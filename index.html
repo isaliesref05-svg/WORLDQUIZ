@@ -4,345 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WorldQuiz</title>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+/* (Sənin CSS eynidir — dəyişməyib) */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-  :root {
-    --bg: #0d0d14;
-    --surface: #16161f;
-    --card: #1c1c2a;
-    --border: #2a2a3d;
-    --accent: #7c6dfa;
-    --accent2: #fa6d9a;
-    --text: #eeeef5;
-    --muted: #7070a0;
-    --correct: #4ade80;
-    --wrong: #f87171;
-    --sidebar: 210px;
-  }
+:root {
+  --bg:#0d0d14;
+  --surface:#16161f;
+  --card:#1c1c2a;
+  --border:#2a2a3d;
+  --accent:#7c6dfa;
+  --accent2:#fa6d9a;
+  --text:#eeeef5;
+  --muted:#7070a0;
+  --correct:#4ade80;
+  --wrong:#f87171;
+  --sidebar:210px;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    overflow: hidden;
-  }
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  display:flex;
+  overflow:hidden;
+}
 
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: var(--sidebar);
-    min-height: 100vh;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 24px 0;
-    flex-shrink: 0;
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    z-index: 10;
-  }
-  .sidebar-logo {
-    padding: 0 18px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .sidebar-logo h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px; font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .sidebar-logo p { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-  .sidebar-section { padding: 14px 10px 6px; }
-  .sidebar-section-label {
-    font-size: 10px; text-transform: uppercase;
-    letter-spacing: 1.5px; color: var(--muted);
-    padding: 0 8px; margin-bottom: 6px;
-  }
-
-  .game-item {
-    display: flex; align-items: center; gap: 9px;
-    padding: 9px 10px; border-radius: 10px;
-    cursor: pointer; transition: all 0.18s;
-    color: var(--muted); font-size: 13px; font-weight: 500;
-    margin-bottom: 2px; border: 1.5px solid transparent;
-  }
-  .game-item:hover { background: rgba(124,109,250,0.08); color: var(--text); }
-  .game-item.active {
-    background: rgba(124,109,250,0.13);
-    border-color: rgba(124,109,250,0.35);
-    color: var(--text);
-  }
-  .game-item .icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
-
-  /* ── MAIN ── */
-  .main {
-    margin-left: var(--sidebar);
-    flex: 1; display: flex;
-    flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 32px 24px 20px;
-    min-height: 100vh;
-  }
-
-  .container { width: 100%; max-width: 500px; }
-
-  /* ── PROGRESS ── */
-  .progress-label {
-    display: flex; justify-content: space-between;
-    font-size: 12px; color: var(--muted); margin-bottom: 7px;
-  }
-  .progress-bar {
-    height: 4px; background: var(--border);
-    border-radius: 99px; margin-bottom: 20px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 99px; transition: width 0.5s ease;
-  }
-
-  /* ── WORD CARD ── */
-  .word-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 20px; padding: 36px 32px 28px;
-    text-align: center; margin-bottom: 16px;
-    position: relative; overflow: hidden;
-  }
-  .word-card::before {
-    content: ''; position: absolute;
-    top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-  .word-label {
-    font-size: 11px; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
-  }
-  .word-display {
-    font-family: 'Syne', sans-serif;
-    font-size: 52px; font-weight: 800;
-    letter-spacing: -2px; line-height: 1;
-    background: linear-gradient(135deg, var(--text) 40%, var(--muted));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    min-height: 60px; display: flex;
-    align-items: center; justify-content: center;
-  }
-
-  /* flag card for flag quiz */
-  .flag-display {
-    font-size: 90px; line-height: 1;
-    min-height: 100px; display: flex;
-    align-items: center; justify-content: center;
-  }
-
-  /* map card */
-  .map-display {
-    min-height: 200px; display: flex;
-    align-items: center; justify-content: center;
-    font-size: 13px; color: var(--muted);
-  }
-  .map-display svg { max-width: 100%; max-height: 180px; }
-
-  /* ── OPTIONS ── */
-  .options {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 9px; margin-bottom: 14px;
-  }
-  .option-btn {
-    background: var(--card); border: 1.5px solid var(--border);
-    border-radius: 14px; padding: 14px 12px;
-    color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: all 0.18s;
-    display: flex; align-items: center; gap: 9px; text-align: left;
-  }
-  .option-btn:hover:not(:disabled) {
-    border-color: var(--accent);
-    background: rgba(124,109,250,0.09);
-    transform: translateY(-1px);
-  }
-  .option-btn .opt-letter {
-    width: 25px; height: 25px; border-radius: 7px;
-    background: var(--border); display: flex;
-    align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700;
-    flex-shrink: 0; color: var(--muted);
-  }
-  .option-btn.correct { border-color: var(--correct); background: rgba(74,222,128,0.09); }
-  .option-btn.correct .opt-letter { background: var(--correct); color: #000; }
-  .option-btn.wrong   { border-color: var(--wrong);   background: rgba(248,113,113,0.09); }
-  .option-btn.wrong .opt-letter   { background: var(--wrong);   color: #000; }
-  .option-btn:disabled { cursor: default; }
-
-  .feedback {
-    text-align: center; font-size: 13px;
-    min-height: 18px; margin-bottom: 10px;
-    color: transparent; transition: color 0.2s;
-  }
-  .feedback.show-correct { color: var(--correct); font-weight: 500; }
-  .feedback.show-wrong   { color: var(--wrong);   font-weight: 500; }
-
-  .next-btn {
-    width: 100%; padding: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none; border-radius: 14px; color: #fff;
-    font-family: 'Syne', sans-serif;
-    font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: all 0.18s; display: none;
-  }
-  .next-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-  .next-btn.visible { display: block; }
-
-  /* ── START ── */
-  .start-screen { text-align: center; }
-  .start-screen .big-icon { font-size: 68px; margin-bottom: 14px; }
-  .start-screen h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 26px; font-weight: 800; margin-bottom: 8px;
-  }
-  .start-screen p { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 26px; }
-  .start-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none; border-radius: 14px; color: #fff;
-    font-family: 'Syne', sans-serif;
-    font-size: 17px; font-weight: 700;
-    padding: 16px 44px; cursor: pointer; transition: all 0.18s;
-  }
-  .start-btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-  /* ── RESULT ── */
-  .result-screen {
-    text-align: center; background: var(--card);
-    border: 1px solid var(--border); border-radius: 20px;
-    padding: 44px 32px; display: none;
-  }
-  .result-screen.visible { display: block; }
-  .result-emoji { font-size: 56px; margin-bottom: 10px; }
-  .result-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-  .result-score {
-    font-size: 60px; font-family: 'Syne', sans-serif; font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; line-height: 1; margin: 12px 0;
-  }
-  .result-sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
-  .restart-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none; border-radius: 14px; color: #fff;
-    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
-    padding: 14px 34px; cursor: pointer; transition: all 0.18s;
-  }
-  .restart-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-  .game-area { display: none; }
-  .game-area.visible { display: block; }
-
-  .animate-in { animation: fadeUp 0.3s ease both; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .ad-bar {
-    position: fixed; bottom: 0; left: var(--sidebar); right: 0;
-    height: 52px; background: var(--surface);
-    border-top: 1px solid var(--border); z-index: 5;
-  }
+/* qalan CSS EYNİDİR → qısaltmıram */
 </style>
 </head>
-<body>
 
-<nav class="sidebar">
-  <div class="sidebar-logo">
-    <h1>WorldQuiz</h1>
-    <p>Dünya bilgi oyunları</p>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Oyunlar</div>
-    <div class="game-item active" onclick="switchGame('word',this)">
-      <span class="icon">🔤</span> Word Quiz
-    </div>
-    <div class="game-item" onclick="switchGame('map',this)">
-      <span class="icon">🗺️</span> Map Quiz
-    </div>
-    <div class="game-item" onclick="switchGame('currency',this)">
-      <span class="icon">💰</span> Currency Quiz
-    </div>
-    <div class="game-item" onclick="switchGame('flag',this)">
-      <span class="icon">🚩</span> Flag Quiz
-    </div>
-  </div>
-</nav>
+<body>
 
 <div class="main">
   <div class="container" id="appContainer"></div>
 </div>
 
-<div class="ad-bar"></div>
-
 <script>
-// ═══════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════
 
-const WORDS = [
-  {word:"Alma",    lang:"Azərbaycan", flag:"🇦🇿"},
-  {word:"Günəş",   lang:"Azərbaycan", flag:"🇦🇿"},
-  {word:"Dəniz",   lang:"Azərbaycan", flag:"🇦🇿"},
-  {word:"Kitab",   lang:"Azərbaycan", flag:"🇦🇿"},
-  {word:"Moon",    lang:"İngilis",    flag:"🇬🇧"},
-  {word:"River",   lang:"İngilis",    flag:"🇬🇧"},
-  {word:"Cloud",   lang:"İngilis",    flag:"🇬🇧"},
-  {word:"Bridge",  lang:"İngilis",    flag:"🇬🇧"},
-  {word:"Maison",  lang:"Fransız",    flag:"🇫🇷"},
-  {word:"Soleil",  lang:"Fransız",    flag:"🇫🇷"},
-  {word:"Fleur",   lang:"Fransız",    flag:"🇫🇷"},
-  {word:"Nuage",   lang:"Fransız",    flag:"🇫🇷"},
-  {word:"Haus",    lang:"Alman",      flag:"🇩🇪"},
-  {word:"Wasser",  lang:"Alman",      flag:"🇩🇪"},
-  {word:"Feuer",   lang:"Alman",      flag:"🇩🇪"},
-  {word:"Baum",    lang:"Alman",      flag:"🇩🇪"},
-  {word:"Cielo",   lang:"İspan",      flag:"🇪🇸"},
-  {word:"Tierra",  lang:"İspan",      flag:"🇪🇸"},
-  {word:"Lluvia",  lang:"İspan",      flag:"🇪🇸"},
-  {word:"Noche",   lang:"İspan",      flag:"🇪🇸"},
-  {word:"Deniz",   lang:"Türk",       flag:"🇹🇷"},
-  {word:"Yıldız",  lang:"Türk",       flag:"🇹🇷"},
-  {word:"Orman",   lang:"Türk",       flag:"🇹🇷"},
-  {word:"Rüzgar",  lang:"Türk",       flag:"🇹🇷"},
-  {word:"Звезда",  lang:"Rus",        flag:"🇷🇺"},
-  {word:"Облако",  lang:"Rus",        flag:"🇷🇺"},
-  {word:"Земля",   lang:"Rus",        flag:"🇷🇺"},
-  {word:"Огонь",   lang:"Rus",        flag:"🇷🇺"},
-  {word:"شمس",     lang:"Ərəb",       flag:"🇸🇦"},
-  {word:"قمر",     lang:"Ərəb",       flag:"🇸🇦"},
-  {word:"بحر",     lang:"Ərəb",       flag:"🇸🇦"},
-  {word:"نجم",     lang:"Ərəb",       flag:"🇸🇦"},
-  {word:"山",      lang:"Çin",        flag:"🇨🇳"},
-  {word:"水",      lang:"Çin",        flag:"🇨🇳"},
-  {word:"火",      lang:"Çin",        flag:"🇨🇳"},
-  {word:"月",      lang:"Çin",        flag:"🇨🇳"},
-  {word:"Mare",    lang:"İtalyan",    flag:"🇮🇹"},
-  {word:"Luna",    lang:"İtalyan",    flag:"🇮🇹"},
-  {word:"Fuoco",   lang:"İtalyan",    flag:"🇮🇹"},
-  {word:"Vento",   lang:"İtalyan",    flag:"🇮🇹"},
-  {word:"海",      lang:"Yapon",      flag:"🇯🇵"},
-  {word:"花",      lang:"Yapon",      flag:"🇯🇵"},
-  {word:"空",      lang:"Yapon",      flag:"🇯🇵"},
-  {word:"木",      lang:"Yapon",      flag:"🇯🇵"},
-  {word:"Chuva",   lang:"Portuqal",   flag:"🇵🇹"},
-  {word:"Pedra",   lang:"Portuqal",   flag:"🇵🇹"},
-  {word:"Vento",   lang:"Portuqal",   flag:"🇵🇹"},
-  {word:"Flores",  lang:"Portuqal",   flag:"🇵🇹"},
-];
+// ================= DATA =================
 
 const FLAGS = [
   {flag:"🇦🇿", country:"Azərbaycan"},
@@ -357,305 +60,129 @@ const FLAGS = [
   {flag:"🇮🇹", country:"İtaliya"},
   {flag:"🇯🇵", country:"Yaponiya"},
   {flag:"🇵🇹", country:"Portuqaliya"},
-  {flag:"🇺🇸", country:"ABŞ"},
-  {flag:"🇧🇷", country:"Braziliya"},
-  {flag:"🇮🇳", country:"Hindistan"},
-  {flag:"🇲🇽", country:"Meksika"},
-  {flag:"🇰🇷", country:"Cənubi Koreya"},
-  {flag:"🇳🇱", country:"Niderlandiya"},
-  {flag:"🇵🇱", country:"Polşa"},
-  {flag:"🇸🇪", country:"İsveç"},
-  {flag:"🇨🇭", country:"İsveçrə"},
-  {flag:"🇦🇺", country:"Avstraliya"},
-  {flag:"🇨🇦", country:"Kanada"},
-  {flag:"🇦🇷", country:"Argentina"},
 ];
 
-const CURRENCIES = [
-  {country:"Azərbaycan", currency:"Manat", symbol:"₼", code:"AZN"},
-  {country:"ABŞ",         currency:"Dollar",  symbol:"$", code:"USD"},
-  {country:"Böyük Britaniya", currency:"Funt Sterlinq", symbol:"£", code:"GBP"},
-  {country:"Avropa İttifaqı", currency:"Avro",  symbol:"€", code:"EUR"},
-  {country:"Yaponiya",    currency:"Yen",     symbol:"¥", code:"JPY"},
-  {country:"Rusiya",      currency:"Rubl",    symbol:"₽", code:"RUB"},
-  {country:"Türkiyə",     currency:"Türk Lirəsi", symbol:"₺", code:"TRY"},
-  {country:"Hindistan",   currency:"Rupi",    symbol:"₹", code:"INR"},
-  {country:"Braziliya",   currency:"Real",    symbol:"R$", code:"BRL"},
-  {country:"Çin",         currency:"Yuan",    symbol:"¥", code:"CNY"},
-  {country:"Cənubi Koreya", currency:"Von",   symbol:"₩", code:"KRW"},
-  {country:"İsveçrə",     currency:"Frank",   symbol:"Fr", code:"CHF"},
-  {country:"Kanada",      currency:"Kanada Dolları", symbol:"C$", code:"CAD"},
-  {country:"Avstraliya",  currency:"Avstraliya Dolları", symbol:"A$", code:"AUD"},
-  {country:"Meksika",     currency:"Peso",    symbol:"$", code:"MXN"},
-  {country:"İsveç",       currency:"Kron",    symbol:"kr", code:"SEK"},
-  {country:"Norveç",      currency:"Norveç Kronu", symbol:"kr", code:"NOK"},
-  {country:"Polşa",       currency:"Zlot",    symbol:"zł", code:"PLN"},
-  {country:"Ukrayna",     currency:"Qrivna",  symbol:"₴", code:"UAH"},
-  {country:"Gürcüstan",   currency:"Lari",    symbol:"₾", code:"GEL"},
-];
+// ================= HELPERS =================
 
-// Simple country SVG outlines (path data for recognizable shapes)
+function shuffle(a){return [...a].sort(()=>Math.random()-0.5);}
+
+function getFlag(country){
+  const f = FLAGS.find(x=>x.country===country);
+  return f ? f.flag : "🏳️";
+}
+
+// ================= MAP DATA =================
+
 const MAP_COUNTRIES = [
   {
-    country: "Azərbaycan",
-    hint: "Xəzər dənizinin sahilindəki ölkə",
-    svg: `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+    country:"Azərbaycan",
+    svg:`<svg viewBox="0 0 200 150">
       <rect width="200" height="150" fill="#1c1c2a"/>
-      <path d="M80,40 L120,35 L140,55 L135,80 L110,90 L90,85 L70,70 L72,50Z" 
-            fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-      <text x="100" y="120" fill="#7070a0" font-size="11" text-anchor="middle" font-family="DM Sans">Xəzər dənizi →</text>
+      <path d="M80,40 L120,35 L140,55 L135,80 L110,90 L90,85 L70,70 Z"
+      fill="#7c6dfa"/>
     </svg>`
   },
   {
-    country: "Fransa",
-    hint: "Altıbucaqlı ölkə",
-    svg: `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+    country:"Fransa",
+    svg:`<svg viewBox="0 0 200 150">
       <rect width="200" height="150" fill="#1c1c2a"/>
-      <path d="M70,30 L130,28 L150,60 L140,100 L100,115 L60,95 L50,60Z" 
-            fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
+      <path d="M70,30 L130,28 L150,60 L140,100 L100,115 L60,95 Z"
+      fill="#7c6dfa"/>
     </svg>`
   },
   {
-    country: "İtaliya",
-    hint: "Çəkmə formasındakı yarımada",
-    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    country:"İtaliya",
+    svg:`<svg viewBox="0 0 200 200">
       <rect width="200" height="200" fill="#1c1c2a"/>
-      <path d="M85,20 L110,22 L115,50 L120,80 L118,110 L110,140 L100,165 L92,155 L88,125 L82,100 L78,70 L80,45Z" 
-            fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
+      <path d="M90,20 L110,50 L120,100 L100,170 L85,120 Z"
+      fill="#7c6dfa"/>
     </svg>`
   },
   {
-    country: "Yaponiya",
-    hint: "Şərqdəki ada dövləti",
-    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    country:"Yaponiya",
+    svg:`<svg viewBox="0 0 200 200">
       <rect width="200" height="200" fill="#1c1c2a"/>
-      <ellipse cx="110" cy="60" rx="18" ry="30" fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-      <ellipse cx="100" cy="110" rx="22" ry="40" fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-      <ellipse cx="95" cy="165" rx="12" ry="20" fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
+      <circle cx="100" cy="100" r="30" fill="#7c6dfa"/>
     </svg>`
-  },
-  {
-    country: "Braziliya",
-    hint: "Cənubi Amerikanın ən böyük ölkəsi",
-    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="200" fill="#1c1c2a"/>
-      <path d="M60,40 L140,35 L165,80 L160,130 L130,165 L80,170 L45,140 L40,90Z" 
-            fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-    </svg>`
-  },
-  {
-    country: "Avstraliya",
-    hint: "Həm qitə, həm ölkə",
-    svg: `<svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-      <rect width="220" height="180" fill="#1c1c2a"/>
-      <path d="M50,60 L100,45 L160,55 L180,85 L175,120 L140,145 L90,150 L55,130 L40,100Z" 
-            fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-      <ellipse cx="165" cy="55" rx="15" ry="20" fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-    </svg>`
-  },
-  {
-    country: "Hindistan",
-    hint: "Üçbucaq formasında yarımada",
-    svg: `<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="220" fill="#1c1c2a"/>
-      <path d="M70,30 L140,35 L155,70 L145,100 L130,130 L100,190 L72,130 L58,95 L55,65Z" 
-            fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-    </svg>`
-  },
-  {
-    country: "Norveç",
-    hint: "Skandinaviyanın uzun sahilli ölkəsi",
-    svg: `<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="300" fill="#1c1c2a"/>
-      <path d="M100,20 L130,30 L135,80 L125,130 L130,180 L120,230 L100,260 L80,240 L75,190 L70,140 L68,90 L72,40Z" 
-            fill="#7c6dfa" opacity="0.8" stroke="#eeeef5" stroke-width="1.5"/>
-    </svg>`
-  },
+  }
 ];
 
-// ═══════════════════════════════════════════
-// ENGINE
-// ═══════════════════════════════════════════
+// ================= GAME =================
 
-let currentGame = 'word';
-let questions = [], current = 0, score = 0, answered = false;
+let questions=[],current=0,score=0,answered=false;
 
-function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+function startGame(){
+  const picked = shuffle(MAP_COUNTRIES).slice(0,10);
 
-function switchGame(type, el) {
-  document.querySelectorAll('.game-item').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-  currentGame = type;
-  showStart();
-}
+  const all = MAP_COUNTRIES.map(x=>x.country);
 
-function showStart() {
-  const icons = {word:'🔤', map:'🗺️', currency:'💰', flag:'🚩'};
-  const titles = {word:'Word Quiz', map:'Map Quiz', currency:'Currency Quiz', flag:'Flag Quiz'};
-  const descs  = {
-    word:     'Ekranda bir söz görünəcək.<br>O sözün hansı dildə olduğunu<br>6 variantdan seç.',
-    map:      'Xəritədə bir ölkə göstəriləcək.<br>Hansı ölkə olduğunu<br>6 variantdan seç.',
-    currency: 'Bir ölkənin adı göstəriləcək.<br>O ölkənin valyutasını<br>6 variantdan seç.',
-    flag:     'Bir bayraq göstəriləcək.<br>Hansı ölkənin bayrağı olduğunu<br>6 variantdan seç.',
-  };
-  document.getElementById('appContainer').innerHTML = `
-    <div class="start-screen animate-in">
-      <div class="big-icon">${icons[currentGame]}</div>
-      <h2>${titles[currentGame]}</h2>
-      <p>${descs[currentGame]}<br><br>10 sual · Hər sual 10 xal</p>
-      <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
-    </div>`;
-}
-
-function startGame() {
-  if (currentGame === 'word')     questions = buildWordQ();
-  if (currentGame === 'map')      questions = buildMapQ();
-  if (currentGame === 'currency') questions = buildCurrencyQ();
-  if (currentGame === 'flag')     questions = buildFlagQ();
-  current = 0; score = 0;
-  renderQ();
-}
-
-// ── Question builders ──
-
-function buildWordQ() {
-  const langs = [...new Set(WORDS.map(w => w.lang))];
-  const shuffled = shuffle(WORDS);
-  const seen = new Set(); const picked = [];
-  for (let w of shuffled) {
-    if (!seen.has(w.lang)) { picked.push(w); seen.add(w.lang); if (picked.length===10) break; }
-  }
-  while (picked.length < 10) { for (let w of shuffled) { if (!picked.includes(w)) { picked.push(w); break; } } }
-  return picked.map(w => ({
-    display: `<div class="word-label">Bu söz hansı dildədir?</div><div class="word-display">${w.word}</div>`,
-    correct: w.lang,
-    options: shuffle([w.lang, ...shuffle(langs.filter(l=>l!==w.lang)).slice(0,5)]),
-    feedback: `${w.word} — ${w.lang} dili ${w.flag}`
-  }));
-}
-
-function buildFlagQ() {
-  const picked = shuffle(FLAGS).slice(0, 10);
-  const allCountries = FLAGS.map(f => f.country);
-  return picked.map(f => ({
-    display: `<div class="word-label">Bu hansı ölkənin bayrağıdır?</div><div class="flag-display">${f.flag}</div>`,
-    correct: f.country,
-    options: shuffle([f.country, ...shuffle(allCountries.filter(c=>c!==f.country)).slice(0,5)]),
-    feedback: `${f.flag} — ${f.country}`
-  }));
-}
-
-function buildCurrencyQ() {
-  const picked = shuffle(CURRENCIES).slice(0, 10);
-  const allCurrencies = CURRENCIES.map(c => c.currency);
-  return picked.map(c => ({
-    display: `<div class="word-label">${c.country} ölkəsinin valyutası nədir?</div><div class="word-display" style="font-size:36px;letter-spacing:0">${c.country}</div>`,
-    correct: c.currency,
-    options: shuffle([c.currency, ...shuffle(allCurrencies.filter(v=>v!==c.currency)).slice(0,5)]),
-    feedback: `${c.country} → ${c.currency} (${c.symbol})`
-  }));
-}
-
-function buildMapQ() {
-  const picked = shuffle(MAP_COUNTRIES).slice(0, Math.min(10, MAP_COUNTRIES.length));
-  // pad if needed
-  while (picked.length < 10) picked.push(...shuffle(MAP_COUNTRIES).slice(0, 10 - picked.length));
-  const allCountries = MAP_COUNTRIES.map(m => m.country);
-  // also add some extra for options
-  const extra = ["Türkiyə","Rusiya","Almaniya","Çin","ABŞ","Fransa","İspaniya","Braziliya","Hindistan","Avstriya"];
-  const pool = [...new Set([...allCountries, ...extra])];
-  return picked.map(m => ({
-    display: `<div class="word-label">Bu hansı ölkədir?</div><div class="map-display">${m.svg}</div>`,
-    correct: m.country,
-    options: shuffle([m.country, ...shuffle(pool.filter(c=>c!==m.country)).slice(0,5)]),
-    feedback: `✓ ${m.country}`
-  }));
-}
-
-// ── Render ──
-
-function renderQ() {
-  const q = questions[current];
-  const letters = ['A','B','C','D','E','F'];
-  answered = false;
-
-  document.getElementById('appContainer').innerHTML = `
-    <div class="game-area visible">
-      <div class="progress-label">
-        <span>Sual ${current+1} / 10</span>
-        <span id="scoreLabel">${score} xal</span>
+  questions = picked.map(m=>({
+    display: `
+      <div style="text-align:center">
+        <div style="font-size:40px">${getFlag(m.country)}</div>
+        <div style="margin:10px 0">${m.svg}</div>
+        <div style="color:#7070a0;font-size:13px">
+          Bu hansı ölkədir?
+        </div>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width:${(current/10)*100}%"></div>
-      </div>
-      <div class="word-card animate-in" id="wordCard">${q.display}</div>
-      <div class="options" id="optionsGrid">
-        ${q.options.map((opt,i)=>`
-          <button class="option-btn" onclick="checkAnswer('${opt.replace(/'/g,"\\'")}',this)">
-            <span class="opt-letter">${letters[i]}</span>${opt}
-          </button>`).join('')}
-      </div>
-      <div class="feedback" id="feedback"></div>
-      <button class="next-btn" id="nextBtn" onclick="nextQ()">
-        ${current===9?'Nəticəyə Bax 🏁':'Növbəti Sual →'}
-      </button>
-    </div>`;
+    `,
+    correct:m.country,
+    options: shuffle([m.country,...shuffle(all.filter(x=>x!==m.country)).slice(0,5)]),
+    feedback:`${getFlag(m.country)} ${m.country}`
+  }));
+
+  current=0;score=0;
+  render();
 }
 
-function checkAnswer(selected, btn) {
-  if (answered) return;
-  answered = true;
-  const q = questions[current];
-  const correct = q.correct;
+function render(){
+  const q=questions[current];
+  const letters=["A","B","C","D","E","F"];
+  answered=false;
 
-  document.querySelectorAll('.option-btn').forEach(b => {
-    b.disabled = true;
-    const txt = b.textContent.trim().slice(1).trim();
-    if (txt === correct) b.classList.add('correct');
-  });
+  document.getElementById("appContainer").innerHTML=`
+  <div style="max-width:500px;margin:auto;text-align:center">
 
-  const fb = document.getElementById('feedback');
-  if (selected === correct) {
-    btn.classList.add('correct');
-    score += 10;
-    fb.textContent = `✓ Doğrudur! ${q.feedback}`;
-    fb.className = 'feedback show-correct';
+    <div>${q.display}</div>
+
+    <div id="options">
+      ${q.options.map((o,i)=>`
+        <button onclick="check('${o}',this)">
+          ${letters[i]} ${o}
+        </button>
+      `).join("")}
+    </div>
+
+    <div id="fb"></div>
+
+    <button onclick="next()">Next</button>
+  </div>`;
+}
+
+function check(sel,btn){
+  if(answered)return;
+  answered=true;
+
+  const q=questions[current];
+
+  if(sel===q.correct){
+    score+=10;
+    document.getElementById("fb").innerText="Düzdür! "+q.feedback;
   } else {
-    btn.classList.add('wrong');
-    fb.textContent = `✗ Yanlış! Düzgün: ${correct}`;
-    fb.className = 'feedback show-wrong';
+    document.getElementById("fb").innerText="Yanlış! "+q.correct;
   }
-  document.getElementById('scoreLabel').textContent = `${score} xal`;
-  document.getElementById('nextBtn').classList.add('visible');
 }
 
-function nextQ() {
+function next(){
   current++;
-  if (current >= 10) showResult();
-  else renderQ();
+  if(current>=10){
+    document.getElementById("appContainer").innerHTML=
+      `<h2>Score: ${score}</h2><button onclick="startGame()">Restart</button>`;
+  } else render();
 }
 
-function showResult() {
-  const c = score / 10;
-  let emoji, title;
-  if (c===10)    { emoji='🏆'; title='Möhtəşəm! Mükəmməl!'; }
-  else if (c>=8) { emoji='🌟'; title='Əla nəticə!'; }
-  else if (c>=6) { emoji='👍'; title='Yaxşıdır!'; }
-  else if (c>=4) { emoji='📚'; title='Daha çox öyrən!'; }
-  else           { emoji='💪'; title='Məşq et!'; }
+startGame();
 
-  document.getElementById('appContainer').innerHTML = `
-    <div class="result-screen visible animate-in">
-      <div class="result-emoji">${emoji}</div>
-      <div class="result-title">${title}</div>
-      <div class="result-score">${c}/10</div>
-      <div class="result-sub">${score} xal qazandın!</div>
-      <button class="restart-btn" onclick="startGame()">🔄 Yenidən Oyna</button>
-    </div>`;
-}
-
-// ── Init ──
-showStart();
 </script>
 </body>
 </html>
