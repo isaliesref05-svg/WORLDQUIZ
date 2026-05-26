@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World Quiz Pro</title>
+<title>World Quiz Infinite</title>
 
 <style>
 body {
     margin: 0;
     font-family: Arial;
     color: white;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: radial-gradient(circle at top, #1f4037, #99f2c8);
 }
 
 /* HEADER */
@@ -19,19 +19,19 @@ header {
     flex-wrap: wrap;
     gap: 10px;
     padding: 12px;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(12px);
 }
 
 header button {
     flex: 1;
     padding: 12px;
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
     cursor: pointer;
     font-weight: bold;
     color: white;
-    background: linear-gradient(45deg, #ff6a00, #ee0979);
+    background: linear-gradient(135deg, #ff512f, #dd2476);
     transition: 0.2s;
 }
 
@@ -49,11 +49,12 @@ header button:hover {
 .card {
     margin-top: 20px;
     padding: 25px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
+    border-radius: 22px;
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(18px);
     text-align: center;
     animation: fadeIn 0.3s ease;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
 }
 
 .question {
@@ -71,11 +72,11 @@ header button:hover {
 .answers button {
     padding: 15px;
     border: none;
-    border-radius: 15px;
+    border-radius: 16px;
     cursor: pointer;
     font-size: 16px;
     color: white;
-    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
     transition: 0.2s;
 }
 
@@ -83,14 +84,13 @@ header button:hover {
     transform: scale(1.05);
 }
 
-/* AD */
-.ad {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: rgba(0,0,0,0.5);
-    padding: 10px;
-    text-align: center;
+/* COLORS */
+.correct {
+    background: linear-gradient(135deg, #00b09b, #96c93d) !important;
+}
+
+.wrong {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b) !important;
 }
 
 /* ANIMATION */
@@ -128,33 +128,36 @@ header button:hover {
     </div>
 </div>
 
-<div class="ad">📢 Reklam yeri</div>
-
 <script>
 const games = {
     language: [
         {question:"Bonjour",correct:"Fransız",options:["Fransız","Türk","Rus","Alman","İspan","İtalyan"]},
-        {question:"Hola",correct:"İspan",options:["Fransız","Türk","Rus","Alman","İspan","İtalyan"]}
+        {question:"Hola",correct:"İspan",options:["Fransız","Türk","Rus","Alman","İspan","İtalyan"]},
+        {question:"Guten Morgen",correct:"Alman",options:["Fransız","Türk","Rus","Alman","İspan","İtalyan"]}
     ],
+
     currency: [
-        {question:"Yaponiyanın valyutası?",correct:"Yen",options:["Dollar","Yen","Euro","Lira","Manat","Peso"]}
+        {question:"Yaponiyanın valyutası?",correct:"Yen",options:["Dollar","Yen","Euro","Lira","Manat","Peso"]},
+        {question:"Türkiyənin valyutası?",correct:"Lira",options:["Dollar","Yen","Euro","Lira","Manat","Peso"]}
     ],
+
     flag: [
-        {question:"🇧🇷",correct:"Braziliya",options:["Argentina","Braziliya","İspaniya","Meksika","Kolumbiya","Portuqaliya"]}
+        {question:"🇧🇷",correct:"Braziliya",options:["Argentina","Braziliya","İspaniya","Meksika","Kolumbiya","Portuqaliya"]},
+        {question:"🇯🇵",correct:"Yaponiya",options:["Çin","Koreya","Yaponiya","Tayland","Vyetnam","Monqolustan"]}
     ],
+
     country: [
-        {question:"🇫🇷",correct:"Fransa",options:["Fransa","İtaliya","İspaniya","Almaniya","Belçika","Portuqaliya"]}
+        {question:"🇫🇷",correct:"Fransa",options:["Fransa","İtaliya","İspaniya","Almaniya","Belçika","Portuqaliya"]},
+        {question:"🇩🇪",correct:"Almaniya",options:["Fransa","İtaliya","İspaniya","Almaniya","Polşa","Avstriya"]}
     ]
 };
 
 let current = [];
 let i = 0;
-let score = 0;
 
 function startGame(type){
-    current = games[type];
+    current = shuffle(games[type]);
     i = 0;
-    score = 0;
     show();
 }
 
@@ -169,27 +172,48 @@ function show(){
     q.options.forEach(o=>{
         let b = document.createElement("button");
         b.innerText = o;
-        b.onclick = ()=>check(o);
+        b.onclick = ()=>check(b, o);
         box.appendChild(b);
     });
 }
 
-function check(a){
-    if(a === current[i].correct) score++;
-    i++;
+function check(btn, ans){
+    let correct = current[i].correct;
+    let buttons = document.querySelectorAll(".answers button");
 
-    if(i >= current.length){
-        end();
+    buttons.forEach(b => b.onclick = null);
+
+    if(ans === correct){
+        btn.classList.add("correct");
     } else {
-        show();
+        btn.classList.add("wrong");
+
+        buttons.forEach(b=>{
+            if(b.innerText === correct){
+                b.classList.add("correct");
+            }
+        });
     }
+
+    setTimeout(()=>{
+        i++;
+        if(i >= current.length){
+            startGameRandom(); // sonsuz sistem
+        } else {
+            show();
+        }
+    }, 1200);
 }
 
-function end(){
-    document.getElementById("question").innerHTML =
-        "Oyun bitdi 🎉<br><br>Score: " + score + "/" + current.length;
+/* 🔥 SONSUZ OYUN */
+function startGameRandom(){
+    let keys = Object.keys(games);
+    let random = keys[Math.floor(Math.random()*keys.length)];
+    startGame(random);
+}
 
-    document.getElementById("answers").innerHTML = "";
+function shuffle(array){
+    return array.sort(()=>Math.random()-0.5);
 }
 </script>
 
