@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GeoMind - Word Quiz</title>
+<title>WorldQuiz</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -18,6 +18,7 @@
     --muted: #7070a0;
     --correct: #4ade80;
     --wrong: #f87171;
+    --sidebar: 220px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,104 +29,154 @@
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    position: relative;
     overflow: hidden;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    top: -200px; left: -200px;
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(124,109,250,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  body::after {
-    content: '';
-    position: fixed;
-    bottom: -200px; right: -200px;
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(250,109,154,0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  /* AD BANNER - bottom */
-  .ad-banner {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 60px;
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar);
+    min-height: 100vh;
     background: var(--surface);
-    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    z-index: 999;
-    font-size: 13px;
-    color: var(--muted);
-  }
-  .ad-banner .ad-label {
-    background: var(--border);
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .ad-banner .ad-slot {
-    background: linear-gradient(90deg, #1c1c2a, #252535, #1c1c2a);
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-    padding: 8px 24px;
-    font-size: 13px;
-    color: var(--muted);
-    cursor: pointer;
-    transition: border-color 0.2s;
-    min-width: 300px;
-    text-align: center;
-  }
-  .ad-banner .ad-slot:hover { border-color: var(--accent); color: var(--text); }
-
-  /* MAIN CONTAINER */
-  .container {
-    width: 100%;
-    max-width: 520px;
-    margin-bottom: 80px;
-    position: relative;
-    z-index: 1;
+    flex-direction: column;
+    padding: 24px 0;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 10;
   }
 
-  /* LOGO */
-  .logo {
-    text-align: center;
-    margin-bottom: 32px;
+  .sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
   }
-  .logo h1 {
+  .sidebar-logo h1 {
     font-family: 'Syne', sans-serif;
-    font-size: 32px;
+    font-size: 22px;
     font-weight: 800;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -1px;
   }
-  .logo p {
+  .sidebar-logo p {
+    font-size: 11px;
     color: var(--muted);
-    font-size: 14px;
-    margin-top: 4px;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
   }
 
-  /* PROGRESS */
+  .sidebar-section {
+    padding: 16px 12px 8px;
+  }
+  .sidebar-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    padding: 0 8px;
+    margin-bottom: 6px;
+  }
+
+  .game-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    border: 1.5px solid transparent;
+    text-decoration: none;
+  }
+  .game-item:hover {
+    background: rgba(124,109,250,0.08);
+    color: var(--text);
+  }
+  .game-item.active {
+    background: rgba(124,109,250,0.13);
+    border-color: rgba(124,109,250,0.35);
+    color: var(--text);
+  }
+  .game-item .icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .game-item .badge {
+    margin-left: auto;
+    font-size: 10px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 99px;
+    padding: 2px 7px;
+    font-weight: 700;
+  }
+  .game-item .badge.soon {
+    background: var(--border);
+    color: var(--muted);
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    margin-left: var(--sidebar);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px 80px;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  .main::before {
+    content: '';
+    position: fixed;
+    top: -200px; right: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(124,109,250,0.09) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── PAGE TITLE ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .page-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .page-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* ── PROGRESS ── */
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
   .progress-bar {
     height: 4px;
     background: var(--border);
     border-radius: 99px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     overflow: hidden;
   }
   .progress-fill {
@@ -134,22 +185,15 @@
     border-radius: 99px;
     transition: width 0.5s ease;
   }
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
 
-  /* WORD CARD */
+  /* ── WORD CARD ── */
   .word-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 40px 32px;
+    padding: 40px 32px 32px;
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     position: relative;
     overflow: hidden;
   }
@@ -161,51 +205,46 @@
     background: linear-gradient(90deg, var(--accent), var(--accent2));
   }
   .word-label {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 2px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
   .word-display {
     font-family: 'Syne', sans-serif;
-    font-size: 52px;
+    font-size: 56px;
     font-weight: 800;
     letter-spacing: -2px;
     line-height: 1;
-    background: linear-gradient(135deg, var(--text), var(--muted));
+    background: linear-gradient(135deg, var(--text) 30%, var(--muted));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 12px;
-    min-height: 60px;
+    min-height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .word-hint {
-    font-size: 13px;
-    color: var(--muted);
-  }
 
-  /* OPTIONS GRID */
+  /* ── OPTIONS ── */
   .options {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .option-btn {
     background: var(--card);
     border: 1.5px solid var(--border);
     border-radius: 14px;
-    padding: 16px 12px;
+    padding: 15px 12px;
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.18s;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -213,81 +252,83 @@
   }
   .option-btn:hover:not(:disabled) {
     border-color: var(--accent);
-    background: rgba(124,109,250,0.08);
+    background: rgba(124,109,250,0.09);
     transform: translateY(-1px);
   }
   .option-btn .opt-letter {
-    width: 28px; height: 28px;
-    border-radius: 8px;
+    width: 26px; height: 26px;
+    border-radius: 7px;
     background: var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     flex-shrink: 0;
     color: var(--muted);
   }
-  .option-btn.correct {
-    border-color: var(--correct);
-    background: rgba(74,222,128,0.1);
-  }
+  .option-btn.correct { border-color: var(--correct); background: rgba(74,222,128,0.09); }
   .option-btn.correct .opt-letter { background: var(--correct); color: #000; }
-  .option-btn.wrong {
-    border-color: var(--wrong);
-    background: rgba(248,113,113,0.1);
-  }
+  .option-btn.wrong { border-color: var(--wrong); background: rgba(248,113,113,0.09); }
   .option-btn.wrong .opt-letter { background: var(--wrong); color: #000; }
   .option-btn:disabled { cursor: default; }
 
-  /* FEEDBACK */
+  /* ── FEEDBACK ── */
   .feedback {
     text-align: center;
-    font-size: 14px;
-    min-height: 20px;
+    font-size: 13px;
+    min-height: 18px;
     margin-bottom: 12px;
-    color: var(--muted);
-    transition: all 0.3s;
+    color: transparent;
+    transition: color 0.2s;
   }
   .feedback.show-correct { color: var(--correct); font-weight: 500; }
-  .feedback.show-wrong { color: var(--wrong); font-weight: 500; }
+  .feedback.show-wrong   { color: var(--wrong);   font-weight: 500; }
 
-  /* NEXT BTN */
+  /* ── NEXT BTN ── */
   .next-btn {
     width: 100%;
-    padding: 16px;
+    padding: 15px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     border: none;
     border-radius: 14px;
     color: #fff;
     font-family: 'Syne', sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: all 0.2s;
+    transition: all 0.18s;
     display: none;
   }
   .next-btn:hover { opacity: 0.9; transform: translateY(-1px); }
   .next-btn.visible { display: block; }
 
-  /* SCORE */
-  .score-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--muted);
-    position: absolute;
-    top: 0; right: 0;
+  /* ── START SCREEN ── */
+  .start-screen {
+    text-align: center;
   }
-  .score-chip span { color: var(--text); font-weight: 700; }
+  .start-screen .big-icon { font-size: 72px; margin-bottom: 16px; }
+  .start-screen h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px; font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .start-screen p {
+    color: var(--muted); font-size: 14px;
+    line-height: 1.7; margin-bottom: 28px;
+  }
+  .start-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 14px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 17px; font-weight: 700;
+    padding: 17px 44px;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .start-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-  /* RESULT SCREEN */
+  /* ── RESULT ── */
   .result-screen {
     text-align: center;
     background: var(--card);
@@ -297,355 +338,305 @@
     display: none;
   }
   .result-screen.visible { display: block; }
-  .result-emoji {
-    font-size: 64px;
-    margin-bottom: 16px;
-  }
+  .result-emoji { font-size: 60px; margin-bottom: 12px; }
   .result-title {
     font-family: 'Syne', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
-    margin-bottom: 8px;
+    font-size: 24px; font-weight: 800; margin-bottom: 8px;
   }
   .result-score {
-    font-size: 60px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
+    font-size: 64px;
+    font-family: 'Syne', sans-serif; font-weight: 800;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    line-height: 1;
-    margin: 16px 0;
+    line-height: 1; margin: 14px 0;
   }
-  .result-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+  .result-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
   .restart-btn {
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 14px;
+    border: none; border-radius: 14px;
     color: #fff;
     font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    padding: 16px 40px;
-    cursor: pointer;
-    transition: all 0.2s;
+    font-size: 15px; font-weight: 700;
+    padding: 15px 36px;
+    cursor: pointer; transition: all 0.18s;
   }
   .restart-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-  /* START SCREEN */
-  .start-screen {
-    text-align: center;
-  }
-  .start-screen .big-icon {
-    font-size: 72px;
-    margin-bottom: 20px;
-  }
-  .start-screen h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 26px;
-    font-weight: 800;
-    margin-bottom: 10px;
-  }
-  .start-screen p {
-    color: var(--muted);
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 28px;
-  }
-  .start-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 14px;
-    color: #fff;
-    font-family: 'Syne', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    padding: 18px 48px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-  .start-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
   .game-area { display: none; }
   .game-area.visible { display: block; }
 
-  .animate-in {
-    animation: fadeUp 0.4s ease both;
-  }
+  .animate-in { animation: fadeUp 0.35s ease both; }
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── AD BAR (boş, sonra doldurulacaq) ── */
+  .ad-bar {
+    position: fixed;
+    bottom: 0;
+    left: var(--sidebar);
+    right: 0;
+    height: 56px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 5;
   }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="logo">
-    <h1>🌍 GeoMind</h1>
-    <p>Word Quiz — Dili tap!</p>
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>WorldQuiz</h1>
+    <p>Dünya bilgi oyunları</p>
   </div>
 
-  <!-- START SCREEN -->
-  <div class="start-screen" id="startScreen">
-    <div class="big-icon">🔤</div>
-    <h2>Word Quiz</h2>
-    <p>Ekranda bir söz görünəcək.<br>O sözün hansı dildə olduğunu 6 variantdan seç.<br>10 sual · Hər sual 10 xal</p>
-    <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
-  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Oyunlar</div>
 
-  <!-- GAME AREA -->
-  <div class="game-area" id="gameArea">
-    <div style="position:relative; margin-bottom:20px;">
+    <div class="game-item active" onclick="selectGame('word')">
+      <span class="icon">🔤</span>
+      Word Quiz
+      <span class="badge">Yeni</span>
+    </div>
+
+    <div class="game-item" onclick="selectGame('map')">
+      <span class="icon">🗺️</span>
+      Map Quiz
+      <span class="badge soon">Tezliklə</span>
+    </div>
+
+    <div class="game-item" onclick="selectGame('flag')">
+      <span class="icon">🚩</span>
+      Flag Quiz
+      <span class="badge soon">Tezliklə</span>
+    </div>
+
+    <div class="game-item" onclick="selectGame('currency')">
+      <span class="icon">💰</span>
+      Currency Quiz
+      <span class="badge soon">Tezliklə</span>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="container">
+
+    <!-- START SCREEN -->
+    <div class="start-screen" id="startScreen">
+      <div class="big-icon">🔤</div>
+      <h2>Word Quiz</h2>
+      <p>Ekranda bir söz görünəcək.<br>O sözün hansı dildə olduğunu<br>6 variantdan seç.</p>
+      <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
+    </div>
+
+    <!-- GAME AREA -->
+    <div class="game-area" id="gameArea">
       <div class="progress-label">
         <span id="questionNum">Sual 1 / 10</span>
         <span id="scoreLabel">0 xal</span>
       </div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
       </div>
 
-    <div class="word-card animate-in" id="wordCard">
-      <div class="word-label">Bu söz hansı dildədir?</div>
-      <div class="word-display" id="wordDisplay">—</div>
-      <div class="word-hint" id="wordHint">Cavabı seçin</div>
+      <div class="word-card animate-in" id="wordCard">
+        <div class="word-label">Bu söz hansı dildədir?</div>
+        <div class="word-display" id="wordDisplay">—</div>
+      </div>
+
+      <div class="options" id="optionsGrid"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Növbəti Sual →</button>
     </div>
 
-    <div class="options" id="optionsGrid"></div>
+    <!-- RESULT -->
+    <div class="result-screen" id="resultScreen">
+      <div class="result-emoji" id="resultEmoji">🏆</div>
+      <div class="result-title" id="resultTitle">Əla!</div>
+      <div class="result-score" id="resultScore">10/10</div>
+      <div class="result-sub" id="resultSub">100 xal qazandın!</div>
+      <button class="restart-btn" onclick="restartGame()">🔄 Yenidən Oyna</button>
+    </div>
 
-    <div class="feedback" id="feedback"></div>
-
-    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Növbəti Sual →</button>
-  </div>
-
-  <!-- RESULT SCREEN -->
-  <div class="result-screen" id="resultScreen">
-    <div class="result-emoji" id="resultEmoji">🏆</div>
-    <div class="result-title" id="resultTitle">Əla!</div>
-    <div class="result-score" id="resultScore">10/10</div>
-    <div class="result-sub" id="resultSub">100 xal qazandın!</div>
-    <button class="restart-btn" onclick="restartGame()">🔄 Yenidən Oyna</button>
   </div>
 </div>
 
-<!-- AD BANNER -->
-<div class="ad-banner">
-  <span class="ad-label">Ad</span>
-  <div class="ad-slot" onclick="adClick()">🎮 &nbsp; Daha çox oyun üçün GeoMind Pro-ya keçin — <strong>Pulsuz Sınayın</strong></div>
-</div>
+<!-- AD BAR (boş) -->
+<div class="ad-bar"></div>
 
 <script>
-// === WORD DATABASE ===
-// Format: { word, language, flag, meaning }
 const wordBank = [
-  // Azərbaycan
-  { word: "Alma", language: "Azərbaycan", flag: "🇦🇿", meaning: "alma (meyvə)" },
-  { word: "Günəş", language: "Azərbaycan", flag: "🇦🇿", meaning: "günəş" },
-  { word: "Dəniz", language: "Azərbaycan", flag: "🇦🇿", meaning: "dəniz" },
-  { word: "Kitab", language: "Azərbaycan", flag: "🇦🇿", meaning: "kitab" },
-  // İngilis
-  { word: "Moon", language: "İngilis", flag: "🇬🇧", meaning: "ay" },
-  { word: "River", language: "İngilis", flag: "🇬🇧", meaning: "çay" },
-  { word: "Cloud", language: "İngilis", flag: "🇬🇧", meaning: "bulud" },
-  { word: "Stone", language: "İngilis", flag: "🇬🇧", meaning: "daş" },
-  // Fransız
-  { word: "Maison", language: "Fransız", flag: "🇫🇷", meaning: "ev" },
-  { word: "Soleil", language: "Fransız", flag: "🇫🇷", meaning: "günəş" },
-  { word: "Fleur", language: "Fransız", flag: "🇫🇷", meaning: "çiçək" },
-  { word: "Nuage", language: "Fransız", flag: "🇫🇷", meaning: "bulud" },
-  // Alman
-  { word: "Haus", language: "Alman", flag: "🇩🇪", meaning: "ev" },
-  { word: "Wasser", language: "Alman", flag: "🇩🇪", meaning: "su" },
-  { word: "Feuer", language: "Alman", flag: "🇩🇪", meaning: "od" },
-  { word: "Baum", language: "Alman", flag: "🇩🇪", meaning: "ağac" },
-  // İspan
-  { word: "Cielo", language: "İspan", flag: "🇪🇸", meaning: "göy" },
-  { word: "Tierra", language: "İspan", flag: "🇪🇸", meaning: "yer" },
-  { word: "Lluvia", language: "İspan", flag: "🇪🇸", meaning: "yağış" },
-  { word: "Noche", language: "İspan", flag: "🇪🇸", meaning: "gecə" },
-  // Türk
-  { word: "Deniz", language: "Türk", flag: "🇹🇷", meaning: "dəniz" },
-  { word: "Yıldız", language: "Türk", flag: "🇹🇷", meaning: "ulduz" },
-  { word: "Orman", language: "Türk", flag: "🇹🇷", meaning: "meşə" },
-  { word: "Rüzgar", language: "Türk", flag: "🇹🇷", meaning: "külək" },
-  // Rus
-  { word: "Звезда", language: "Rus", flag: "🇷🇺", meaning: "ulduz" },
-  { word: "Облако", language: "Rus", flag: "🇷🇺", meaning: "bulud" },
-  { word: "Земля", language: "Rus", flag: "🇷🇺", meaning: "yer" },
-  { word: "Огонь", language: "Rus", flag: "🇷🇺", meaning: "od" },
-  // Ərəb
-  { word: "شمس", language: "Ərəb", flag: "🇸🇦", meaning: "günəş" },
-  { word: "قمر", language: "Ərəb", flag: "🇸🇦", meaning: "ay" },
-  { word: "بحر", language: "Ərəb", flag: "🇸🇦", meaning: "dəniz" },
-  { word: "نجم", language: "Ərəb", flag: "🇸🇦", meaning: "ulduz" },
-  // Çin
-  { word: "山", language: "Çin", flag: "🇨🇳", meaning: "dağ" },
-  { word: "水", language: "Çin", flag: "🇨🇳", meaning: "su" },
-  { word: "火", language: "Çin", flag: "🇨🇳", meaning: "od" },
-  { word: "月", language: "Çin", flag: "🇨🇳", meaning: "ay" },
-  // İtalyan
-  { word: "Mare", language: "İtalyan", flag: "🇮🇹", meaning: "dəniz" },
-  { word: "Luna", language: "İtalyan", flag: "🇮🇹", meaning: "ay" },
-  { word: "Fuoco", language: "İtalyan", flag: "🇮🇹", meaning: "od" },
-  { word: "Vento", language: "İtalyan", flag: "🇮🇹", meaning: "külək" },
-  // Yapon
-  { word: "山", language: "Yapon", flag: "🇯🇵", meaning: "yama (dağ)" },
-  { word: "海", language: "Yapon", flag: "🇯🇵", meaning: "umi (dəniz)" },
-  { word: "花", language: "Yapon", flag: "🇯🇵", meaning: "hana (çiçək)" },
-  { word: "空", language: "Yapon", flag: "🇯🇵", meaning: "sora (göy)" },
-  // Portuqal
-  { word: "Chuva", language: "Portuqal", flag: "🇵🇹", meaning: "yağış" },
-  { word: "Pedra", language: "Portuqal", flag: "🇵🇹", meaning: "daş" },
-  { word: "Vento", language: "Portuqal", flag: "🇵🇹", meaning: "külək" },
-  { word: "Flores", language: "Portuqal", flag: "🇵🇹", meaning: "çiçəklər" },
+  { word:"Alma",    language:"Azərbaycan", flag:"🇦🇿" },
+  { word:"Günəş",   language:"Azərbaycan", flag:"🇦🇿" },
+  { word:"Dəniz",   language:"Azərbaycan", flag:"🇦🇿" },
+  { word:"Kitab",   language:"Azərbaycan", flag:"🇦🇿" },
+  { word:"Moon",    language:"İngilis",    flag:"🇬🇧" },
+  { word:"River",   language:"İngilis",    flag:"🇬🇧" },
+  { word:"Cloud",   language:"İngilis",    flag:"🇬🇧" },
+  { word:"Stone",   language:"İngilis",    flag:"🇬🇧" },
+  { word:"Maison",  language:"Fransız",    flag:"🇫🇷" },
+  { word:"Soleil",  language:"Fransız",    flag:"🇫🇷" },
+  { word:"Fleur",   language:"Fransız",    flag:"🇫🇷" },
+  { word:"Nuage",   language:"Fransız",    flag:"🇫🇷" },
+  { word:"Haus",    language:"Alman",      flag:"🇩🇪" },
+  { word:"Wasser",  language:"Alman",      flag:"🇩🇪" },
+  { word:"Feuer",   language:"Alman",      flag:"🇩🇪" },
+  { word:"Baum",    language:"Alman",      flag:"🇩🇪" },
+  { word:"Cielo",   language:"İspan",      flag:"🇪🇸" },
+  { word:"Tierra",  language:"İspan",      flag:"🇪🇸" },
+  { word:"Lluvia",  language:"İspan",      flag:"🇪🇸" },
+  { word:"Noche",   language:"İspan",      flag:"🇪🇸" },
+  { word:"Deniz",   language:"Türk",       flag:"🇹🇷" },
+  { word:"Yıldız",  language:"Türk",       flag:"🇹🇷" },
+  { word:"Orman",   language:"Türk",       flag:"🇹🇷" },
+  { word:"Rüzgar",  language:"Türk",       flag:"🇹🇷" },
+  { word:"Звезда",  language:"Rus",        flag:"🇷🇺" },
+  { word:"Облако",  language:"Rus",        flag:"🇷🇺" },
+  { word:"Земля",   language:"Rus",        flag:"🇷🇺" },
+  { word:"Огонь",   language:"Rus",        flag:"🇷🇺" },
+  { word:"شمس",     language:"Ərəb",       flag:"🇸🇦" },
+  { word:"قمر",     language:"Ərəb",       flag:"🇸🇦" },
+  { word:"بحر",     language:"Ərəb",       flag:"🇸🇦" },
+  { word:"نجم",     language:"Ərəb",       flag:"🇸🇦" },
+  { word:"山",      language:"Çin",        flag:"🇨🇳" },
+  { word:"水",      language:"Çin",        flag:"🇨🇳" },
+  { word:"火",      language:"Çin",        flag:"🇨🇳" },
+  { word:"月",      language:"Çin",        flag:"🇨🇳" },
+  { word:"Mare",    language:"İtalyan",    flag:"🇮🇹" },
+  { word:"Luna",    language:"İtalyan",    flag:"🇮🇹" },
+  { word:"Fuoco",   language:"İtalyan",    flag:"🇮🇹" },
+  { word:"Vento",   language:"İtalyan",    flag:"🇮🇹" },
+  { word:"海",      language:"Yapon",      flag:"🇯🇵" },
+  { word:"花",      language:"Yapon",      flag:"🇯🇵" },
+  { word:"空",      language:"Yapon",      flag:"🇯🇵" },
+  { word:"Chuva",   language:"Portuqal",   flag:"🇵🇹" },
+  { word:"Pedra",   language:"Portuqal",   flag:"🇵🇹" },
+  { word:"Vento",   language:"Portuqal",   flag:"🇵🇹" },
+  { word:"Flores",  language:"Portuqal",   flag:"🇵🇹" },
 ];
 
 const allLanguages = [...new Set(wordBank.map(w => w.language))];
 
-// GAME STATE
-let questions = [];
-let current = 0;
-let score = 0;
-let answered = false;
+let questions = [], current = 0, score = 0, answered = false;
 
-function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
-}
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 
 function buildQuestions() {
-  // Pick 10 random words, no repeat language in a row ideally
   const shuffled = shuffle(wordBank);
   const seen = new Set();
   const picked = [];
   for (let w of shuffled) {
-    if (!seen.has(w.language)) {
-      picked.push(w);
-      seen.add(w.language);
-      if (picked.length === 10) break;
-    }
+    if (!seen.has(w.language)) { picked.push(w); seen.add(w.language); if (picked.length === 10) break; }
   }
-  // If less than 10 unique languages, fill the rest
-  if (picked.length < 10) {
-    for (let w of shuffled) {
-      if (!picked.includes(w)) {
-        picked.push(w);
-        if (picked.length === 10) break;
-      }
-    }
+  while (picked.length < 10) {
+    for (let w of shuffled) { if (!picked.includes(w)) { picked.push(w); break; } }
   }
-
   return picked.map(word => {
-    // 6 options: correct + 5 random wrong
     const wrong = shuffle(allLanguages.filter(l => l !== word.language)).slice(0, 5);
-    const options = shuffle([word.language, ...wrong]);
-    return { word, options };
+    return { word, options: shuffle([word.language, ...wrong]) };
   });
+}
+
+function selectGame(type) {
+  document.querySelectorAll('.game-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if (type !== 'word') {
+    alert('Bu oyun tezliklə əlavə olunacaq! 🚀');
+    event.currentTarget.classList.remove('active');
+    document.querySelector('.game-item').classList.add('active');
+  }
 }
 
 function startGame() {
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('gameArea').classList.add('visible');
   questions = buildQuestions();
-  current = 0;
-  score = 0;
+  current = 0; score = 0;
   renderQuestion();
 }
 
 function renderQuestion() {
   answered = false;
   const q = questions[current];
-
   document.getElementById('questionNum').textContent = `Sual ${current + 1} / 10`;
   document.getElementById('scoreLabel').textContent = `${score} xal`;
   document.getElementById('progressFill').style.width = `${(current / 10) * 100}%`;
   document.getElementById('wordDisplay').textContent = q.word.word;
-  document.getElementById('wordHint').textContent = `Mənası: "${q.word.meaning}"`;
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'feedback';
   document.getElementById('nextBtn').classList.remove('visible');
 
   const grid = document.getElementById('optionsGrid');
   grid.innerHTML = '';
-  const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
-
+  const letters = ['A','B','C','D','E','F'];
   q.options.forEach((lang, i) => {
     const btn = document.createElement('button');
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span> ${lang}`;
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${lang}`;
     btn.onclick = () => checkAnswer(lang, btn, q);
     grid.appendChild(btn);
   });
 
-  // animate
-  document.getElementById('wordCard').classList.remove('animate-in');
-  void document.getElementById('wordCard').offsetWidth;
-  document.getElementById('wordCard').classList.add('animate-in');
+  const card = document.getElementById('wordCard');
+  card.classList.remove('animate-in');
+  void card.offsetWidth;
+  card.classList.add('animate-in');
 }
 
 function checkAnswer(selected, btn, q) {
   if (answered) return;
   answered = true;
-
   const correct = q.word.language;
-  const allBtns = document.querySelectorAll('.option-btn');
-
-  allBtns.forEach(b => {
+  document.querySelectorAll('.option-btn').forEach(b => {
     b.disabled = true;
-    const langText = b.textContent.trim().slice(1).trim(); // remove letter
-    if (langText === correct) b.classList.add('correct');
+    const txt = b.textContent.trim().slice(1).trim();
+    if (txt === correct) b.classList.add('correct');
   });
-
+  const fb = document.getElementById('feedback');
   if (selected === correct) {
     btn.classList.add('correct');
     score += 10;
-    const fb = document.getElementById('feedback');
-    fb.textContent = `✓ Doğrudur! ${q.word.word} — ${correct} dilidir`;
+    fb.textContent = `✓ Doğrudur! ${q.word.word} — ${correct} dili ${q.word.flag}`;
     fb.className = 'feedback show-correct';
   } else {
     btn.classList.add('wrong');
-    const fb = document.getElementById('feedback');
     fb.textContent = `✗ Yanlış! Düzgün cavab: ${correct} ${q.word.flag}`;
     fb.className = 'feedback show-wrong';
   }
-
   document.getElementById('scoreLabel').textContent = `${score} xal`;
-  document.getElementById('nextBtn').classList.add('visible');
-
-  if (current === 9) {
-    document.getElementById('nextBtn').textContent = 'Nəticəyə Bax 🏁';
-  } else {
-    document.getElementById('nextBtn').textContent = 'Növbəti Sual →';
-  }
+  const nb = document.getElementById('nextBtn');
+  nb.textContent = current === 9 ? 'Nəticəyə Bax 🏁' : 'Növbəti Sual →';
+  nb.classList.add('visible');
 }
 
 function nextQuestion() {
   current++;
-  if (current >= 10) {
-    showResult();
-  } else {
-    renderQuestion();
-  }
+  if (current >= 10) showResult();
+  else renderQuestion();
 }
 
 function showResult() {
   document.getElementById('gameArea').classList.remove('visible');
-  document.getElementById('progressFill').style.width = '100%';
-
+  const rs = document.getElementById('resultScreen');
+  rs.classList.add('visible');
   const correct = score / 10;
-  const resultScreen = document.getElementById('resultScreen');
-  resultScreen.classList.add('visible');
-
   document.getElementById('resultScore').textContent = `${correct}/10`;
   document.getElementById('resultSub').textContent = `${score} xal qazandın!`;
-
   let emoji, title;
-  if (correct === 10) { emoji = '🏆'; title = 'Möhtəşəm! Mükəmməl nəticə!'; }
-  else if (correct >= 8) { emoji = '🌟'; title = 'Əla nəticə!'; }
-  else if (correct >= 6) { emoji = '👍'; title = 'Yaxşıdır, davam et!'; }
-  else if (correct >= 4) { emoji = '📚'; title = 'Daha çox öyrən!'; }
-  else { emoji = '💪'; title = 'Məşq et, bacaracaqsan!'; }
-
+  if (correct===10)      { emoji='🏆'; title='Möhtəşəm! Mükəmməl!'; }
+  else if (correct>=8)   { emoji='🌟'; title='Əla nəticə!'; }
+  else if (correct>=6)   { emoji='👍'; title='Yaxşıdır!'; }
+  else if (correct>=4)   { emoji='📚'; title='Daha çox öyrən!'; }
+  else                   { emoji='💪'; title='Məşq et!'; }
   document.getElementById('resultEmoji').textContent = emoji;
   document.getElementById('resultTitle').textContent = title;
 }
@@ -654,15 +645,9 @@ function restartGame() {
   document.getElementById('resultScreen').classList.remove('visible');
   document.getElementById('gameArea').classList.add('visible');
   questions = buildQuestions();
-  current = 0;
-  score = 0;
+  current = 0; score = 0;
   renderQuestion();
 }
-
-function adClick() {
-  alert('🎮 GeoMind Pro — Tezliklə!\nDaha çox oyun, statistika və çox oyunçu modu!');
-}
 </script>
-
 </body>
 </html>
