@@ -13,22 +13,24 @@ body {
     background: radial-gradient(circle at top, #141e30, #243b55);
 }
 
+/* TOP LEFT MENU */
 header {
+    position: fixed;
+    top: 10px;
+    left: 10px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 12px;
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
 }
 
 header button {
-    flex: 1;
-    padding: 12px;
+    width: 120px;
+    padding: 8px;
     border: none;
-    border-radius: 14px;
+    border-radius: 10px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 14px;
     color: white;
     background: linear-gradient(135deg, #ff512f, #dd2476);
     transition: 0.2s;
@@ -38,27 +40,27 @@ header button:hover {
     transform: scale(1.05);
 }
 
+/* GAME AREA */
 .container {
     max-width: 700px;
     margin: auto;
-    padding: 20px;
+    padding-top: 80px;
 }
 
 .card {
-    margin-top: 20px;
     padding: 25px;
     border-radius: 20px;
     background: rgba(255,255,255,0.08);
     backdrop-filter: blur(15px);
     text-align: center;
+    animation: fadeIn 0.3s ease;
 }
 
 .question {
-    font-size: 30px;
-    margin-bottom: 20px;
+    font-size: 28px;
+    margin-bottom: 15px;
 }
 
-/* ANSWERS */
 .answers {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -72,39 +74,59 @@ header button:hover {
     cursor: pointer;
     background: linear-gradient(135deg, #00c6ff, #0072ff);
     color: white;
-    font-size: 16px;
+    font-size: 15px;
 }
 
-.correct { background: linear-gradient(135deg, #00b09b, #96c93d) !important; }
-.wrong { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; }
+.correct {
+    background: linear-gradient(135deg, #00b09b, #96c93d) !important;
+}
 
-/* FLAG IMAGE */
+.wrong {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b) !important;
+}
+
+/* FLAG */
 .flag {
     width: 120px;
+    border-radius: 10px;
     margin-bottom: 10px;
-    border-radius: 8px;
 }
 
-/* MAP BOX */
+/* MAP */
 .map {
-    font-size: 18px;
-    padding: 20px;
     background: rgba(255,255,255,0.1);
+    padding: 15px;
     border-radius: 12px;
     margin-bottom: 10px;
 }
 
-@media (max-width:600px){
-    .answers{grid-template-columns:1fr;}
+/* ANIMATION */
+@keyframes fadeIn {
+    from {opacity: 0; transform: scale(0.95);}
+    to {opacity: 1; transform: scale(1);}
+}
+
+/* MOBILE */
+@media(max-width:600px){
+    header button{
+        width: 90px;
+        font-size: 12px;
+    }
+    .answers{
+        grid-template-columns:1fr;
+    }
 }
 </style>
 </head>
 
 <body>
 
+<!-- SOL ÜST MENYU -->
 <header>
 <button onclick="start('flag')">🚩 Bayraq</button>
 <button onclick="start('map')">🗺️ Xəritə</button>
+<button onclick="start('language')">🌍 Dil</button>
+<button onclick="start('currency')">💰 Valyuta</button>
 </header>
 
 <div class="container">
@@ -122,29 +144,23 @@ header button:hover {
 const games = {
 
 flag: [
-    {
-        img: "https://flagcdn.com/w320/jp.png",
-        correct: "Yaponiya",
-        options: ["Yaponiya","Çin","Koreya","Tayland"]
-    },
-    {
-        img: "https://flagcdn.com/w320/br.png",
-        correct: "Braziliya",
-        options: ["Argentina","Braziliya","Meksika","Peru"]
-    }
+    {img:"https://flagcdn.com/w320/jp.png",correct:"Yaponiya",options:["Yaponiya","Çin","Koreya","Tayland"]},
+    {img:"https://flagcdn.com/w320/br.png",correct:"Braziliya",options:["Argentina","Braziliya","Meksika","Peru"]}
 ],
 
 map: [
-    {
-        text: "Bu ölkə Avropadadır, ərazisi kiçikdir və Alp dağlarına yaxındır",
-        correct: "İsveçrə",
-        options: ["Fransa","İsveçrə","Almaniya","İtaliya"]
-    },
-    {
-        text: "Bu ölkə çox böyükdür, Sibir bölgəsi var",
-        correct: "Rusiya",
-        options: ["Kanada","Rusiya","Çin","Qazaxıstan"]
-    }
+    {text:"Avropada kiçik ölkədir, Alp dağları var",correct:"İsveçrə",options:["Fransa","İsveçrə","Almaniya","İtaliya"]},
+    {text:"Çox böyük ölkə, Sibir var",correct:"Rusiya",options:["Kanada","Rusiya","Çin","Qazaxıstan"]}
+],
+
+language: [
+    {text:"Bonjour hansı dildir?",correct:"Fransız",options:["Fransız","Türk","İspan","Alman"]},
+    {text:"Hola hansı dildir?",correct:"İspan",options:["Fransız","Türk","İspan","Alman"]}
+],
+
+currency: [
+    {text:"Yaponiyanın valyutası?",correct:"Yen",options:["Dollar","Yen","Euro","Lira"]},
+    {text:"Türkiyənin valyutası?",correct:"Lira",options:["Dollar","Yen","Euro","Lira"]}
 ]
 
 };
@@ -164,26 +180,25 @@ function show(){
     let q=current[i];
 
     document.getElementById("answers").innerHTML="";
-    document.getElementById("question").innerText="";
+    document.getElementById("extra").innerHTML="";
 
-    let extra=document.getElementById("extra");
-    extra.innerHTML="";
-
-    // FLAG
+    // FLAG IMAGE
     if(type==="flag"){
         let img=document.createElement("img");
         img.src=q.img;
         img.className="flag";
-        extra.appendChild(img);
+        document.getElementById("extra").appendChild(img);
     }
 
-    // MAP
-    if(type==="map"){
-        let div=document.createElement("div");
-        div.className="map";
-        div.innerText=q.text;
-        extra.appendChild(div);
+    // MAP / TEXT
+    if(q.text){
+        let d=document.createElement("div");
+        d.className="map";
+        d.innerText=q.text;
+        document.getElementById("extra").appendChild(d);
     }
+
+    document.getElementById("question").innerText="";
 
     let box=document.getElementById("answers");
 
@@ -204,7 +219,6 @@ function check(btn,ans){
         btn.classList.add("correct");
     }else{
         btn.classList.add("wrong");
-
         document.querySelectorAll(".answers button").forEach(b=>{
             if(b.innerText===correct) b.classList.add("correct");
         });
