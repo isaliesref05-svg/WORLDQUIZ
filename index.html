@@ -4,185 +4,461 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WorldQuiz</title>
-
 <style>
-/* (Sənin CSS eynidir — dəyişməyib) */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  :root {
+    --bg:#0d0d14; --surface:#16161f; --card:#1c1c2a; --border:#2a2a3d;
+    --accent:#7c6dfa; --accent2:#fa6d9a; --text:#eeeef5; --muted:#7070a0;
+    --correct:#4ade80; --wrong:#f87171; --sidebar:210px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;overflow:hidden;}
 
-:root {
-  --bg:#0d0d14;
-  --surface:#16161f;
-  --card:#1c1c2a;
-  --border:#2a2a3d;
-  --accent:#7c6dfa;
-  --accent2:#fa6d9a;
-  --text:#eeeef5;
-  --muted:#7070a0;
-  --correct:#4ade80;
-  --wrong:#f87171;
-  --sidebar:210px;
-}
+  .sidebar{width:var(--sidebar);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:10;}
+  .sidebar-logo{padding:0 18px 20px;border-bottom:1px solid var(--border);}
+  .sidebar-logo h1{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .sidebar-logo p{font-size:11px;color:var(--muted);margin-top:2px;}
+  .sidebar-section{padding:14px 10px 6px;}
+  .sidebar-section-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:0 8px;margin-bottom:6px;}
+  .game-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all .18s;color:var(--muted);font-size:13px;font-weight:500;margin-bottom:2px;border:1.5px solid transparent;}
+  .game-item:hover{background:rgba(124,109,250,.08);color:var(--text);}
+  .game-item.active{background:rgba(124,109,250,.13);border-color:rgba(124,109,250,.35);color:var(--text);}
+  .game-item .icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
 
-*{box-sizing:border-box;margin:0;padding:0;}
+  .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px 20px;min-height:100vh;}
+  .container{width:100%;max-width:540px;}
 
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'DM Sans',sans-serif;
-  display:flex;
-  overflow:hidden;
-}
+  .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px;}
+  .progress-bar{height:4px;background:var(--border);border-radius:99px;margin-bottom:18px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .5s ease;}
 
-/* qalan CSS EYNİDİR → qısaltmıram */
+  .word-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 32px 24px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;}
+  .word-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+  .word-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;}
+  .word-display{font-family:'Syne',sans-serif;font-size:50px;font-weight:800;letter-spacing:-2px;line-height:1;background:linear-gradient(135deg,var(--text) 40%,var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;min-height:58px;display:flex;align-items:center;justify-content:center;}
+
+  /* FLAG */
+  .flag-box{display:flex;align-items:center;justify-content:center;min-height:110px;}
+  .flag-svg{width:180px;height:110px;border-radius:6px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.5);border:1px solid var(--border);}
+
+  /* MAP */
+  .map-box{position:relative;width:100%;height:240px;border-radius:12px;overflow:hidden;background:#0a1628;}
+  .map-box svg{width:100%;height:100%;}
+  .map-marker{position:absolute;transform:translate(-50%,-100%);font-size:24px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8));animation:bounce .6s ease infinite alternate;}
+  @keyframes bounce{from{transform:translate(-50%,-100%)}to{transform:translate(-50%,-120%)}}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+  .option-btn{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:13px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:9px;text-align:left;}
+  .option-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(124,109,250,.09);transform:translateY(-1px);}
+  .option-btn .opt-letter{width:25px;height:25px;border-radius:7px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;color:var(--muted);}
+  .option-btn.correct{border-color:var(--correct);background:rgba(74,222,128,.09);}
+  .option-btn.correct .opt-letter{background:var(--correct);color:#000;}
+  .option-btn.wrong{border-color:var(--wrong);background:rgba(248,113,113,.09);}
+  .option-btn.wrong .opt-letter{background:var(--wrong);color:#000;}
+  .option-btn:disabled{cursor:default;}
+
+  .feedback{text-align:center;font-size:13px;min-height:18px;margin-bottom:10px;color:transparent;transition:color .2s;}
+  .feedback.ok{color:var(--correct);font-weight:500;}
+  .feedback.err{color:var(--wrong);font-weight:500;}
+
+  .next-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .18s;display:none;}
+  .next-btn:hover{opacity:.9;transform:translateY(-1px);}
+  .next-btn.visible{display:block;}
+
+  .start-screen{text-align:center;}
+  .start-screen .big-icon{font-size:68px;margin-bottom:14px;}
+  .start-screen h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;}
+  .start-screen p{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:26px;}
+  .start-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-family:'Syne',sans-serif;font-size:17px;font-weight:700;padding:16px 44px;cursor:pointer;transition:all .18s;}
+  .start-btn:hover{opacity:.9;transform:translateY(-2px);}
+
+  .result-screen{text-align:center;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:44px 32px;display:none;}
+  .result-screen.visible{display:block;}
+  .result-emoji{font-size:56px;margin-bottom:10px;}
+  .result-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
+  .result-score{font-size:60px;font-family:'Syne',sans-serif;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:12px 0;}
+  .result-sub{color:var(--muted);font-size:14px;margin-bottom:22px;}
+  .restart-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;padding:14px 34px;cursor:pointer;transition:all .18s;}
+  .restart-btn:hover{opacity:.9;transform:translateY(-1px);}
+
+  .game-area{display:none;}
+  .game-area.visible{display:block;}
+  .animate-in{animation:fadeUp .3s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .ad-bar{position:fixed;bottom:0;left:var(--sidebar);right:0;height:52px;background:var(--surface);border-top:1px solid var(--border);z-index:5;}
 </style>
 </head>
-
 <body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>WorldQuiz</h1>
+    <p>Dünya bilgi oyunları</p>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Oyunlar</div>
+    <div class="game-item active" onclick="switchGame('word',this)"><span class="icon">🔤</span> Word Quiz</div>
+    <div class="game-item" onclick="switchGame('map',this)"><span class="icon">🗺️</span> Map Quiz</div>
+    <div class="game-item" onclick="switchGame('currency',this)"><span class="icon">💰</span> Currency Quiz</div>
+    <div class="game-item" onclick="switchGame('flag',this)"><span class="icon">🚩</span> Flag Quiz</div>
+  </div>
+</nav>
 
 <div class="main">
   <div class="container" id="appContainer"></div>
 </div>
+<div class="ad-bar"></div>
 
 <script>
+// ══════════════════════════════════
+// FLAG SVGs (real colored flags)
+// ══════════════════════════════════
+const FLAG_SVGS = {
+  "Azərbaycan": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="37" fill="#0092BC"/><rect y="37" width="180" height="36" fill="#E8002D"/><rect y="73" width="180" height="37" fill="#00B050"/><circle cx="85" cy="55" r="13" fill="white"/><circle cx="88" cy="55" r="10" fill="#E8002D"/><polygon points="97,55 100,49 103,55 97,55" fill="white" transform="rotate(0,100,55)"/><g fill="white" transform="translate(96,48)"><polygon points="4,0 5,3 8,3 5.5,5 6.5,8 4,6 1.5,8 2.5,5 0,3 3,3" transform="scale(0.7)"/></g></svg>`,
+  "Böyük Britaniya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#012169"/><line x1="0" y1="0" x2="180" y2="110" stroke="white" stroke-width="20"/><line x1="180" y1="0" x2="0" y2="110" stroke="white" stroke-width="20"/><line x1="0" y1="0" x2="180" y2="110" stroke="#C8102E" stroke-width="12"/><line x1="180" y1="0" x2="0" y2="110" stroke="#C8102E" stroke-width="12"/><rect x="75" y="0" width="30" height="110" fill="white"/><rect x="0" y="40" width="180" height="30" fill="white"/><rect x="80" y="0" width="20" height="110" fill="#C8102E"/><rect x="0" y="45" width="180" height="20" fill="#C8102E"/></svg>`,
+  "Fransa": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="60" height="110" fill="#002395"/><rect x="60" width="60" height="110" fill="#EDEDED"/><rect x="120" width="60" height="110" fill="#ED2939"/></svg>`,
+  "Almaniya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="37" fill="#000000"/><rect y="37" width="180" height="36" fill="#DD0000"/><rect y="73" width="180" height="37" fill="#FFCE00"/></svg>`,
+  "İspaniya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#AA151B"/><rect y="27" width="180" height="56" fill="#F1BF00"/><rect x="45" y="38" width="6" height="34" fill="#AA151B"/><rect x="45" y="38" width="30" height="6" fill="#AA151B"/><rect x="45" y="66" width="30" height="6" fill="#AA151B"/><ellipse cx="60" cy="52" rx="9" ry="8" fill="none" stroke="#AA151B" stroke-width="2"/></svg>`,
+  "Türkiyə": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#E30A17"/><circle cx="70" cy="55" r="22" fill="white"/><circle cx="78" cy="55" r="17" fill="#E30A17"/><polygon points="95,55 104,47 104,63" fill="white" transform="rotate(-15,99,55)"/><polygon points="98,49 107,44 105,51" fill="white"/></svg>`,
+  "Rusiya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="37" fill="#FFFFFF"/><rect y="37" width="180" height="36" fill="#0039A6"/><rect y="73" width="180" height="37" fill="#D52B1E"/></svg>`,
+  "Səudiyyə Ərəbistanı": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#006C35"/><text x="90" y="62" fill="white" font-size="14" text-anchor="middle" font-family="serif">لا إله إلا الله</text><rect x="60" y="70" width="60" height="4" fill="white"/></svg>`,
+  "Çin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#DE2910"/><polygon points="25,12 28,22 38,22 30,28 33,38 25,32 17,38 20,28 12,22 22,22" fill="#FFDE00"/><polygon points="50,8 52,14 58,14 53,18 55,24 50,20 45,24 47,18 42,14 48,14" fill="#FFDE00"/><polygon points="60,20 62,26 68,26 63,30 65,36 60,32 55,36 57,30 52,26 58,26" fill="#FFDE00"/><polygon points="60,35 62,41 68,41 63,45 65,51 60,47 55,51 57,45 52,41 58,41" fill="#FFDE00"/><polygon points="50,46 52,52 58,52 53,56 55,62 50,58 45,62 47,56 42,52 48,52" fill="#FFDE00"/></svg>`,
+  "İtaliya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="60" height="110" fill="#009246"/><rect x="60" width="60" height="110" fill="#FFFFFF"/><rect x="120" width="60" height="110" fill="#CE2B37"/></svg>`,
+  "Yaponiya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#FFFFFF"/><circle cx="90" cy="55" r="33" fill="#BC002D"/></svg>`,
+  "Portuqaliya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="72" height="110" fill="#006600"/><rect x="72" width="108" height="110" fill="#FF0000"/><circle cx="72" cy="55" r="18" fill="#FFFF00" stroke="#000080" stroke-width="2"/><circle cx="72" cy="55" r="12" fill="#0000CC"/><circle cx="72" cy="55" r="7" fill="#FFFFFF"/></svg>`,
+  "ABŞ": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#B22234"/><rect y="8" width="180" height="9" fill="white"/><rect y="25" width="180" height="9" fill="white"/><rect y="42" width="180" height="9" fill="white"/><rect y="59" width="180" height="9" fill="white"/><rect y="76" width="180" height="9" fill="white"/><rect y="93" width="180" height="9" fill="white"/><rect width="72" height="59" fill="#3C3B6E"/><g fill="white" font-size="7">
+    <text x="6" y="10">★ ★ ★ ★ ★ ★</text><text x="10" y="17">★ ★ ★ ★ ★</text>
+    <text x="6" y="24">★ ★ ★ ★ ★ ★</text><text x="10" y="31">★ ★ ★ ★ ★</text>
+    <text x="6" y="38">★ ★ ★ ★ ★ ★</text><text x="10" y="45">★ ★ ★ ★ ★</text>
+  </g></svg>`,
+  "Braziliya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#009C3B"/><polygon points="90,10 170,55 90,100 10,55" fill="#FEDD00"/><circle cx="90" cy="55" r="25" fill="#002776"/><ellipse cx="90" cy="55" rx="25" ry="10" fill="none" stroke="white" stroke-width="1.5" transform="rotate(-20,90,55)"/><text x="90" y="58" fill="white" font-size="5" text-anchor="middle" font-weight="bold">ORDEM E PROGRESSO</text></svg>`,
+  "Hindistan": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="37" fill="#FF9933"/><rect y="37" width="180" height="36" fill="#FFFFFF"/><rect y="73" width="180" height="37" fill="#138808"/><circle cx="90" cy="55" r="13" fill="none" stroke="#000080" stroke-width="2"/><circle cx="90" cy="55" r="2" fill="#000080"/></svg>`,
+  "Meksika": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="60" height="110" fill="#006847"/><rect x="60" width="60" height="110" fill="#FFFFFF"/><rect x="120" width="60" height="110" fill="#CE1126"/><circle cx="90" cy="55" r="12" fill="#8B4513"/></svg>`,
+  "Cənubi Koreya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#FFFFFF"/><circle cx="90" cy="55" r="25" fill="#CD2E3A"/><path d="M90,30 A25,25 0 0,1 90,80 A12.5,12.5 0 0,1 90,55 A12.5,12.5 0 0,0 90,30Z" fill="#003478"/><line x1="30" y1="25" x2="55" y2="42" stroke="#000" stroke-width="4"/><line x1="35" y1="32" x2="60" y2="49" stroke="#000" stroke-width="4"/><line x1="125" y1="68" x2="150" y2="85" stroke="#000" stroke-width="4"/></svg>`,
+  "Niderlandiya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="37" fill="#AE1C28"/><rect y="37" width="180" height="36" fill="#FFFFFF"/><rect y="73" width="180" height="37" fill="#21468B"/></svg>`,
+  "Polşa": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="55" fill="#FFFFFF"/><rect y="55" width="180" height="55" fill="#DC143C"/></svg>`,
+  "İsveç": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#006AA7"/><rect x="60" width="25" height="110" fill="#FECC02"/><rect y="42" width="180" height="25" fill="#FECC02"/></svg>`,
+  "İsveçrə": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#FF0000"/><rect x="77" y="25" width="26" height="60" fill="#FFFFFF"/><rect x="52" y="42" width="76" height="26" fill="#FFFFFF"/></svg>`,
+  "Avstraliya": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#00008B"/><rect x="0" y="0" width="90" height="55" fill="#00008B"/><line x1="0" y1="0" x2="90" y2="55" stroke="white" stroke-width="10"/><line x1="90" y1="0" x2="0" y2="55" stroke="white" stroke-width="10"/><line x1="0" y1="0" x2="90" y2="55" stroke="#CC0000" stroke-width="6"/><line x1="90" y1="0" x2="0" y2="55" stroke="#CC0000" stroke-width="6"/><rect x="36" y="0" width="18" height="55" fill="white"/><rect x="0" y="19" width="90" height="17" fill="white"/><rect x="39" y="0" width="12" height="55" fill="#CC0000"/><rect x="0" y="22" width="90" height="11" fill="#CC0000"/><g fill="white"><polygon points="120,20 122,26 128,26 123,30 125,36 120,32 115,36 117,30 112,26 118,26" transform="scale(0.8) translate(35,15)"/><circle cx="148" cy="80" r="4" fill="white"/><circle cx="158" cy="65" r="3" fill="white"/><circle cx="165" cy="80" r="3" fill="white"/><circle cx="155" cy="88" r="3" fill="white"/></g></svg>`,
+  "Kanada": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="45" height="110" fill="#FF0000"/><rect x="135" width="45" height="110" fill="#FF0000"/><rect x="45" width="90" height="110" fill="#FFFFFF"/><polygon points="90,22 94,37 107,37 97,46 100,60 90,51 80,60 83,46 73,37 86,37" fill="#FF0000"/></svg>`,
+  "Argentina": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="37" fill="#74ACDF"/><rect y="37" width="180" height="36" fill="#FFFFFF"/><rect y="73" width="180" height="37" fill="#74ACDF"/><circle cx="90" cy="55" r="14" fill="#F6B40E"/><circle cx="90" cy="55" r="9" fill="#F6B40E" stroke="#85340A" stroke-width="1"/></svg>`,
+  "Ukrayna": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="55" fill="#005BBB"/><rect y="55" width="180" height="55" fill="#FFD500"/></svg>`,
+  "Gürcüstan": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="white"/><rect x="82" y="0" width="16" height="110" fill="#FF0000"/><rect x="0" y="47" width="180" height="16" fill="#FF0000"/><rect x="10" y="10" width="30" height="30" fill="none" stroke="#FF0000" stroke-width="4"/><rect x="140" y="10" width="30" height="30" fill="none" stroke="#FF0000" stroke-width="4"/><rect x="10" y="70" width="30" height="30" fill="none" stroke="#FF0000" stroke-width="4"/><rect x="140" y="70" width="30" height="30" fill="none" stroke="#FF0000" stroke-width="4"/></svg>`,
+  "Norveç": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110"><rect width="180" height="110" fill="#EF2B2D"/><rect x="52" y="0" width="28" height="110" fill="#FFFFFF"/><rect x="0" y="41" width="180" height="28" fill="#FFFFFF"/><rect x="57" y="0" width="18" height="110" fill="#002868"/><rect x="0" y="46" width="180" height="18" fill="#002868"/></svg>`,
+};
 
-// ================= DATA =================
+// ══════════════════════════════════
+// WORLD MAP SVG (simplified Robinson-like)
+// ══════════════════════════════════
+// Country lat/lon centers for marker placement on equirectangular map
+const COUNTRY_COORDS = {
+  "Azərbaycan":           {lat:40.1,  lon:47.2},
+  "Böyük Britaniya":      {lat:54.0,  lon:-2.0},
+  "Fransa":               {lat:46.2,  lon:2.2},
+  "Almaniya":             {lat:51.2,  lon:10.4},
+  "İspaniya":             {lat:40.0,  lon:-4.0},
+  "Türkiyə":              {lat:39.0,  lon:35.2},
+  "Rusiya":               {lat:61.5,  lon:105.3},
+  "Səudiyyə Ərəbistanı":  {lat:23.9,  lon:45.1},
+  "Çin":                  {lat:35.9,  lon:104.2},
+  "İtaliya":              {lat:41.9,  lon:12.6},
+  "Yaponiya":             {lat:36.2,  lon:138.3},
+  "Portuqaliya":          {lat:39.4,  lon:-8.2},
+  "ABŞ":                  {lat:37.1,  lon:-95.7},
+  "Braziliya":            {lat:-14.2, lon:-51.9},
+  "Hindistan":            {lat:20.6,  lon:78.9},
+  "Meksika":              {lat:23.6,  lon:-102.5},
+  "Cənubi Koreya":        {lat:35.9,  lon:127.8},
+  "Niderlandiya":         {lat:52.1,  lon:5.3},
+  "Polşa":                {lat:51.9,  lon:19.1},
+  "İsveç":                {lat:60.1,  lon:18.6},
+  "İsveçrə":              {lat:46.8,  lon:8.2},
+  "Avstraliya":           {lat:-25.3, lon:133.8},
+  "Kanada":               {lat:56.1,  lon:-106.3},
+  "Argentina":            {lat:-38.4, lon:-63.6},
+  "Ukrayna":              {lat:48.4,  lon:31.2},
+  "Gürcüstan":            {lat:42.3,  lon:43.4},
+  "Norveç":               {lat:60.5,  lon:8.5},
+};
 
-const FLAGS = [
-  {flag:"🇦🇿", country:"Azərbaycan"},
-  {flag:"🇬🇧", country:"Böyük Britaniya"},
-  {flag:"🇫🇷", country:"Fransa"},
-  {flag:"🇩🇪", country:"Almaniya"},
-  {flag:"🇪🇸", country:"İspaniya"},
-  {flag:"🇹🇷", country:"Türkiyə"},
-  {flag:"🇷🇺", country:"Rusiya"},
-  {flag:"🇸🇦", country:"Səudiyyə Ərəbistanı"},
-  {flag:"🇨🇳", country:"Çin"},
-  {flag:"🇮🇹", country:"İtaliya"},
-  {flag:"🇯🇵", country:"Yaponiya"},
-  {flag:"🇵🇹", country:"Portuqaliya"},
-];
-
-// ================= HELPERS =================
-
-function shuffle(a){return [...a].sort(()=>Math.random()-0.5);}
-
-function getFlag(country){
-  const f = FLAGS.find(x=>x.country===country);
-  return f ? f.flag : "🏳️";
+// Equirectangular projection: lon→x, lat→y on 540x270 canvas
+function coordToXY(lat, lon, W, H) {
+  const x = ((lon + 180) / 360) * W;
+  const y = ((90 - lat) / 180) * H;
+  return {x, y};
 }
 
-// ================= MAP DATA =================
+// Simplified world map path (continents outlines)
+const WORLD_PATH = `
+M 10,60 L 30,55 L 40,45 L 55,42 L 65,50 L 70,60 L 65,75 L 55,80 L 45,78 L 35,72 L 20,70 Z
+M 60,45 L 75,40 L 95,38 L 110,42 L 125,40 L 140,35 L 155,38 L 165,45 L 168,55 L 160,65 L 148,70 L 135,72 L 120,68 L 108,72 L 95,70 L 82,68 L 70,72 L 62,65 Z
+M 145,38 L 160,32 L 172,35 L 175,45 L 170,52 L 158,50 L 148,44 Z
+M 185,55 L 200,50 L 215,48 L 225,55 L 230,68 L 225,80 L 210,88 L 198,85 L 188,75 L 183,65 Z
+M 220,50 L 238,42 L 255,38 L 268,42 L 278,52 L 282,65 L 278,78 L 265,85 L 250,88 L 235,82 L 222,72 L 218,60 Z
+M 278,45 L 295,38 L 315,35 L 330,40 L 340,52 L 335,65 L 322,70 L 308,68 L 295,62 L 280,55 Z
+M 330,42 L 355,35 L 380,32 L 405,35 L 420,45 L 425,60 L 418,75 L 400,82 L 380,85 L 358,80 L 340,68 L 328,55 Z
+M 60,78 L 72,75 L 82,80 L 85,95 L 78,108 L 65,112 L 52,105 L 48,90 Z
+M 75,90 L 88,88 L 98,95 L 100,110 L 92,125 L 78,128 L 65,120 L 62,105 Z
+M 138,80 L 155,75 L 168,80 L 172,95 L 165,112 L 148,118 L 132,112 L 128,95 Z
+M 155,112 L 168,108 L 178,118 L 175,135 L 162,140 L 150,132 Z
+M 295,90 L 308,85 L 318,92 L 315,108 L 300,115 L 288,108 Z
+M 300,108 L 315,105 L 325,115 L 318,135 L 302,142 L 288,132 L 285,118 Z
+M 388,115 L 412,110 L 428,118 L 432,135 L 425,152 L 408,160 L 388,158 L 372,148 L 368,130 L 375,118 Z
+M 108,45 L 125,40 L 138,45 L 142,58 L 136,70 L 120,75 L 106,68 L 102,55 Z
+`;
 
-const MAP_COUNTRIES = [
-  {
-    country:"Azərbaycan",
-    svg:`<svg viewBox="0 0 200 150">
-      <rect width="200" height="150" fill="#1c1c2a"/>
-      <path d="M80,40 L120,35 L140,55 L135,80 L110,90 L90,85 L70,70 Z"
-      fill="#7c6dfa"/>
-    </svg>`
-  },
-  {
-    country:"Fransa",
-    svg:`<svg viewBox="0 0 200 150">
-      <rect width="200" height="150" fill="#1c1c2a"/>
-      <path d="M70,30 L130,28 L150,60 L140,100 L100,115 L60,95 Z"
-      fill="#7c6dfa"/>
-    </svg>`
-  },
-  {
-    country:"İtaliya",
-    svg:`<svg viewBox="0 0 200 200">
-      <rect width="200" height="200" fill="#1c1c2a"/>
-      <path d="M90,20 L110,50 L120,100 L100,170 L85,120 Z"
-      fill="#7c6dfa"/>
-    </svg>`
-  },
-  {
-    country:"Yaponiya",
-    svg:`<svg viewBox="0 0 200 200">
-      <rect width="200" height="200" fill="#1c1c2a"/>
-      <circle cx="100" cy="100" r="30" fill="#7c6dfa"/>
-    </svg>`
-  }
+function buildWorldMapSVG(lat, lon) {
+  const W = 530, H = 270;
+  const pos = coordToXY(lat, lon, W, H);
+  return `
+  <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+    <rect width="${W}" height="${H}" fill="#0a1628"/>
+    <!-- Ocean grid lines -->
+    <line x1="0" y1="${H/2}" x2="${W}" y2="${H/2}" stroke="#1a2a3a" stroke-width="0.5"/>
+    <line x1="${W/2}" y1="0" x2="${W/2}" y2="${H}" stroke="#1a2a3a" stroke-width="0.5"/>
+    <!-- Continents simplified fill -->
+    <path d="${WORLD_PATH}" fill="#1e3a2f" stroke="#2a5040" stroke-width="0.8" opacity="0.9"/>
+    <!-- Graticule -->
+    ${[-60,-30,0,30,60].map(lt => {
+      const y = ((90-lt)/180)*H;
+      return `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1a2a3a" stroke-width="0.4"/>`;
+    }).join('')}
+    ${[-150,-120,-90,-60,-30,0,30,60,90,120,150].map(ln => {
+      const x = ((ln+180)/360)*W;
+      return `<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1a2a3a" stroke-width="0.4"/>`;
+    }).join('')}
+    <!-- Marker -->
+    <circle cx="${pos.x}" cy="${pos.y}" r="18" fill="rgba(124,109,250,0.25)" stroke="none">
+      <animate attributeName="r" values="14;22;14" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="${pos.x}" cy="${pos.y}" r="8" fill="#fa6d9a" stroke="white" stroke-width="2"/>
+    <line x1="${pos.x}" y1="${pos.y}" x2="${pos.x}" y2="${pos.y-22}" stroke="#fa6d9a" stroke-width="2"/>
+    <polygon points="${pos.x},${pos.y-22} ${pos.x-5},${pos.y-32} ${pos.x+5},${pos.y-32}" fill="#fa6d9a"/>
+  </svg>`;
+}
+
+// ══════════════════════════════════
+// DATA
+// ══════════════════════════════════
+const WORDS = [
+  {word:"Alma",   lang:"Azərbaycan",flag:"🇦🇿"},{word:"Günəş",  lang:"Azərbaycan",flag:"🇦🇿"},
+  {word:"Dəniz",  lang:"Azərbaycan",flag:"🇦🇿"},{word:"Kitab",  lang:"Azərbaycan",flag:"🇦🇿"},
+  {word:"Moon",   lang:"İngilis",   flag:"🇬🇧"},{word:"River",  lang:"İngilis",   flag:"🇬🇧"},
+  {word:"Cloud",  lang:"İngilis",   flag:"🇬🇧"},{word:"Bridge", lang:"İngilis",   flag:"🇬🇧"},
+  {word:"Maison", lang:"Fransız",   flag:"🇫🇷"},{word:"Soleil", lang:"Fransız",   flag:"🇫🇷"},
+  {word:"Fleur",  lang:"Fransız",   flag:"🇫🇷"},{word:"Nuage",  lang:"Fransız",   flag:"🇫🇷"},
+  {word:"Haus",   lang:"Alman",     flag:"🇩🇪"},{word:"Wasser", lang:"Alman",     flag:"🇩🇪"},
+  {word:"Feuer",  lang:"Alman",     flag:"🇩🇪"},{word:"Baum",   lang:"Alman",     flag:"🇩🇪"},
+  {word:"Cielo",  lang:"İspan",     flag:"🇪🇸"},{word:"Tierra", lang:"İspan",     flag:"🇪🇸"},
+  {word:"Noche",  lang:"İspan",     flag:"🇪🇸"},{word:"Lluvia", lang:"İspan",     flag:"🇪🇸"},
+  {word:"Deniz",  lang:"Türk",      flag:"🇹🇷"},{word:"Yıldız", lang:"Türk",      flag:"🇹🇷"},
+  {word:"Orman",  lang:"Türk",      flag:"🇹🇷"},{word:"Rüzgar", lang:"Türk",      flag:"🇹🇷"},
+  {word:"Звезда", lang:"Rus",       flag:"🇷🇺"},{word:"Облако", lang:"Rus",       flag:"🇷🇺"},
+  {word:"Земля",  lang:"Rus",       flag:"🇷🇺"},{word:"Огонь",  lang:"Rus",       flag:"🇷🇺"},
+  {word:"شمس",    lang:"Ərəb",      flag:"🇸🇦"},{word:"قمر",    lang:"Ərəb",      flag:"🇸🇦"},
+  {word:"بحر",    lang:"Ərəb",      flag:"🇸🇦"},{word:"نجم",    lang:"Ərəb",      flag:"🇸🇦"},
+  {word:"山",     lang:"Çin",       flag:"🇨🇳"},{word:"水",     lang:"Çin",       flag:"🇨🇳"},
+  {word:"火",     lang:"Çin",       flag:"🇨🇳"},{word:"月",     lang:"Çin",       flag:"🇨🇳"},
+  {word:"Mare",   lang:"İtalyan",   flag:"🇮🇹"},{word:"Luna",   lang:"İtalyan",   flag:"🇮🇹"},
+  {word:"Fuoco",  lang:"İtalyan",   flag:"🇮🇹"},{word:"Vento",  lang:"İtalyan",   flag:"🇮🇹"},
+  {word:"海",     lang:"Yapon",     flag:"🇯🇵"},{word:"花",     lang:"Yapon",     flag:"🇯🇵"},
+  {word:"空",     lang:"Yapon",     flag:"🇯🇵"},{word:"木",     lang:"Yapon",     flag:"🇯🇵"},
+  {word:"Chuva",  lang:"Portuqal",  flag:"🇵🇹"},{word:"Pedra",  lang:"Portuqal",  flag:"🇵🇹"},
+  {word:"Flores", lang:"Portuqal",  flag:"🇵🇹"},{word:"Vento",  lang:"Portuqal",  flag:"🇵🇹"},
 ];
 
-// ================= GAME =================
+const MAP_COUNTRIES_LIST = [
+  "Azərbaycan","Böyük Britaniya","Fransa","Almaniya","İspaniya","Türkiyə",
+  "Rusiya","Səudiyyə Ərəbistanı","Çin","İtaliya","Yaponiya","Portuqaliya",
+  "ABŞ","Braziliya","Hindistan","Meksika","Cənubi Koreya","Niderlandiya",
+  "Polşa","İsveç","İsveçrə","Avstraliya","Kanada","Argentina","Ukrayna","Gürcüstan","Norveç"
+];
 
-let questions=[],current=0,score=0,answered=false;
+const FLAG_COUNTRIES = Object.keys(FLAG_SVGS);
+
+const CURRENCIES = [
+  {country:"Azərbaycan",       currency:"Manat",                symbol:"₼"},
+  {country:"ABŞ",              currency:"Dollar",               symbol:"$"},
+  {country:"Böyük Britaniya",  currency:"Funt Sterlinq",        symbol:"£"},
+  {country:"Avropa İttifaqı",  currency:"Avro",                 symbol:"€"},
+  {country:"Yaponiya",         currency:"Yen",                  symbol:"¥"},
+  {country:"Rusiya",           currency:"Rubl",                 symbol:"₽"},
+  {country:"Türkiyə",          currency:"Türk Lirəsi",          symbol:"₺"},
+  {country:"Hindistan",        currency:"Rupi",                 symbol:"₹"},
+  {country:"Braziliya",        currency:"Real",                 symbol:"R$"},
+  {country:"Çin",              currency:"Yuan",                 symbol:"¥"},
+  {country:"Cənubi Koreya",    currency:"Von",                  symbol:"₩"},
+  {country:"İsveçrə",          currency:"Frank",                symbol:"Fr"},
+  {country:"Kanada",           currency:"Kanada Dolları",       symbol:"C$"},
+  {country:"Avstraliya",       currency:"Avstraliya Dolları",   symbol:"A$"},
+  {country:"Meksika",          currency:"Peso",                 symbol:"$"},
+  {country:"İsveç",            currency:"Kron",                 symbol:"kr"},
+  {country:"Norveç",           currency:"Norveç Kronu",         symbol:"kr"},
+  {country:"Polşa",            currency:"Zlot",                 symbol:"zł"},
+  {country:"Ukrayna",          currency:"Qrivna",               symbol:"₴"},
+  {country:"Gürcüstan",        currency:"Lari",                 symbol:"₾"},
+  {country:"Azərbaycan",       currency:"Manat",                symbol:"₼"},
+  {country:"İsveçrə",          currency:"Frank",                symbol:"Fr"},
+];
+
+// ══════════════════════════════════
+// ENGINE
+// ══════════════════════════════════
+let currentGame='word', questions=[], current=0, score=0, answered=false;
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+
+function switchGame(type,el){
+  document.querySelectorAll('.game-item').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  currentGame=type;
+  showStart();
+}
+
+function showStart(){
+  const icons={word:'🔤',map:'🗺️',currency:'💰',flag:'🚩'};
+  const titles={word:'Word Quiz',map:'Map Quiz',currency:'Currency Quiz',flag:'Flag Quiz'};
+  const descs={
+    word:'Ekranda bir söz görünəcək.<br>O sözün hansı dildə olduğunu<br>6 variantdan seç.',
+    map:'Dünya xəritəsində bir ölkənin<br>yeri işarələnəcək.<br>Hansı ölkə olduğunu 6 variantdan seç.',
+    currency:'Bir ölkənin adı göstəriləcək.<br>O ölkənin valyutasını<br>6 variantdan seç.',
+    flag:'Bir ölkənin bayrağı göstəriləcək.<br>Hansı ölkə olduğunu<br>6 variantdan seç.',
+  };
+  document.getElementById('appContainer').innerHTML=`
+    <div class="start-screen animate-in">
+      <div class="big-icon">${icons[currentGame]}</div>
+      <h2>${titles[currentGame]}</h2>
+      <p>${descs[currentGame]}<br><br>10 sual · Hər sual 10 xal</p>
+      <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
+    </div>`;
+}
 
 function startGame(){
-  const picked = shuffle(MAP_COUNTRIES).slice(0,10);
+  if(currentGame==='word')     questions=buildWordQ();
+  if(currentGame==='map')      questions=buildMapQ();
+  if(currentGame==='currency') questions=buildCurrencyQ();
+  if(currentGame==='flag')     questions=buildFlagQ();
+  current=0; score=0; renderQ();
+}
 
-  const all = MAP_COUNTRIES.map(x=>x.country);
-
-  questions = picked.map(m=>({
-    display: `
-      <div style="text-align:center">
-        <div style="font-size:40px">${getFlag(m.country)}</div>
-        <div style="margin:10px 0">${m.svg}</div>
-        <div style="color:#7070a0;font-size:13px">
-          Bu hansı ölkədir?
-        </div>
-      </div>
-    `,
-    correct:m.country,
-    options: shuffle([m.country,...shuffle(all.filter(x=>x!==m.country)).slice(0,5)]),
-    feedback:`${getFlag(m.country)} ${m.country}`
+function buildWordQ(){
+  const langs=[...new Set(WORDS.map(w=>w.lang))];
+  const sh=shuffle(WORDS); const seen=new Set(); const picked=[];
+  for(let w of sh){if(!seen.has(w.lang)){picked.push(w);seen.add(w.lang);if(picked.length===10)break;}}
+  while(picked.length<10){for(let w of sh){if(!picked.includes(w)){picked.push(w);break;}}}
+  return picked.map(w=>({
+    display:`<div class="word-label">Bu söz hansı dildədir?</div><div class="word-display">${w.word}</div>`,
+    correct:w.lang,
+    options:shuffle([w.lang,...shuffle(langs.filter(l=>l!==w.lang)).slice(0,5)]),
+    fb:`${w.word} — ${w.lang} ${w.flag}`
   }));
-
-  current=0;score=0;
-  render();
 }
 
-function render(){
-  const q=questions[current];
-  const letters=["A","B","C","D","E","F"];
+function buildMapQ(){
+  const picked=shuffle(MAP_COUNTRIES_LIST).slice(0,10);
+  return picked.map(c=>{
+    const coord=COUNTRY_COORDS[c]||{lat:0,lon:0};
+    const mapSVG=buildWorldMapSVG(coord.lat,coord.lon);
+    const others=shuffle(MAP_COUNTRIES_LIST.filter(x=>x!==c)).slice(0,5);
+    return {
+      display:`<div class="word-label">Bu hansı ölkədir?</div><div class="map-box">${mapSVG}</div>`,
+      correct:c,
+      options:shuffle([c,...others]),
+      fb:`📍 ${c}`
+    };
+  });
+}
+
+function buildCurrencyQ(){
+  const picked=shuffle(CURRENCIES).slice(0,10);
+  const allC=CURRENCIES.map(c=>c.currency);
+  return picked.map(c=>({
+    display:`<div class="word-label">${c.country} ölkəsinin valyutası?</div><div class="word-display" style="font-size:32px;letter-spacing:0;line-height:1.2">${c.country}</div>`,
+    correct:c.currency,
+    options:shuffle([c.currency,...shuffle([...new Set(allC)].filter(v=>v!==c.currency)).slice(0,5)]),
+    fb:`${c.country} → ${c.currency} ${c.symbol}`
+  }));
+}
+
+function buildFlagQ(){
+  const picked=shuffle(FLAG_COUNTRIES).slice(0,10);
+  return picked.map(c=>({
+    display:`<div class="word-label">Bu hansı ölkənin bayrağıdır?</div><div class="flag-box"><div class="flag-svg">${FLAG_SVGS[c]}</div></div>`,
+    correct:c,
+    options:shuffle([c,...shuffle(FLAG_COUNTRIES.filter(x=>x!==c)).slice(0,5)]),
+    fb:`${c}`
+  }));
+}
+
+function renderQ(){
   answered=false;
-
-  document.getElementById("appContainer").innerHTML=`
-  <div style="max-width:500px;margin:auto;text-align:center">
-
-    <div>${q.display}</div>
-
-    <div id="options">
-      ${q.options.map((o,i)=>`
-        <button onclick="check('${o}',this)">
-          ${letters[i]} ${o}
-        </button>
-      `).join("")}
-    </div>
-
-    <div id="fb"></div>
-
-    <button onclick="next()">Next</button>
-  </div>`;
+  const q=questions[current];
+  const letters=['A','B','C','D','E','F'];
+  document.getElementById('appContainer').innerHTML=`
+    <div class="game-area visible">
+      <div class="progress-label">
+        <span>Sual ${current+1} / 10</span>
+        <span id="scoreLabel">${score} xal</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${(current/10)*100}%"></div></div>
+      <div class="word-card animate-in">${q.display}</div>
+      <div class="options">
+        ${q.options.map((opt,i)=>`
+          <button class="option-btn" onclick="checkAnswer(${i})">
+            <span class="opt-letter">${letters[i]}</span>${opt}
+          </button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">${current===9?'Nəticəyə Bax 🏁':'Növbəti Sual →'}</button>
+    </div>`;
 }
 
-function check(sel,btn){
+function checkAnswer(idx){
   if(answered)return;
   answered=true;
-
   const q=questions[current];
-
-  if(sel===q.correct){
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach(b=>b.disabled=true);
+  const correctIdx=q.options.indexOf(q.correct);
+  btns[correctIdx].classList.add('correct');
+  const fb=document.getElementById('feedback');
+  if(idx===correctIdx){
     score+=10;
-    document.getElementById("fb").innerText="Düzdür! "+q.feedback;
+    fb.textContent=`✓ Doğrudur! ${q.fb}`;
+    fb.className='feedback ok';
   } else {
-    document.getElementById("fb").innerText="Yanlış! "+q.correct;
+    btns[idx].classList.add('wrong');
+    fb.textContent=`✗ Yanlış! Düzgün: ${q.correct}`;
+    fb.className='feedback err';
   }
+  document.getElementById('scoreLabel').textContent=`${score} xal`;
+  document.getElementById('nextBtn').classList.add('visible');
 }
 
-function next(){
+function nextQ(){
   current++;
-  if(current>=10){
-    document.getElementById("appContainer").innerHTML=
-      `<h2>Score: ${score}</h2><button onclick="startGame()">Restart</button>`;
-  } else render();
+  if(current>=10)showResult();
+  else renderQ();
 }
 
-startGame();
+function showResult(){
+  const c=score/10;
+  let emoji,title;
+  if(c===10){emoji='🏆';title='Möhtəşəm! Mükəmməl!';}
+  else if(c>=8){emoji='🌟';title='Əla nəticə!';}
+  else if(c>=6){emoji='👍';title='Yaxşıdır!';}
+  else if(c>=4){emoji='📚';title='Daha çox öyrən!';}
+  else{emoji='💪';title='Məşq et!';}
+  document.getElementById('appContainer').innerHTML=`
+    <div class="result-screen visible animate-in">
+      <div class="result-emoji">${emoji}</div>
+      <div class="result-title">${title}</div>
+      <div class="result-score">${c}/10</div>
+      <div class="result-sub">${score} xal qazandın!</div>
+      <button class="restart-btn" onclick="startGame()">🔄 Yenidən Oyna</button>
+    </div>`;
+}
 
+showStart();
 </script>
 </body>
 </html>
