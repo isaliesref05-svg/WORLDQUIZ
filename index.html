@@ -3,241 +3,665 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World Quiz Pro</title>
-
+<title>GeoMind - Word Quiz</title>
 <style>
-body {
-    margin: 0;
-    font-family: Arial;
-    color: white;
-    background: radial-gradient(circle at top, #141e30, #243b55);
-}
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-/* TOP LEFT MENU */
-header {
-    position: fixed;
-    top: 10px;
-    left: 10px;
+  :root {
+    --bg: #0d0d14;
+    --surface: #16161f;
+    --card: #1c1c2a;
+    --border: #2a2a3d;
+    --accent: #7c6dfa;
+    --accent2: #fa6d9a;
+    --text: #eeeef5;
+    --muted: #7070a0;
+    --correct: #4ade80;
+    --wrong: #f87171;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    z-index: 10;
-}
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
 
-header button {
-    width: 120px;
-    padding: 8px;
-    border: none;
-    border-radius: 10px;
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,109,250,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(250,109,154,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* AD BANNER - bottom */
+  .ad-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 999;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .ad-banner .ad-label {
+    background: var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .ad-banner .ad-slot {
+    background: linear-gradient(90deg, #1c1c2a, #252535, #1c1c2a);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 8px 24px;
+    font-size: 13px;
+    color: var(--muted);
     cursor: pointer;
-    font-size: 14px;
-    color: white;
-    background: linear-gradient(135deg, #ff512f, #dd2476);
-    transition: 0.2s;
-}
-
-header button:hover {
-    transform: scale(1.05);
-}
-
-/* GAME AREA */
-.container {
-    max-width: 700px;
-    margin: auto;
-    padding-top: 80px;
-}
-
-.card {
-    padding: 25px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
+    transition: border-color 0.2s;
+    min-width: 300px;
     text-align: center;
-    animation: fadeIn 0.3s ease;
-}
+  }
+  .ad-banner .ad-slot:hover { border-color: var(--accent); color: var(--text); }
 
-.question {
-    font-size: 28px;
-    margin-bottom: 15px;
-}
+  /* MAIN CONTAINER */
+  .container {
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 80px;
+    position: relative;
+    z-index: 1;
+  }
 
-.answers {
+  /* LOGO */
+  .logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .logo h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+  }
+  .logo p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  /* WORD CARD */
+  .word-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .word-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .word-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+  .word-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--text), var(--muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .word-hint {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* OPTIONS GRID */
+  .options {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-}
-
-.answers button {
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    background: linear-gradient(135deg, #00c6ff, #0072ff);
-    color: white;
+    margin-bottom: 20px;
+  }
+  .option-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
     font-size: 15px;
-}
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(124,109,250,0.08);
+    transform: translateY(-1px);
+  }
+  .option-btn .opt-letter {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: var(--muted);
+  }
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: rgba(74,222,128,0.1);
+  }
+  .option-btn.correct .opt-letter { background: var(--correct); color: #000; }
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background: rgba(248,113,113,0.1);
+  }
+  .option-btn.wrong .opt-letter { background: var(--wrong); color: #000; }
+  .option-btn:disabled { cursor: default; }
 
-.correct {
-    background: linear-gradient(135deg, #00b09b, #96c93d) !important;
-}
+  /* FEEDBACK */
+  .feedback {
+    text-align: center;
+    font-size: 14px;
+    min-height: 20px;
+    margin-bottom: 12px;
+    color: var(--muted);
+    transition: all 0.3s;
+  }
+  .feedback.show-correct { color: var(--correct); font-weight: 500; }
+  .feedback.show-wrong { color: var(--wrong); font-weight: 500; }
 
-.wrong {
-    background: linear-gradient(135deg, #ff416c, #ff4b2b) !important;
-}
+  /* NEXT BTN */
+  .next-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    display: none;
+  }
+  .next-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .next-btn.visible { display: block; }
 
-/* FLAG */
-.flag {
-    width: 120px;
-    border-radius: 10px;
+  /* SCORE */
+  .score-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    position: absolute;
+    top: 0; right: 0;
+  }
+  .score-chip span { color: var(--text); font-weight: 700; }
+
+  /* RESULT SCREEN */
+  .result-screen {
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 32px;
+    display: none;
+  }
+  .result-screen.visible { display: block; }
+  .result-emoji {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  .result-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .result-score {
+    font-size: 60px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin: 16px 0;
+  }
+  .result-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+  .restart-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* START SCREEN */
+  .start-screen {
+    text-align: center;
+  }
+  .start-screen .big-icon {
+    font-size: 72px;
+    margin-bottom: 20px;
+  }
+  .start-screen h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
     margin-bottom: 10px;
-}
+  }
+  .start-screen p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .start-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 18px 48px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .start-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-/* MAP */
-.map {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-}
+  .game-area { display: none; }
+  .game-area.visible { display: block; }
 
-/* ANIMATION */
-@keyframes fadeIn {
-    from {opacity: 0; transform: scale(0.95);}
-    to {opacity: 1; transform: scale(1);}
-}
-
-/* MOBILE */
-@media(max-width:600px){
-    header button{
-        width: 90px;
-        font-size: 12px;
-    }
-    .answers{
-        grid-template-columns:1fr;
-    }
-}
+  .animate-in {
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
-
 <body>
 
-<!-- SOL ÜST MENYU -->
-<header>
-<button onclick="start('flag')">🚩 Bayraq</button>
-<button onclick="start('map')">🗺️ Xəritə</button>
-<button onclick="start('language')">🌍 Dil</button>
-<button onclick="start('currency')">💰 Valyuta</button>
-</header>
-
 <div class="container">
-<div class="card">
+  <div class="logo">
+    <h1>🌍 GeoMind</h1>
+    <p>Word Quiz — Dili tap!</p>
+  </div>
 
-<div id="question" class="question">Oyuna başla</div>
-<div id="extra"></div>
-<div id="answers" class="answers"></div>
+  <!-- START SCREEN -->
+  <div class="start-screen" id="startScreen">
+    <div class="big-icon">🔤</div>
+    <h2>Word Quiz</h2>
+    <p>Ekranda bir söz görünəcək.<br>O sözün hansı dildə olduğunu 6 variantdan seç.<br>10 sual · Hər sual 10 xal</p>
+    <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
+  </div>
 
+  <!-- GAME AREA -->
+  <div class="game-area" id="gameArea">
+    <div style="position:relative; margin-bottom:20px;">
+      <div class="progress-label">
+        <span id="questionNum">Sual 1 / 10</span>
+        <span id="scoreLabel">0 xal</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+
+    <div class="word-card animate-in" id="wordCard">
+      <div class="word-label">Bu söz hansı dildədir?</div>
+      <div class="word-display" id="wordDisplay">—</div>
+      <div class="word-hint" id="wordHint">Cavabı seçin</div>
+    </div>
+
+    <div class="options" id="optionsGrid"></div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Növbəti Sual →</button>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🏆</div>
+    <div class="result-title" id="resultTitle">Əla!</div>
+    <div class="result-score" id="resultScore">10/10</div>
+    <div class="result-sub" id="resultSub">100 xal qazandın!</div>
+    <button class="restart-btn" onclick="restartGame()">🔄 Yenidən Oyna</button>
+  </div>
 </div>
+
+<!-- AD BANNER -->
+<div class="ad-banner">
+  <span class="ad-label">Ad</span>
+  <div class="ad-slot" onclick="adClick()">🎮 &nbsp; Daha çox oyun üçün GeoMind Pro-ya keçin — <strong>Pulsuz Sınayın</strong></div>
 </div>
 
 <script>
+// === WORD DATABASE ===
+// Format: { word, language, flag, meaning }
+const wordBank = [
+  // Azərbaycan
+  { word: "Alma", language: "Azərbaycan", flag: "🇦🇿", meaning: "alma (meyvə)" },
+  { word: "Günəş", language: "Azərbaycan", flag: "🇦🇿", meaning: "günəş" },
+  { word: "Dəniz", language: "Azərbaycan", flag: "🇦🇿", meaning: "dəniz" },
+  { word: "Kitab", language: "Azərbaycan", flag: "🇦🇿", meaning: "kitab" },
+  // İngilis
+  { word: "Moon", language: "İngilis", flag: "🇬🇧", meaning: "ay" },
+  { word: "River", language: "İngilis", flag: "🇬🇧", meaning: "çay" },
+  { word: "Cloud", language: "İngilis", flag: "🇬🇧", meaning: "bulud" },
+  { word: "Stone", language: "İngilis", flag: "🇬🇧", meaning: "daş" },
+  // Fransız
+  { word: "Maison", language: "Fransız", flag: "🇫🇷", meaning: "ev" },
+  { word: "Soleil", language: "Fransız", flag: "🇫🇷", meaning: "günəş" },
+  { word: "Fleur", language: "Fransız", flag: "🇫🇷", meaning: "çiçək" },
+  { word: "Nuage", language: "Fransız", flag: "🇫🇷", meaning: "bulud" },
+  // Alman
+  { word: "Haus", language: "Alman", flag: "🇩🇪", meaning: "ev" },
+  { word: "Wasser", language: "Alman", flag: "🇩🇪", meaning: "su" },
+  { word: "Feuer", language: "Alman", flag: "🇩🇪", meaning: "od" },
+  { word: "Baum", language: "Alman", flag: "🇩🇪", meaning: "ağac" },
+  // İspan
+  { word: "Cielo", language: "İspan", flag: "🇪🇸", meaning: "göy" },
+  { word: "Tierra", language: "İspan", flag: "🇪🇸", meaning: "yer" },
+  { word: "Lluvia", language: "İspan", flag: "🇪🇸", meaning: "yağış" },
+  { word: "Noche", language: "İspan", flag: "🇪🇸", meaning: "gecə" },
+  // Türk
+  { word: "Deniz", language: "Türk", flag: "🇹🇷", meaning: "dəniz" },
+  { word: "Yıldız", language: "Türk", flag: "🇹🇷", meaning: "ulduz" },
+  { word: "Orman", language: "Türk", flag: "🇹🇷", meaning: "meşə" },
+  { word: "Rüzgar", language: "Türk", flag: "🇹🇷", meaning: "külək" },
+  // Rus
+  { word: "Звезда", language: "Rus", flag: "🇷🇺", meaning: "ulduz" },
+  { word: "Облако", language: "Rus", flag: "🇷🇺", meaning: "bulud" },
+  { word: "Земля", language: "Rus", flag: "🇷🇺", meaning: "yer" },
+  { word: "Огонь", language: "Rus", flag: "🇷🇺", meaning: "od" },
+  // Ərəb
+  { word: "شمس", language: "Ərəb", flag: "🇸🇦", meaning: "günəş" },
+  { word: "قمر", language: "Ərəb", flag: "🇸🇦", meaning: "ay" },
+  { word: "بحر", language: "Ərəb", flag: "🇸🇦", meaning: "dəniz" },
+  { word: "نجم", language: "Ərəb", flag: "🇸🇦", meaning: "ulduz" },
+  // Çin
+  { word: "山", language: "Çin", flag: "🇨🇳", meaning: "dağ" },
+  { word: "水", language: "Çin", flag: "🇨🇳", meaning: "su" },
+  { word: "火", language: "Çin", flag: "🇨🇳", meaning: "od" },
+  { word: "月", language: "Çin", flag: "🇨🇳", meaning: "ay" },
+  // İtalyan
+  { word: "Mare", language: "İtalyan", flag: "🇮🇹", meaning: "dəniz" },
+  { word: "Luna", language: "İtalyan", flag: "🇮🇹", meaning: "ay" },
+  { word: "Fuoco", language: "İtalyan", flag: "🇮🇹", meaning: "od" },
+  { word: "Vento", language: "İtalyan", flag: "🇮🇹", meaning: "külək" },
+  // Yapon
+  { word: "山", language: "Yapon", flag: "🇯🇵", meaning: "yama (dağ)" },
+  { word: "海", language: "Yapon", flag: "🇯🇵", meaning: "umi (dəniz)" },
+  { word: "花", language: "Yapon", flag: "🇯🇵", meaning: "hana (çiçək)" },
+  { word: "空", language: "Yapon", flag: "🇯🇵", meaning: "sora (göy)" },
+  // Portuqal
+  { word: "Chuva", language: "Portuqal", flag: "🇵🇹", meaning: "yağış" },
+  { word: "Pedra", language: "Portuqal", flag: "🇵🇹", meaning: "daş" },
+  { word: "Vento", language: "Portuqal", flag: "🇵🇹", meaning: "külək" },
+  { word: "Flores", language: "Portuqal", flag: "🇵🇹", meaning: "çiçəklər" },
+];
 
-const games = {
+const allLanguages = [...new Set(wordBank.map(w => w.language))];
 
-flag: [
-    {img:"https://flagcdn.com/w320/jp.png",correct:"Yaponiya",options:["Yaponiya","Çin","Koreya","Tayland"]},
-    {img:"https://flagcdn.com/w320/br.png",correct:"Braziliya",options:["Argentina","Braziliya","Meksika","Peru"]}
-],
+// GAME STATE
+let questions = [];
+let current = 0;
+let score = 0;
+let answered = false;
 
-map: [
-    {text:"Avropada kiçik ölkədir, Alp dağları var",correct:"İsveçrə",options:["Fransa","İsveçrə","Almaniya","İtaliya"]},
-    {text:"Çox böyük ölkə, Sibir var",correct:"Rusiya",options:["Kanada","Rusiya","Çin","Qazaxıstan"]}
-],
-
-language: [
-    {text:"Bonjour hansı dildir?",correct:"Fransız",options:["Fransız","Türk","İspan","Alman"]},
-    {text:"Hola hansı dildir?",correct:"İspan",options:["Fransız","Türk","İspan","Alman"]}
-],
-
-currency: [
-    {text:"Yaponiyanın valyutası?",correct:"Yen",options:["Dollar","Yen","Euro","Lira"]},
-    {text:"Türkiyənin valyutası?",correct:"Lira",options:["Dollar","Yen","Euro","Lira"]}
-]
-
-};
-
-let current=[];
-let i=0;
-let type="";
-
-function start(t){
-    type=t;
-    current = shuffle(games[t]);
-    i=0;
-    show();
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
 }
 
-function show(){
-    let q=current[i];
-
-    document.getElementById("answers").innerHTML="";
-    document.getElementById("extra").innerHTML="";
-
-    // FLAG IMAGE
-    if(type==="flag"){
-        let img=document.createElement("img");
-        img.src=q.img;
-        img.className="flag";
-        document.getElementById("extra").appendChild(img);
+function buildQuestions() {
+  // Pick 10 random words, no repeat language in a row ideally
+  const shuffled = shuffle(wordBank);
+  const seen = new Set();
+  const picked = [];
+  for (let w of shuffled) {
+    if (!seen.has(w.language)) {
+      picked.push(w);
+      seen.add(w.language);
+      if (picked.length === 10) break;
     }
-
-    // MAP / TEXT
-    if(q.text){
-        let d=document.createElement("div");
-        d.className="map";
-        d.innerText=q.text;
-        document.getElementById("extra").appendChild(d);
+  }
+  // If less than 10 unique languages, fill the rest
+  if (picked.length < 10) {
+    for (let w of shuffled) {
+      if (!picked.includes(w)) {
+        picked.push(w);
+        if (picked.length === 10) break;
+      }
     }
+  }
 
-    document.getElementById("question").innerText="";
-
-    let box=document.getElementById("answers");
-
-    q.options.forEach(o=>{
-        let b=document.createElement("button");
-        b.innerText=o;
-        b.onclick=()=>check(b,o);
-        box.appendChild(b);
-    });
+  return picked.map(word => {
+    // 6 options: correct + 5 random wrong
+    const wrong = shuffle(allLanguages.filter(l => l !== word.language)).slice(0, 5);
+    const options = shuffle([word.language, ...wrong]);
+    return { word, options };
+  });
 }
 
-function check(btn,ans){
-    let correct=current[i].correct;
-
-    document.querySelectorAll(".answers button").forEach(b=>b.onclick=null);
-
-    if(ans===correct){
-        btn.classList.add("correct");
-    }else{
-        btn.classList.add("wrong");
-        document.querySelectorAll(".answers button").forEach(b=>{
-            if(b.innerText===correct) b.classList.add("correct");
-        });
-    }
-
-    setTimeout(()=>{
-        i++;
-        if(i>=current.length){
-            start(type);
-        }else{
-            show();
-        }
-    },1000);
+function startGame() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameArea').classList.add('visible');
+  questions = buildQuestions();
+  current = 0;
+  score = 0;
+  renderQuestion();
 }
 
-function shuffle(a){
-    return a.sort(()=>Math.random()-0.5);
+function renderQuestion() {
+  answered = false;
+  const q = questions[current];
+
+  document.getElementById('questionNum').textContent = `Sual ${current + 1} / 10`;
+  document.getElementById('scoreLabel').textContent = `${score} xal`;
+  document.getElementById('progressFill').style.width = `${(current / 10) * 100}%`;
+  document.getElementById('wordDisplay').textContent = q.word.word;
+  document.getElementById('wordHint').textContent = `Mənası: "${q.word.meaning}"`;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').classList.remove('visible');
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+  q.options.forEach((lang, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span> ${lang}`;
+    btn.onclick = () => checkAnswer(lang, btn, q);
+    grid.appendChild(btn);
+  });
+
+  // animate
+  document.getElementById('wordCard').classList.remove('animate-in');
+  void document.getElementById('wordCard').offsetWidth;
+  document.getElementById('wordCard').classList.add('animate-in');
 }
 
+function checkAnswer(selected, btn, q) {
+  if (answered) return;
+  answered = true;
+
+  const correct = q.word.language;
+  const allBtns = document.querySelectorAll('.option-btn');
+
+  allBtns.forEach(b => {
+    b.disabled = true;
+    const langText = b.textContent.trim().slice(1).trim(); // remove letter
+    if (langText === correct) b.classList.add('correct');
+  });
+
+  if (selected === correct) {
+    btn.classList.add('correct');
+    score += 10;
+    const fb = document.getElementById('feedback');
+    fb.textContent = `✓ Doğrudur! ${q.word.word} — ${correct} dilidir`;
+    fb.className = 'feedback show-correct';
+  } else {
+    btn.classList.add('wrong');
+    const fb = document.getElementById('feedback');
+    fb.textContent = `✗ Yanlış! Düzgün cavab: ${correct} ${q.word.flag}`;
+    fb.className = 'feedback show-wrong';
+  }
+
+  document.getElementById('scoreLabel').textContent = `${score} xal`;
+  document.getElementById('nextBtn').classList.add('visible');
+
+  if (current === 9) {
+    document.getElementById('nextBtn').textContent = 'Nəticəyə Bax 🏁';
+  } else {
+    document.getElementById('nextBtn').textContent = 'Növbəti Sual →';
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= 10) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('gameArea').classList.remove('visible');
+  document.getElementById('progressFill').style.width = '100%';
+
+  const correct = score / 10;
+  const resultScreen = document.getElementById('resultScreen');
+  resultScreen.classList.add('visible');
+
+  document.getElementById('resultScore').textContent = `${correct}/10`;
+  document.getElementById('resultSub').textContent = `${score} xal qazandın!`;
+
+  let emoji, title;
+  if (correct === 10) { emoji = '🏆'; title = 'Möhtəşəm! Mükəmməl nəticə!'; }
+  else if (correct >= 8) { emoji = '🌟'; title = 'Əla nəticə!'; }
+  else if (correct >= 6) { emoji = '👍'; title = 'Yaxşıdır, davam et!'; }
+  else if (correct >= 4) { emoji = '📚'; title = 'Daha çox öyrən!'; }
+  else { emoji = '💪'; title = 'Məşq et, bacaracaqsan!'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+}
+
+function restartGame() {
+  document.getElementById('resultScreen').classList.remove('visible');
+  document.getElementById('gameArea').classList.add('visible');
+  questions = buildQuestions();
+  current = 0;
+  score = 0;
+  renderQuestion();
+}
+
+function adClick() {
+  alert('🎮 GeoMind Pro — Tezliklə!\nDaha çox oyun, statistika və çox oyunçu modu!');
+}
 </script>
 
 </body>
