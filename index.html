@@ -1,39 +1,244 @@
-Sahip avatarı
-DÜNYA TESTİ
-Halk
-GitHub Copilot'u kurun
-GitHub'ın yapay zeka destekli çift programcı özelliğini kullanarak kod yazarken önerileri otomatik olarak tamamlayın.
+# World Quiz Game — Tək Fayl Sayt
 
-Bu depoya işbirlikçiler ekleyin
-GitHub kullanıcı adı veya e-posta adresini kullanarak kişileri arayın.
+Aşağıdakı faylı `index.html` adı ilə saxla.
 
-Hızlı kurulum — eğer daha önce bu tür işlerle uğraştıysanız.
-veya	
-https://github.com/isaliesref05-svg/WORLDQUIZ.git
-Yeni bir dosya oluşturarak veya mevcut bir dosyayı yükleyerek başlayın . Her depoya README , LICENSE ve .gitignore dosyalarının eklenmesini öneririz .
+Sonra:
 
-…veya komut satırında yeni bir depo oluşturun
-echo "# WORLDQUIZ" >> README.md 
-git init 
-git add README.md 
-git commit -m "first commit" 
-git branch -M main 
-git remote add origin https://github.com/isaliesref05-svg/WORLDQUIZ.git
- git push -u origin main
-…veya komut satırından mevcut bir depoyu gönderin.
-git remote add origin https://github.com/isaliesref05-svg/WORLDQUIZ.git
- git branch -M main 
-git push -u origin main
- İpucu! GitHub'ı uzak depo olarak eklerken bu sayfanın URL'sini kullanın.
-Altbilgi
-© 2026 GitHub, Inc.
-Altbilgi navigasyonu
-Şartlar
-Mahremiyet
-Güvenlik
-Durum
-Toplum
-Belgeler
-Temas etmek
-Çerezleri yönetin
-Kişisel bilgilerimi paylaşmayın.
+1. Faylı aç
+2. İşləyəcək
+3. Netlify və ya Vercelə yükləyə bilərsən
+
+```html
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Quiz</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: white;
+}
+
+header {
+    background: #1e1e1e;
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+header button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: #333;
+    color: white;
+    cursor: pointer;
+}
+
+header button:hover {
+    background: #555;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: #1f1f1f;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.question {
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.answers button {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: #2e2e2e;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.answers button:hover {
+    background: #444;
+}
+
+.result {
+    text-align: center;
+    font-size: 28px;
+}
+
+.ad {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #222;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-top: 2px solid #444;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <button onclick="startGame('language')">Dil Tap</button>
+    <button onclick="startGame('currency')">Valyuta Tap</button>
+    <button onclick="startGame('flag')">Bayraq Tap</button>
+</header>
+
+<div class="container">
+    <div class="card">
+        <div id="question" class="question">Oyun seç</div>
+        <div id="answers" class="answers"></div>
+    </div>
+</div>
+
+<div class="ad">
+    Reklam üçün yer (Google AdSense)
+</div>
+
+<script>
+const games = {
+    language: [
+        {
+            question: 'Bonjour',
+            correct: 'Fransız',
+            options: ['Fransız', 'Türk', 'Rus', 'Alman', 'İspan', 'İtalyan']
+        },
+        {
+            question: 'Guten Morgen',
+            correct: 'Alman',
+            options: ['Fransız', 'Türk', 'Rus', 'Alman', 'İspan', 'İtalyan']
+        },
+        {
+            question: 'Hola',
+            correct: 'İspan',
+            options: ['Fransız', 'Türk', 'Rus', 'Alman', 'İspan', 'İtalyan']
+        }
+    ],
+
+    currency: [
+        {
+            question: 'Yaponiyanın valyutası?',
+            correct: 'Yen',
+            options: ['Dollar', 'Yen', 'Euro', 'Peso', 'Manat', 'Lira']
+        },
+        {
+            question: 'Azərbaycanın valyutası?',
+            correct: 'Manat',
+            options: ['Dollar', 'Yen', 'Euro', 'Peso', 'Manat', 'Lira']
+        },
+        {
+            question: 'Türkiyənin valyutası?',
+            correct: 'Lira',
+            options: ['Dollar', 'Yen', 'Euro', 'Peso', 'Manat', 'Lira']
+        }
+    ],
+
+    flag: [
+        {
+            question: '🇧🇷',
+            correct: 'Braziliya',
+            options: ['Argentina', 'Braziliya', 'Meksika', 'İspaniya', 'Kolumbiya', 'Portuqaliya']
+        },
+        {
+            question: '🇦🇿',
+            correct: 'Azərbaycan',
+            options: ['Türkiyə', 'Azərbaycan', 'Qazaxıstan', 'İran', 'Gürcüstan', 'Pakistan']
+        },
+        {
+            question: '🇯🇵',
+            correct: 'Yaponiya',
+            options: ['Çin', 'Koreya', 'Tayland', 'Yaponiya', 'Vyetnam', 'Monqolustan']
+        }
+    ]
+};
+
+let currentGame = [];
+let currentIndex = 0;
+let score = 0;
+
+function startGame(type) {
+    currentGame = [...games[type]];
+    currentIndex = 0;
+    score = 0;
+    showQuestion();
+}
+
+function showQuestion() {
+    const q = currentGame[currentIndex];
+
+    document.getElementById('question').innerText = q.question;
+
+    const answersDiv = document.getElementById('answers');
+    answersDiv.innerHTML = '';
+
+    q.options.forEach(option => {
+        const btn = document.createElement('button');
+        btn.innerText = option;
+        btn.onclick = () => checkAnswer(option);
+        answersDiv.appendChild(btn);
+    });
+}
+
+function checkAnswer(answer) {
+    const q = currentGame[currentIndex];
+
+    if(answer === q.correct) {
+        score++;
+    }
+
+    currentIndex++;
+
+    if(currentIndex >= currentGame.length) {
+        endGame();
+    } else {
+        showQuestion();
+    }
+}
+
+function endGame() {
+    document.getElementById('question').innerHTML = `Oyun bitdi!<br><br>${score}/${currentGame.length}`;
+    document.getElementById('answers').innerHTML = '';
+}
+</script>
+
+</body>
+</html>
+```
+
+## Google-a yükləmək
+
+Ən rahat:
+
+1. GitHub hesabı aç
+2. Repository yarat
+3. index.html faylını yüklə
+4. Vercel və ya Netlify bağla
+5. Sayt hazır olacaq
+
+Sayt sonra telefon və PC-də işləyəcək.
+
