@@ -1,49 +1,45 @@
-# World Quiz Game — Tək Fayl Sayt
-
-Aşağıdakı faylı `index.html` adı ilə saxla.
-
-Sonra:
-
-1. Faylı aç
-2. İşləyəcək
-3. Netlify və ya Vercelə yükləyə bilərsən
-
-```html
 <!DOCTYPE html>
 <html lang="az">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World Quiz</title>
+<title>World Quiz Pro</title>
+
 <style>
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #121212;
+    font-family: Arial;
     color: white;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
 }
 
+/* HEADER */
 header {
-    background: #1e1e1e;
-    padding: 15px;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
-    align-items: center;
+    padding: 12px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
 }
 
 header button {
-    padding: 10px 15px;
+    flex: 1;
+    padding: 12px;
     border: none;
-    border-radius: 8px;
-    background: #333;
-    color: white;
+    border-radius: 12px;
     cursor: pointer;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(45deg, #ff6a00, #ee0979);
+    transition: 0.2s;
 }
 
 header button:hover {
-    background: #555;
+    transform: scale(1.05);
 }
 
+/* CARD */
 .container {
     max-width: 700px;
     margin: auto;
@@ -51,194 +47,151 @@ header button:hover {
 }
 
 .card {
-    background: #1f1f1f;
-    border-radius: 12px;
-    padding: 20px;
     margin-top: 20px;
+    padding: 25px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    text-align: center;
+    animation: fadeIn 0.3s ease;
 }
 
 .question {
-    font-size: 28px;
+    font-size: 32px;
     margin-bottom: 20px;
-    text-align: center;
 }
 
+/* ANSWERS */
 .answers {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
 }
 
 .answers button {
     padding: 15px;
     border: none;
-    border-radius: 10px;
-    background: #2e2e2e;
-    color: white;
-    font-size: 16px;
+    border-radius: 15px;
     cursor: pointer;
+    font-size: 16px;
+    color: white;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    transition: 0.2s;
 }
 
 .answers button:hover {
-    background: #444;
+    transform: scale(1.05);
 }
 
-.result {
-    text-align: center;
-    font-size: 28px;
-}
-
+/* AD */
 .ad {
     position: fixed;
     bottom: 0;
-    left: 0;
     width: 100%;
-    background: #222;
-    color: white;
-    text-align: center;
+    background: rgba(0,0,0,0.5);
     padding: 10px;
-    border-top: 2px solid #444;
+    text-align: center;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {opacity: 0; transform: scale(0.9);}
+    to {opacity: 1; transform: scale(1);}
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .answers {
+        grid-template-columns: 1fr;
+    }
+
+    .question {
+        font-size: 24px;
+    }
 }
 </style>
 </head>
+
 <body>
 
 <header>
-    <button onclick="startGame('language')">Dil Tap</button>
-    <button onclick="startGame('currency')">Valyuta Tap</button>
-    <button onclick="startGame('flag')">Bayraq Tap</button>
+<button onclick="startGame('language')">🌍 Dil</button>
+<button onclick="startGame('currency')">💰 Valyuta</button>
+<button onclick="startGame('flag')">🚩 Bayraq</button>
+<button onclick="startGame('country')">🗺️ Ölkə</button>
 </header>
 
 <div class="container">
     <div class="card">
-        <div id="question" class="question">Oyun seç</div>
+        <div id="question" class="question">Oyuna başla!</div>
         <div id="answers" class="answers"></div>
     </div>
 </div>
 
-<div class="ad">
-    Reklam üçün yer (Google AdSense)
-</div>
+<div class="ad">📢 Reklam yeri</div>
 
 <script>
 const games = {
     language: [
-        {
-            question: 'Bonjour',
-            correct: 'Fransız',
-            options: ['Fransız', 'Türk', 'Rus', 'Alman', 'İspan', 'İtalyan']
-        },
-        {
-            question: 'Guten Morgen',
-            correct: 'Alman',
-            options: ['Fransız', 'Türk', 'Rus', 'Alman', 'İspan', 'İtalyan']
-        },
-        {
-            question: 'Hola',
-            correct: 'İspan',
-            options: ['Fransız', 'Türk', 'Rus', 'Alman', 'İspan', 'İtalyan']
-        }
+        {question:"Bonjour",correct:"Fransız",options:["Fransız","Türk","Rus","Alman","İspan","İtalyan"]},
+        {question:"Hola",correct:"İspan",options:["Fransız","Türk","Rus","Alman","İspan","İtalyan"]}
     ],
-
     currency: [
-        {
-            question: 'Yaponiyanın valyutası?',
-            correct: 'Yen',
-            options: ['Dollar', 'Yen', 'Euro', 'Peso', 'Manat', 'Lira']
-        },
-        {
-            question: 'Azərbaycanın valyutası?',
-            correct: 'Manat',
-            options: ['Dollar', 'Yen', 'Euro', 'Peso', 'Manat', 'Lira']
-        },
-        {
-            question: 'Türkiyənin valyutası?',
-            correct: 'Lira',
-            options: ['Dollar', 'Yen', 'Euro', 'Peso', 'Manat', 'Lira']
-        }
+        {question:"Yaponiyanın valyutası?",correct:"Yen",options:["Dollar","Yen","Euro","Lira","Manat","Peso"]}
     ],
-
     flag: [
-        {
-            question: '🇧🇷',
-            correct: 'Braziliya',
-            options: ['Argentina', 'Braziliya', 'Meksika', 'İspaniya', 'Kolumbiya', 'Portuqaliya']
-        },
-        {
-            question: '🇦🇿',
-            correct: 'Azərbaycan',
-            options: ['Türkiyə', 'Azərbaycan', 'Qazaxıstan', 'İran', 'Gürcüstan', 'Pakistan']
-        },
-        {
-            question: '🇯🇵',
-            correct: 'Yaponiya',
-            options: ['Çin', 'Koreya', 'Tayland', 'Yaponiya', 'Vyetnam', 'Monqolustan']
-        }
+        {question:"🇧🇷",correct:"Braziliya",options:["Argentina","Braziliya","İspaniya","Meksika","Kolumbiya","Portuqaliya"]}
+    ],
+    country: [
+        {question:"🇫🇷",correct:"Fransa",options:["Fransa","İtaliya","İspaniya","Almaniya","Belçika","Portuqaliya"]}
     ]
 };
 
-let currentGame = [];
-let currentIndex = 0;
+let current = [];
+let i = 0;
 let score = 0;
 
-function startGame(type) {
-    currentGame = [...games[type]];
-    currentIndex = 0;
+function startGame(type){
+    current = games[type];
+    i = 0;
     score = 0;
-    showQuestion();
+    show();
 }
 
-function showQuestion() {
-    const q = currentGame[currentIndex];
+function show(){
+    let q = current[i];
 
-    document.getElementById('question').innerText = q.question;
+    document.getElementById("question").innerText = q.question;
 
-    const answersDiv = document.getElementById('answers');
-    answersDiv.innerHTML = '';
+    let box = document.getElementById("answers");
+    box.innerHTML = "";
 
-    q.options.forEach(option => {
-        const btn = document.createElement('button');
-        btn.innerText = option;
-        btn.onclick = () => checkAnswer(option);
-        answersDiv.appendChild(btn);
+    q.options.forEach(o=>{
+        let b = document.createElement("button");
+        b.innerText = o;
+        b.onclick = ()=>check(o);
+        box.appendChild(b);
     });
 }
 
-function checkAnswer(answer) {
-    const q = currentGame[currentIndex];
+function check(a){
+    if(a === current[i].correct) score++;
+    i++;
 
-    if(answer === q.correct) {
-        score++;
-    }
-
-    currentIndex++;
-
-    if(currentIndex >= currentGame.length) {
-        endGame();
+    if(i >= current.length){
+        end();
     } else {
-        showQuestion();
+        show();
     }
 }
 
-function endGame() {
-    document.getElementById('question').innerHTML = `Oyun bitdi!<br><br>${score}/${currentGame.length}`;
-    document.getElementById('answers').innerHTML = '';
+function end(){
+    document.getElementById("question").innerHTML =
+        "Oyun bitdi 🎉<br><br>Score: " + score + "/" + current.length;
+
+    document.getElementById("answers").innerHTML = "";
 }
 </script>
 
 </body>
 </html>
-```
-
-## Google-a yükləmək
-
-Ən rahat:
-
-1. GitHub hesabı aç
-2. Repository yarat
-3. index.html faylını yüklə
-4. Vercel və ya Netlify bağla
-5. Sayt hazır olacaq
-
-Sayt sonra telefon və PC-də işləyəcək.
-
