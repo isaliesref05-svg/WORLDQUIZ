@@ -358,7 +358,7 @@ body{
   .ow{grid-template-columns:1fr}
   .gh{padding:11px 13px}
   .qw{padding:17px 13px 9px}
-  .ow{padding:0 13px 18px}
+  .ow{padding:0 13px 100px}
   .ltxt{font-size:1.15rem}
   .mcard{height:230px}
   .fbig{width:140px}
@@ -582,6 +582,8 @@ const C=[
   {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',lc:'bg', d:3, cap:'Sofiya'},
   {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',lc:'hr', d:3, cap:'Zaqreb'},
   {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',lc:'sr', d:3, cap:'Belqrad'},
+  
+  /* ─── d:3 YENİ ÇƏTİN ÖLKƏLƏR ─── */
   {id:496,code:'MN',nameAz:'Monqolustan',            currency:'Monqol Tuqriki',         cur:'MNT',lc:'mn', d:3, cap:'Ulanbator'},
   {id:524,code:'NP',nameAz:'Nepal',                  currency:'Nepal Rupisi',           cur:'NPR',lc:'ne', d:3, cap:'Katmandu'},
   {id:116,code:'KH',nameAz:'Kamboca',                currency:'Kamboca Rieli',          cur:'KHR',lc:'km', d:3, cap:'Pnom Pen'},
@@ -635,7 +637,7 @@ const P={
   zh:{l:'Çin dili',        t:'清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。'},
   ko:{l:'Koreya dili',      t:'가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.'},
   ar:{l:'Ərəb dili',    t:'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.'},
-  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं。'},
+  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती پر गिरकर मिट्टी की सुगंध फैलाती हैं।'},
   tr:{l:'Türk dili',     t:'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.'},
   fa:{l:'Fars dili',      t:'باد ملایم بهاری شکوفههای گیلاس را به آرامی به هوا میبرد.'},
   id:{l:'İndoneziya dili',  t:'Angin semilir membawa aroma bunga yang segar dari taman kota.'},
@@ -780,16 +782,15 @@ function pickCountry(){
   let sh=shuf(diffCountries);
   let t=sh.find(x=>!GS.used.includes(x.code));
   if(!t){
-     const others = shuf(C);
-     t=others.find(x=>!GS.used.includes(x.code)) || others[0];
+     GS.used = GS.used.filter(code => !diffCountries.find(c => c.code === code));
+     t=sh.find(x=>!GS.used.includes(x.code)) || sh[0];
   }
   GS.used.push(t.code);
   return t;
 }
 
-/* Çətin modda seçimlərin sayını artır (8 seçim) */
 function getWrongCount(){
-  return GS.diff === 3 ? 7 : 5;
+  return 5;
 }
 
 function genLang(){
@@ -799,7 +800,7 @@ function genLang(){
   let sh=shuf(diffLangs);
   let t=sh.find(x=>!GS.used.includes(x.code));
   if(!t){
-    sh = shuf(C.filter(x=>P[x.lc]));
+    GS.used = GS.used.filter(code => !diffLangs.find(c => c.code === code));
     t=sh.find(x=>!GS.used.includes(x.code)) || sh[0];
   }
   GS.used.push(t.code);
@@ -901,10 +902,11 @@ function renderQ(q){
       drawMap(q.target);
       break;
     case'currency':
+      const cWord = q.target.currency.split(' ').pop();
       qw.innerHTML=`
         <div class="ccard" style="padding: 50px 20px;">
-          <div class="cname">${q.target.cur}</div>
-          <p class="chint">Bu valyuta kodu (ISO 4217) hansı ölkəyə məxsusdur?</p>
+          <div class="cname">${cWord}</div>
+          <p class="chint">Bu valyuta hansı ölkəyə məxsusdur?</p>
         </div>`;
       break;
     case'flag':
