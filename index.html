@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>World Quiz – Coğrafiya Oyunları</title>
-<meta name="description" content="Dil, xəritə, valyuta və bayraq oyunları ilə dünya coğrafiyasını öyrən."/>
+<meta name="description" content="Dil, xəritə, valyuta, bayraq və paytaxt oyunları ilə dünya coğrafiyasını öyrən."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
@@ -237,7 +237,7 @@ body{
 }
 #wsvg{width:100%;height:100%;display:block}
 
-/* Currency card */
+/* Currency/Capital card */
 .ccard{
   background:var(--bgc);border:1px solid var(--border);
   border-radius:22px;padding:40px 28px;text-align:center;
@@ -384,7 +384,6 @@ body{
     <button class="ni" id="n-language" onclick="openGameSetup('language')">
       <span class="ni-ic">💬</span>
       <div class="ni-b"><span class="ni-t">Dil Tapma</span><span class="ni-d">Hansı dildə yazılıb?</span></div>
-      <span class="ni-badge">YENİ</span>
     </button>
     <button class="ni" id="n-map" onclick="openGameSetup('map')">
       <span class="ni-ic">🗺️</span>
@@ -397,6 +396,11 @@ body{
     <button class="ni" id="n-flag" onclick="openGameSetup('flag')">
       <span class="ni-ic">🏴</span>
       <div class="ni-b"><span class="ni-t">Bayraq Tapma</span><span class="ni-d">Bayrağa görə ölkə</span></div>
+    </button>
+    <button class="ni" id="n-capital" onclick="openGameSetup('capital')">
+      <span class="ni-ic">🏛️</span>
+      <div class="ni-b"><span class="ni-t">Paytaxt Tapma</span><span class="ni-d">Ölkələrin paytaxtı</span></div>
+      <span class="ni-badge">YENİ</span>
     </button>
   </nav>
   <div class="sb-foot">
@@ -448,6 +452,9 @@ body{
         </div>
         <div class="gcard" onclick="openGameSetup('flag')">
           <span class="gc-ic">🏴</span><h3>Bayraq Tapma</h3><p>Bayrağa görə ölkəni müəyyən et</p>
+        </div>
+        <div class="gcard" onclick="openGameSetup('capital')">
+          <span class="gc-ic">🏛️</span><h3>Paytaxt Tapma</h3><p>Ölkənin paytaxtını tap</p>
         </div>
       </div>
     </div>
@@ -513,66 +520,66 @@ body{
    DATA – Countries (d = Difficulty Level: 1-Easy, 2-Medium, 3-Hard)
 ═══════════════════════════════════════════ */
 const C=[
-  {id:840,code:'US',nameAz:'Amerika',               currency:'ABŞ Dolları',            cur:'USD',lc:'en', d:1},
-  {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',         cur:'GBP',lc:'en', d:1},
-  {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                   cur:'EUR',lc:'fr', d:1},
-  {id:276,code:'DE',nameAz:'Almaniya',               currency:'Avro',                   cur:'EUR',lc:'de', d:1},
-  {id:392,code:'JP',nameAz:'Yaponiya',               currency:'Yapon Yeni',             cur:'JPY',lc:'ja', d:1},
-  {id:156,code:'CN',nameAz:'Çin',                    currency:'Çin Yuanı',              cur:'CNY',lc:'zh', d:1},
-  {id:76, code:'BR',nameAz:'Braziliya',              currency:'Braziliya Realı',        cur:'BRL',lc:'pt', d:1},
-  {id:643,code:'RU',nameAz:'Rusiya',                 currency:'Rus Rublu',              cur:'RUB',lc:'ru', d:1},
-  {id:356,code:'IN',nameAz:'Hindistan',              currency:'Hindistan Rupisi',       cur:'INR',lc:'hi', d:1},
-  {id:792,code:'TR',nameAz:'Türkiyə',                currency:'Türk Lirəsi',            cur:'TRY',lc:'tr', d:1},
-  {id:380,code:'IT',nameAz:'İtaliya',                currency:'Avro',                   cur:'EUR',lc:'it', d:1},
-  {id:724,code:'ES',nameAz:'İspaniya',               currency:'Avro',                   cur:'EUR',lc:'es', d:1},
-  {id:124,code:'CA',nameAz:'Kanada',                 currency:'Kanada Dolları',         cur:'CAD',lc:'fr', d:1},
-  {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:1},
-  {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',      cur:'AZN',lc:'az', d:1},
+  {id:840,code:'US',nameAz:'Amerika',               currency:'ABŞ Dolları',            cur:'USD',lc:'en', d:1, cap:'Vaşinqton'},
+  {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',         cur:'GBP',lc:'en', d:1, cap:'London'},
+  {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                   cur:'EUR',lc:'fr', d:1, cap:'Paris'},
+  {id:276,code:'DE',nameAz:'Almaniya',               currency:'Avro',                   cur:'EUR',lc:'de', d:1, cap:'Berlin'},
+  {id:392,code:'JP',nameAz:'Yaponiya',               currency:'Yapon Yeni',             cur:'JPY',lc:'ja', d:1, cap:'Tokio'},
+  {id:156,code:'CN',nameAz:'Çin',                    currency:'Çin Yuanı',              cur:'CNY',lc:'zh', d:1, cap:'Pekin'},
+  {id:76, code:'BR',nameAz:'Braziliya',              currency:'Braziliya Realı',        cur:'BRL',lc:'pt', d:1, cap:'Brazilia'},
+  {id:643,code:'RU',nameAz:'Rusiya',                 currency:'Rus Rublu',              cur:'RUB',lc:'ru', d:1, cap:'Moskva'},
+  {id:356,code:'IN',nameAz:'Hindistan',              currency:'Hindistan Rupisi',       cur:'INR',lc:'hi', d:1, cap:'Yeni Dehli'},
+  {id:792,code:'TR',nameAz:'Türkiyə',                currency:'Türk Lirəsi',            cur:'TRY',lc:'tr', d:1, cap:'Ankara'},
+  {id:380,code:'IT',nameAz:'İtaliya',                currency:'Avro',                   cur:'EUR',lc:'it', d:1, cap:'Roma'},
+  {id:724,code:'ES',nameAz:'İspaniya',               currency:'Avro',                   cur:'EUR',lc:'es', d:1, cap:'Madrid'},
+  {id:124,code:'CA',nameAz:'Kanada',                 currency:'Kanada Dolları',         cur:'CAD',lc:'fr', d:1, cap:'Ottava'},
+  {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:1, cap:'Kanberra'},
+  {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',      cur:'AZN',lc:'az', d:1, cap:'Bakı'},
 
-  {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',         cur:'MXN',lc:'es', d:2},
-  {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',           cur:'SAR',lc:'ar', d:2},
-  {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',            cur:'KRW',lc:'ko', d:2},
-  {id:32, code:'AR',nameAz:'Argentina',              currency:'Argentina Pesosu',       cur:'ARS',lc:'es', d:2},
-  {id:616,code:'PL',nameAz:'Polşa',                  currency:'Polşa Zlotısı',          cur:'PLN',lc:'pl', d:2},
-  {id:528,code:'NL',nameAz:'Niderland',              currency:'Avro',                   cur:'EUR',lc:'nl', d:2},
-  {id:752,code:'SE',nameAz:'İsveç',                  currency:'İsveç Kronası',          cur:'SEK',lc:'sv', d:2},
-  {id:578,code:'NO',nameAz:'Norveç',                 currency:'Norveç Kronası',         cur:'NOK',lc:'no', d:2},
-  {id:208,code:'DK',nameAz:'Danimarka',              currency:'Danimarka Kronası',      cur:'DKK',lc:'da', d:2},
-  {id:756,code:'CH',nameAz:'İsveçrə',                currency:'İsveçrə Frankı',         cur:'CHF',lc:'de', d:2},
-  {id:620,code:'PT',nameAz:'Portuqaliya',            currency:'Avro',                   cur:'EUR',lc:'pt', d:2},
-  {id:300,code:'GR',nameAz:'Yunanıstan',             currency:'Avro',                   cur:'EUR',lc:'el', d:2},
-  {id:804,code:'UA',nameAz:'Ukrayna',                currency:'Ukrayna Qrivnası',       cur:'UAH',lc:'uk', d:2},
-  {id:642,code:'RO',nameAz:'Rumıniya',               currency:'Rumıniya Leyi',          cur:'RON',lc:'ro', d:2},
-  {id:348,code:'HU',nameAz:'Macarıstan',             currency:'Macarıstan Forinti',     cur:'HUF',lc:'hu', d:2},
-  {id:203,code:'CZ',nameAz:'Çexiya',                 currency:'Çex Kronası',            cur:'CZK',lc:'cs', d:2},
-  {id:246,code:'FI',nameAz:'Finlandiya',             currency:'Avro',                   cur:'EUR',lc:'fi', d:2},
-  {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',    cur:'ZAR',lc:'zu', d:2},
-  {id:818,code:'EG',nameAz:'Mısır',                  currency:'Misir Funtu',            cur:'EGP',lc:'ar', d:2},
+  {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',         cur:'MXN',lc:'es', d:2, cap:'Mexiko'},
+  {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',           cur:'SAR',lc:'ar', d:2, cap:'Ər-Riyad'},
+  {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',            cur:'KRW',lc:'ko', d:2, cap:'Seul'},
+  {id:32, code:'AR',nameAz:'Argentina',              currency:'Argentina Pesosu',       cur:'ARS',lc:'es', d:2, cap:'Buenos-Ayres'},
+  {id:616,code:'PL',nameAz:'Polşa',                  currency:'Polşa Zlotısı',          cur:'PLN',lc:'pl', d:2, cap:'Varşava'},
+  {id:528,code:'NL',nameAz:'Niderland',              currency:'Avro',                   cur:'EUR',lc:'nl', d:2, cap:'Amsterdam'},
+  {id:752,code:'SE',nameAz:'İsveç',                  currency:'İsveç Kronası',          cur:'SEK',lc:'sv', d:2, cap:'Stokholm'},
+  {id:578,code:'NO',nameAz:'Norveç',                 currency:'Norveç Kronası',         cur:'NOK',lc:'no', d:2, cap:'Oslo'},
+  {id:208,code:'DK',nameAz:'Danimarka',              currency:'Danimarka Kronası',      cur:'DKK',lc:'da', d:2, cap:'Kopenhagen'},
+  {id:756,code:'CH',nameAz:'İsveçrə',                currency:'İsveçrə Frankı',         cur:'CHF',lc:'de', d:2, cap:'Bern'},
+  {id:620,code:'PT',nameAz:'Portuqaliya',            currency:'Avro',                   cur:'EUR',lc:'pt', d:2, cap:'Lissabon'},
+  {id:300,code:'GR',nameAz:'Yunanıstan',             currency:'Avro',                   cur:'EUR',lc:'el', d:2, cap:'Afina'},
+  {id:804,code:'UA',nameAz:'Ukrayna',                currency:'Ukrayna Qrivnası',       cur:'UAH',lc:'uk', d:2, cap:'Kiyev'},
+  {id:642,code:'RO',nameAz:'Rumıniya',               currency:'Rumıniya Leyi',          cur:'RON',lc:'ro', d:2, cap:'Buxarest'},
+  {id:348,code:'HU',nameAz:'Macarıstan',             currency:'Macarıstan Forinti',     cur:'HUF',lc:'hu', d:2, cap:'Budapeşt'},
+  {id:203,code:'CZ',nameAz:'Çexiya',                 currency:'Çex Kronası',            cur:'CZK',lc:'cs', d:2, cap:'Praqa'},
+  {id:246,code:'FI',nameAz:'Finlandiya',             currency:'Avro',                   cur:'EUR',lc:'fi', d:2, cap:'Helsinki'},
+  {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',    cur:'ZAR',lc:'zu', d:2, cap:'Pretoriya'},
+  {id:818,code:'EG',nameAz:'Mısır',                  currency:'Misir Funtu',            cur:'EGP',lc:'ar', d:2, cap:'Qahirə'},
 
-  {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',       cur:'NGN',lc:'ig', d:3},
-  {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',        cur:'KES',lc:'sw', d:3},
-  {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',           cur:'THB',lc:'th', d:3},
-  {id:360,code:'ID',nameAz:'İndoneziya',             currency:'İndoneziya Rupisi',      cur:'IDR',lc:'id', d:3},
-  {id:458,code:'MY',nameAz:'Malayziya',              currency:'Malayziya Ringgiti',     cur:'MYR',lc:'ms', d:3},
-  {id:608,code:'PH',nameAz:'Filippin',               currency:'Filippin Pesosu',        cur:'PHP',lc:'tl', d:3},
-  {id:704,code:'VN',nameAz:'Vyetnam',                currency:'Vyetnam Donqu',          cur:'VND',lc:'vi', d:3},
-  {id:50, code:'BD',nameAz:'Banqladeş',              currency:'Banqladeş Takası',       cur:'BDT',lc:'bn', d:3},
-  {id:586,code:'PK',nameAz:'Pakistan',               currency:'Pakistan Rupisi',        cur:'PKR',lc:'ur', d:3},
-  {id:376,code:'IL',nameAz:'İsrail',                 currency:'İsrail Şekeli',          cur:'ILS',lc:'he', d:3},
-  {id:364,code:'IR',nameAz:'İran',                   currency:'İran Rialı',             cur:'IRR',lc:'fa', d:3},
-  {id:554,code:'NZ',nameAz:'Yeni Zelandiya',         currency:'Yeni Zelandiya Dolları', cur:'NZD',lc:'en', d:3},
-  {id:784,code:'AE',nameAz:'BƏƏ',                    currency:'BƏƏ Dirhəmi',            cur:'AED',lc:'ar', d:3},
-  {id:414,code:'KW',nameAz:'Küveyt',                 currency:'Küveyt Dinarı',          cur:'KWD',lc:'ar', d:3},
-  {id:634,code:'QA',nameAz:'Qətər',                  currency:'Qətər Riyalı',           cur:'QAR',lc:'ar', d:3},
-  {id:152,code:'CL',nameAz:'Çili',                   currency:'Çili Pesosu',            cur:'CLP',lc:'es', d:3},
-  {id:170,code:'CO',nameAz:'Kolumbiya',              currency:'Kolumbiya Pesosu',       cur:'COP',lc:'es', d:3},
-  {id:604,code:'PE',nameAz:'Peru',                   currency:'Peru Solu',              cur:'PEN',lc:'es', d:3},
-  {id:504,code:'MA',nameAz:'Mərakeş',                currency:'Mərakeş Dirhəmi',        cur:'MAD',lc:'ar', d:3},
-  {id:372,code:'IE',nameAz:'İrlandiya',              currency:'Avro',                   cur:'EUR',lc:'en', d:3},
-  {id:703,code:'SK',nameAz:'Slovakiya',              currency:'Avro',                   cur:'EUR',lc:'sk', d:3},
-  {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',lc:'bg', d:3},
-  {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',lc:'hr', d:3},
-  {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',lc:'sr', d:3},
+  {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',       cur:'NGN',lc:'ig', d:3, cap:'Abuca'},
+  {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',        cur:'KES',lc:'sw', d:3, cap:'Nayrobi'},
+  {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',           cur:'THB',lc:'th', d:3, cap:'Banqkok'},
+  {id:360,code:'ID',nameAz:'İndoneziya',             currency:'İndoneziya Rupisi',      cur:'IDR',lc:'id', d:3, cap:'Cakarta'},
+  {id:458,code:'MY',nameAz:'Malayziya',              currency:'Malayziya Ringgiti',     cur:'MYR',lc:'ms', d:3, cap:'Kuala-Lumpur'},
+  {id:608,code:'PH',nameAz:'Filippin',               currency:'Filippin Pesosu',        cur:'PHP',lc:'tl', d:3, cap:'Manila'},
+  {id:704,code:'VN',nameAz:'Vyetnam',                currency:'Vyetnam Donqu',          cur:'VND',lc:'vi', d:3, cap:'Hanoy'},
+  {id:50, code:'BD',nameAz:'Banqladeş',              currency:'Banqladeş Takası',       cur:'BDT',lc:'bn', d:3, cap:'Dəkkə'},
+  {id:586,code:'PK',nameAz:'Pakistan',               currency:'Pakistan Rupisi',        cur:'PKR',lc:'ur', d:3, cap:'İslamabad'},
+  {id:376,code:'IL',nameAz:'İsrail',                 currency:'İsrail Şekeli',          cur:'ILS',lc:'he', d:3, cap:'Qüds'},
+  {id:364,code:'IR',nameAz:'İran',                   currency:'İran Rialı',             cur:'IRR',lc:'fa', d:3, cap:'Tehran'},
+  {id:554,code:'NZ',nameAz:'Yeni Zelandiya',         currency:'Yeni Zelandiya Dolları', cur:'NZD',lc:'en', d:3, cap:'Vellinqton'},
+  {id:784,code:'AE',nameAz:'BƏƏ',                    currency:'BƏƏ Dirhəmi',            cur:'AED',lc:'ar', d:3, cap:'Əbu-Dabi'},
+  {id:414,code:'KW',nameAz:'Küveyt',                 currency:'Küveyt Dinarı',          cur:'KWD',lc:'ar', d:3, cap:'Küveyt şəhəri'},
+  {id:634,code:'QA',nameAz:'Qətər',                  currency:'Qətər Riyalı',           cur:'QAR',lc:'ar', d:3, cap:'Doha'},
+  {id:152,code:'CL',nameAz:'Çili',                   currency:'Çili Pesosu',            cur:'CLP',lc:'es', d:3, cap:'Santyaqo'},
+  {id:170,code:'CO',nameAz:'Kolumbiya',              currency:'Kolumbiya Pesosu',       cur:'COP',lc:'es', d:3, cap:'Boqota'},
+  {id:604,code:'PE',nameAz:'Peru',                   currency:'Peru Solu',              cur:'PEN',lc:'es', d:3, cap:'Lima'},
+  {id:504,code:'MA',nameAz:'Mərakeş',                currency:'Mərakeş Dirhəmi',        cur:'MAD',lc:'ar', d:3, cap:'Rabat'},
+  {id:372,code:'IE',nameAz:'İrlandiya',              currency:'Avro',                   cur:'EUR',lc:'en', d:3, cap:'Dublin'},
+  {id:703,code:'SK',nameAz:'Slovakiya',              currency:'Avro',                   cur:'EUR',lc:'sk', d:3, cap:'Bratislava'},
+  {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',lc:'bg', d:3, cap:'Sofiya'},
+  {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',lc:'hr', d:3, cap:'Zaqreb'},
+  {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',lc:'sr', d:3, cap:'Belqrad'},
 ];
 
 const P={
@@ -652,7 +659,13 @@ document.addEventListener('click',e=>{
   }
 });
 
-const BADGES={language:'💬 Dil Tapma',map:'🗺️ Xəritə Oyunu',currency:'💰 Valyuta Tapma',flag:'🏴 Bayraq Tapma'};
+const BADGES={
+  language:'💬 Dil Tapma',
+  map:'🗺️ Xəritə Oyunu',
+  currency:'💰 Valyuta Tapma',
+  flag:'🏴 Bayraq Tapma',
+  capital:'🏛️ Paytaxt Tapma'
+};
 
 function openGameSetup(type){
   pendingType = type;
@@ -692,7 +705,7 @@ function updateProgress(){
 }
 
 function loadQ(){
-  const gens={language:genLang,map:genMap,currency:genCurr,flag:genFlag};
+  const gens={language:genLang,map:genMap,currency:genCurr,flag:genFlag,capital:genCap};
   const q=gens[GS.type]();
   renderQ(q);
 }
@@ -779,6 +792,19 @@ function genFlag(){
   return{type:'flag',target:t,cv:t.code,opts};
 }
 
+function genCap(){
+  const t=pickCountry();
+  let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code && x.cap !== t.cap);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cap !== t.cap));
+  
+  const wrongs=shuf(pool).slice(0,5);
+  const opts=shuf([
+    {v:t.code,label:t.cap,correct:true},
+    ...wrongs.map(x=>({v:x.code,label:x.cap,correct:false}))
+  ]);
+  return{type:'capital',target:t,cv:t.code,opts};
+}
+
 /* ═══════════════════════════════════════════
    RENDER QUESTION
 ═══════════════════════════════════════════ */
@@ -814,6 +840,13 @@ function renderQ(q){
       qw.innerHTML=`
         <div class="fcard"><img class="fbig" src="https://flagcdn.com/w320/${q.target.code.toLowerCase()}.png" alt="Bayraq"/></div>
         <p class="qlbl">Bu bayraq hansı ölkəyə məxsusdur?</p>`;
+      break;
+    case'capital':
+      qw.innerHTML=`
+        <div class="ccard" style="padding: 50px 20px;">
+          <div class="cname">${q.target.nameAz}</div>
+          <p class="chint">Bu ölkənin paytaxtı haradır?</p>
+        </div>`;
       break;
   }
 
