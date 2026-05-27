@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>GeoQuiz – Coğrafiya Oyunları</title>
+<title>World Quiz – Coğrafiya Oyunları</title>
 <meta name="description" content="Dil, xəritə, valyuta və bayraq oyunları ilə dünya coğrafiyasını öyrən."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -137,7 +137,7 @@ body{
 /* ─── MODAL (DIFFICULTY) ─── */
 .modal-ov{
   position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);
-  display:flex;align-items:center;justify-content:center;z-index:9999;
+  display:flex;align-items:center;justify-content:center;z-index:99999;
   opacity:0;pointer-events:none;transition:opacity .3s;
 }
 .modal-ov.show{opacity:1;pointer-events:auto}
@@ -242,7 +242,10 @@ body{
   background:var(--bgc);border:1px solid var(--border);
   border-radius:22px;padding:40px 28px;text-align:center;
 }
-.cname{font-family:'Space Grotesk',sans-serif;font-size:3.2rem;font-weight:800;margin-bottom:10px}
+.cname{
+  font-family:'Space Grotesk',sans-serif;font-size:3.2rem;font-weight:800;margin-bottom:10px;
+  background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
 .chint{font-size:.9rem;color:var(--t2)}
 
 /* Flag card */
@@ -372,14 +375,14 @@ body{
   <div class="sb-logo">
     <span class="sb-globe">🌍</span>
     <div>
-      <span class="sb-name">GeoQuiz</span>
+      <span class="sb-name">World Quiz</span>
       <span class="sb-sub">Coğrafiya Oyunları</span>
     </div>
   </div>
   <nav class="sb-nav">
     <p class="sb-sec">OYUNLAR</p>
     <button class="ni" id="n-language" onclick="openGameSetup('language')">
-      <span class="ni-ic">🔤</span>
+      <span class="ni-ic">💬</span>
       <div class="ni-b"><span class="ni-t">Dil Tapma</span><span class="ni-d">Hansı dildə yazılıb?</span></div>
       <span class="ni-badge">YENİ</span>
     </button>
@@ -430,12 +433,12 @@ body{
     <div class="ww">
       <div class="wh">
         <span class="wh-g">🌍</span>
-        <h1>GeoQuiz-ə Xoş Gəldiniz!</h1>
+        <h1>World Quiz-ə Xoş Gəldiniz!</h1>
         <p>Sol menyudan bir oyun seçin və biliklərinizi yoxlayın</p>
       </div>
       <div class="gcards">
         <div class="gcard" onclick="openGameSetup('language')">
-          <span class="gc-ic">🔤</span><h3>Dil Tapma</h3><p>Cümləni oxu, hansı dildə olduğunu tap</p>
+          <span class="gc-ic">💬</span><h3>Dil Tapma</h3><p>Cümləni oxu, hansı dildə olduğunu tap</p>
         </div>
         <div class="gcard" onclick="openGameSetup('map')">
           <span class="gc-ic">🗺️</span><h3>Xəritə Oyunu</h3><p>Xəritədə göstərilən ölkəni tap</p>
@@ -454,7 +457,7 @@ body{
   <div class="scr" id="scr-game">
     <div class="gh">
       <div class="gi">
-        <span class="gbadge" id="gbadge">🔤 Dil Tapma</span>
+        <span class="gbadge" id="gbadge">💬 Dil Tapma</span>
         <span class="diff-badge" id="dbadge">Orta</span>
         <button class="bback" onclick="goHome()">← Geri</button>
       </div>
@@ -649,7 +652,7 @@ document.addEventListener('click',e=>{
   }
 });
 
-const BADGES={language:'🔤 Dil Tapma',map:'🗺️ Xəritə Oyunu',currency:'💰 Valyuta Tapma',flag:'🏴 Bayraq Tapma'};
+const BADGES={language:'💬 Dil Tapma',map:'🗺️ Xəritə Oyunu',currency:'💰 Valyuta Tapma',flag:'🏴 Bayraq Tapma'};
 
 function openGameSetup(type){
   pendingType = type;
@@ -723,7 +726,6 @@ function genLang(){
   }
   GS.used.push(t.code);
 
-  // Wrong options try to come from the same difficulty for challenge
   let wPool = C.filter(x=>x.d === GS.diff && P[x.lc] && x.lc !== t.lc);
   if(wPool.length < 5) wPool = wPool.concat(C.filter(x=>P[x.lc] && x.lc !== t.lc));
 
@@ -815,7 +817,6 @@ function renderQ(q){
       break;
   }
 
-  // Options always 6
   ow.innerHTML=q.opts.map((o,i)=>`
     <button class="obtn" data-v="${o.v}" onclick="answer('${o.v}','${q.cv}',this)">
       <span class="olet">${LETS[i]}</span>
@@ -906,4 +907,55 @@ function showResults(){
   document.getElementById('bdno').textContent=w;
   document.getElementById('bdac').textContent=acc+'%';
   let em,msg;
-  if(s===10){em='🏆';msg='Mükəmməl! 1
+  if(s===10){em='🏆';msg='Mükəmməl! 10/10 – Həqiqi coğrafiya ustasısınız!';}
+  else if(s>=8){em='🌟';msg='Əla nəticə! Çox yaxşı bildiyinizi sübut etdiniz!';}
+  else if(s>=6){em='👍';msg='Yaxşı! Orta üstü nəticə əldə etdiniz.';}
+  else if(s>=4){em='📚';msg='Pis deyil. Daha çox məşq etmək lazımdır.';}
+  else{em='💪';msg='Çalışmağa davam et! Növbəti dəfə daha yaxşı olacaq.';}
+  document.getElementById('ric').textContent=em;
+  document.getElementById('rmsg').textContent=msg;
+  saveStats(s);
+  showScr('results');
+}
+
+function restartGame(){
+  openGameSetup(GS.type);
+}
+function goHome(){
+  showScr('welcome');
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
+}
+
+/* ═══════════════════════════════════════════
+   STATS (localStorage)
+═══════════════════════════════════════════ */
+function loadStats(){
+  const played=localStorage.getItem('gqPlayed')||0;
+  const best=localStorage.getItem('gqBest');
+  document.getElementById('sp').textContent=played;
+  document.getElementById('sb2').textContent=best?best+'/10':'–';
+}
+function saveStats(score){
+  const p=parseInt(localStorage.getItem('gqPlayed')||0)+1;
+  const prev=parseInt(localStorage.getItem('gqBest')||0);
+  localStorage.setItem('gqPlayed',p);
+  if(score>prev)localStorage.setItem('gqBest',score);
+  loadStats();
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadStats();
+  const adph=document.getElementById('adph');
+  if(adph)setTimeout(()=>{
+    const ins=document.querySelector('.adsbygoogle');
+    if(ins&&ins.innerHTML.trim()!=='')adph.style.display='none';
+  },2000);
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r=>r.json()).then(d=>GS.worldData=d).catch(()=>{});
+});
+</script>
+</body>
+</html>
