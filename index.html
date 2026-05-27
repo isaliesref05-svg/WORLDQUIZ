@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js"></script>
-<!-- AdSense kodu -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5047561293873562" crossorigin="anonymous"></script>
 
 <style>
@@ -515,11 +514,7 @@ body{
 </div>
 
 <script>
-/* ═══════════════════════════════════════════
-   DATA – Countries (d = Difficulty Level: 1-Easy, 2-Medium, 3-Hard)
-═══════════════════════════════════════════ */
 const C=[
-  /* ─── d:1 ASAN ─── */
   {id:840,code:'US',nameAz:'Amerika',               currency:'ABŞ Dolları',            cur:'USD',lc:'en', d:1, cap:'Vaşinqton'},
   {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',         cur:'GBP',lc:'en', d:1, cap:'London'},
   {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                   cur:'EUR',lc:'fr', d:1, cap:'Paris'},
@@ -535,8 +530,6 @@ const C=[
   {id:124,code:'CA',nameAz:'Kanada',                 currency:'Kanada Dolları',         cur:'CAD',lc:'fr', d:1, cap:'Ottava'},
   {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:1, cap:'Kanberra'},
   {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',      cur:'AZN',lc:'az', d:1, cap:'Bakı'},
-
-  /* ─── d:2 ORTA ─── */
   {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',         cur:'MXN',lc:'es', d:2, cap:'Mexiko'},
   {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',           cur:'SAR',lc:'ar', d:2, cap:'Ər-Riyad'},
   {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',            cur:'KRW',lc:'ko', d:2, cap:'Seul'},
@@ -556,8 +549,6 @@ const C=[
   {id:246,code:'FI',nameAz:'Finlandiya',             currency:'Avro',                   cur:'EUR',lc:'fi', d:2, cap:'Helsinki'},
   {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',    cur:'ZAR',lc:'zu', d:2, cap:'Pretoriya'},
   {id:818,code:'EG',nameAz:'Mısır',                  currency:'Misir Funtu',            cur:'EGP',lc:'ar', d:2, cap:'Qahirə'},
-
-  /* ─── d:3 ÇƏTİN ─── */
   {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',       cur:'NGN',lc:'ig', d:3, cap:'Abuca'},
   {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',        cur:'KES',lc:'sw', d:3, cap:'Nayrobi'},
   {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',           cur:'THB',lc:'th', d:3, cap:'Banqkok'},
@@ -582,8 +573,6 @@ const C=[
   {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',lc:'bg', d:3, cap:'Sofiya'},
   {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',lc:'hr', d:3, cap:'Zaqreb'},
   {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',lc:'sr', d:3, cap:'Belqrad'},
-  
-  /* ─── d:3 YENİ ÇƏTİN ÖLKƏLƏR ─── */
   {id:496,code:'MN',nameAz:'Monqolustan',            currency:'Monqol Tuqriki',         cur:'MNT',lc:'mn', d:3, cap:'Ulanbator'},
   {id:524,code:'NP',nameAz:'Nepal',                  currency:'Nepal Rupisi',           cur:'NPR',lc:'ne', d:3, cap:'Katmandu'},
   {id:116,code:'KH',nameAz:'Kamboca',                currency:'Kamboca Rieli',          cur:'KHR',lc:'km', d:3, cap:'Pnom Pen'},
@@ -610,7 +599,6 @@ const C=[
   {id:51, code:'AM',nameAz:'Ermənistan',              currency:'Erməni Dramı',           cur:'AMD',lc:'hy', d:3, cap:'İrəvan'},
   {id:398,code:'KZ',nameAz:'Qazaxıstan',             currency:'Qazax Tengesi',          cur:'KZT',lc:'kk', d:3, cap:'Astana'},
   {id:860,code:'UZ',nameAz:'Özbəkistan',             currency:'Özbək Somu',             cur:'UZS',lc:'uz', d:3, cap:'Daşkənd'},
-  /* Extreme Hard */
   {id:798,code:'TV',nameAz:'Tuvalu',                 currency:'Tuvalu Dolları',         cur:'TVD',lc:'en', d:3, cap:'Funafuti'},
   {id:520,code:'NR',nameAz:'Nauru',                  currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:3, cap:'Yaren'},
   {id:748,code:'SZ',nameAz:'Esvatini',               currency:'Lilanqeni',              cur:'SZL',lc:'en', d:3, cap:'Mbabane'},
@@ -667,7 +655,6 @@ const P={
   bg:{l:'Bolqar dili',  t:'Слънцето грее ярко над зелените поля и тихите реки.'},
   hr:{l:'Xorvat dili',   t:'More mirno plovi i donosi svježinu i mir ovoga ljetnog jutra.'},
   sr:{l:'Serb dili',     t:'Звезде сијају на ноћном небу и осветљавају цео свет.'},
-  /* ─── YENİ DİLLƏR (çətin mod üçün) ─── */
   mn:{l:'Monqol dili',    t:'Монгол нутгийн уудам тал нь алтан шар өнгөөр гялалзаж байна.'},
   ne:{l:'Nepal dili',      t:'हिमालयको चुचुरोमा हिउँ चम्किरहेको दृश्य अत्यन्त सुन्दर छ।'},
   km:{l:'Kxmer dili',      t:'ព្រះអាទិត្យរះលើប្រាសាទបុរាណដ៏អស្ចារ្យក្នុងព្រលឹម。'},
@@ -682,30 +669,18 @@ const P={
   et:{l:'Eston dili',      t:'Päike loojub metsa taha ja värvib taeva oranžidesse toonidesse.'},
   ka:{l:'Gürcü dili',      t:'მთების მწვერვალებზე თოვლი ანათებს მზის სხივებში ლამაზად.'},
   kk:{l:'Qazax dili',      t:'Дала кең жайылып жатыр, аспанда ақ бұлттар баяу жүзіп барады.'},
-  uz:{l:'Özbək dili',      t:'Quyosh botayotganda osmon oltin rangga bo\'yaldi va shamol esdi.'},
+  uz:{l:'Özbək dili',      t:"Quyosh botayotganda osmon oltin rangga bo'yaldi va shamol esdi."},
+  hy:{l:'Erməni dili',     t:'Արեւի լույսը գեղեցիկ փայլում է բնության վրա:'},
 };
 
-/* Armenian dili xətaya yol verməmək üçün əlavə kimi təyin edildi */
-P.hy = {l:'Erməni dili', t:'Արեւի լույսը գեղեցիկ փայլում է բնության վրա:'};
-
-/* ═══════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════ */
 let GS={type:null,diff:1,qi:0,score:0,used:[],worldData:null};
 let pendingType = null;
 
-/* ═══════════════════════════════════════════
-   UTILS
-═══════════════════════════════════════════ */
 function shuf(a){
   const r=[...a];
   for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}
   return r;
 }
-
-/* ═══════════════════════════════════════════
-   SCREENS & MODAL
-═══════════════════════════════════════════ */
 function showScr(name){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById('scr-'+name).classList.add('on');
@@ -739,21 +714,15 @@ function closeModal(){
   document.getElementById('diff-modal').classList.remove('show');
 }
 
-/* ═══════════════════════════════════════════
-   GAME FLOW
-═══════════════════════════════════════════ */
 function startWithDiff(diffLevel){
   closeModal();
   GS={type:pendingType,diff:diffLevel,qi:0,score:0,used:[],worldData:GS.worldData};
-  
   document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
   const nb=document.getElementById('n-'+pendingType);
   if(nb)nb.classList.add('active');
-  
   document.getElementById('gbadge').textContent=BADGES[pendingType];
   const dl_names = {1:'Asan', 2:'Orta', 3:'Çətin'};
   document.getElementById('dbadge').textContent=dl_names[diffLevel];
-  
   document.getElementById('sval').textContent='0';
   showScr('game');
   updateProgress();
@@ -772,13 +741,9 @@ function loadQ(){
   renderQ(q);
 }
 
-/* ═══════════════════════════════════════════
-   GENERATORS
-═══════════════════════════════════════════ */
 function pickCountry(){
   let diffCountries = C.filter(x=>x.d === GS.diff);
   if(diffCountries.length === 0) diffCountries = C;
-  
   let sh=shuf(diffCountries);
   let t=sh.find(x=>!GS.used.includes(x.code));
   if(!t){
@@ -789,14 +754,9 @@ function pickCountry(){
   return t;
 }
 
-function getWrongCount(){
-  return 5;
-}
-
 function genLang(){
   let diffLangs = C.filter(x=>x.d === GS.diff && P[x.lc]);
   if(diffLangs.length === 0) diffLangs = C.filter(x=>P[x.lc]);
-
   let sh=shuf(diffLangs);
   let t=sh.find(x=>!GS.used.includes(x.code));
   if(!t){
@@ -804,15 +764,12 @@ function genLang(){
     t=sh.find(x=>!GS.used.includes(x.code)) || sh[0];
   }
   GS.used.push(t.code);
-
-  const wc = getWrongCount();
+  const wc = 5;
   let wPool = C.filter(x=>x.d === GS.diff && P[x.lc] && x.lc !== t.lc);
   if(wPool.length < wc) wPool = wPool.concat(C.filter(x=>P[x.lc] && x.lc !== t.lc));
-
   const wrongs=shuf(wPool)
     .reduce((acc,x)=>{if(!acc.find(a=>a.lc===x.lc))acc.push(x);return acc;},[])
     .slice(0,wc);
-
   const opts=shuf([
     {v:t.lc,label:P[t.lc].l,correct:true},
     ...wrongs.map(x=>({v:x.lc,label:P[x.lc].l,correct:false}))
@@ -822,11 +779,9 @@ function genLang(){
 
 function genMap(){
   const t=pickCountry();
-  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code);
-  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code));
-  
-  const wrongs=shuf(pool).slice(0,wc);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code));
+  const wrongs=shuf(pool).slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -836,11 +791,9 @@ function genMap(){
 
 function genCurr(){
   const t=pickCountry();
-  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code && x.cur !== t.cur);
-  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cur !== t.cur));
-  
-  const wrongs=shuf(pool).slice(0,wc);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cur !== t.cur));
+  const wrongs=shuf(pool).slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -850,11 +803,9 @@ function genCurr(){
 
 function genFlag(){
   const t=pickCountry();
-  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code);
-  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code));
-  
-  const wrongs=shuf(pool).slice(0,wc);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code));
+  const wrongs=shuf(pool).slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -864,11 +815,9 @@ function genFlag(){
 
 function genCap(){
   const t=pickCountry();
-  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code && x.cap !== t.cap);
-  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cap !== t.cap));
-  
-  const wrongs=shuf(pool).slice(0,wc);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cap !== t.cap));
+  const wrongs=shuf(pool).slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.cap,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.cap,correct:false}))
@@ -876,63 +825,33 @@ function genCap(){
   return{type:'capital',target:t,cv:t.code,opts};
 }
 
-/* ═══════════════════════════════════════════
-   RENDER QUESTION
-═══════════════════════════════════════════ */
 const LETS=['A','B','C','D','E','F','G','H'];
 
 function renderQ(q){
   const qw=document.getElementById('qw');
   const ow=document.getElementById('ow');
-
-
   switch(q.type){
     case'language':
-      qw.innerHTML=`
-        <div class="lcard"><div class="ltxt">${q.text}</div></div>
-        <p class="qlbl">Bu mətn hansı dildə yazılmışdır?</p>`;
+      qw.innerHTML=`<div class="lcard"><div class="ltxt">${q.text}</div></div><p class="qlbl">Bu mətn hansı dildə yazılmışdır?</p>`;
       break;
     case'map':
-      qw.innerHTML=`
-        <div class="mcard" id="mcard">
-          <div class="mmsg" id="mmsg"><div class="mspn"></div><span>Xəritə yüklənir...</span></div>
-          <svg id="wsvg"></svg>
-        </div>
-        <p class="qlbl">Xəritədə vurgulanmış ölkə hansıdır?</p>`;
+      qw.innerHTML=`<div class="mcard" id="mcard"><div class="mmsg" id="mmsg"><div class="mspn"></div><span>Xəritə yüklənir...</span></div><svg id="wsvg"></svg></div><p class="qlbl">Xəritədə vurgulanmış ölkə hansıdır?</p>`;
       drawMap(q.target);
       break;
     case'currency':
       const cWord = q.target.currency.split(' ').pop();
-      qw.innerHTML=`
-        <div class="ccard" style="padding: 50px 20px;">
-          <div class="cname">${cWord}</div>
-          <p class="chint">Bu valyuta hansı ölkəyə məxsusdur?</p>
-        </div>`;
+      qw.innerHTML=`<div class="ccard" style="padding:50px 20px;"><div class="cname">${cWord}</div><p class="chint">Bu valyuta hansı ölkəyə məxsusdur?</p></div>`;
       break;
     case'flag':
-      qw.innerHTML=`
-        <div class="fcard"><img class="fbig" src="https://flagcdn.com/w320/${q.target.code.toLowerCase()}.png" alt="Bayraq"/></div>
-        <p class="qlbl">Bu bayraq hansı ölkəyə məxsusdur?</p>`;
+      qw.innerHTML=`<div class="fcard"><img class="fbig" src="https://flagcdn.com/w320/${q.target.code.toLowerCase()}.png" alt="Bayraq"/></div><p class="qlbl">Bu bayraq hansı ölkəyə məxsusdur?</p>`;
       break;
     case'capital':
-      qw.innerHTML=`
-        <div class="ccard" style="padding: 50px 20px;">
-          <div class="cname">${q.target.nameAz}</div>
-          <p class="chint">Bu ölkənin paytaxtı haradır?</p>
-        </div>`;
+      qw.innerHTML=`<div class="ccard" style="padding:50px 20px;"><div class="cname">${q.target.nameAz}</div><p class="chint">Bu ölkənin paytaxtı haradır?</p></div>`;
       break;
   }
-
-  ow.innerHTML=q.opts.map((o,i)=>`
-    <button class="obtn" data-v="${o.v}" onclick="answer('${o.v}','${q.cv}',this)">
-      <span class="olet">${LETS[i]}</span>
-      <span>${o.label}</span>
-    </button>`).join('');
+  ow.innerHTML=q.opts.map((o,i)=>`<button class="obtn" data-v="${o.v}" onclick="answer('${o.v}','${q.cv}',this)"><span class="olet">${LETS[i]}</span><span>${o.label}</span></button>`).join('');
 }
 
-/* ═══════════════════════════════════════════
-   ANSWER HANDLING
-═══════════════════════════════════════════ */
 function answer(selected,correct,btn){
   document.querySelectorAll('.obtn').forEach(b=>{
     b.disabled=true;
@@ -958,9 +877,6 @@ function toast(msg,cls){
   setTimeout(()=>el.remove(),950);
 }
 
-/* ═══════════════════════════════════════════
-   MAP (D3)
-═══════════════════════════════════════════ */
 async function drawMap(target){
   try{
     if(!GS.worldData){
@@ -986,17 +902,12 @@ async function drawMap(target){
       .attr('stroke','#090d1a')
       .attr('stroke-width',.4)
       .style('filter',d=>+d.id===target.id?'drop-shadow(0 0 8px rgba(124,58,237,.8))':'none');
-    
-    /* ? işarəsi ləğv edildi, artıq xəritədə ölkənin üzərində yazı olmur */
   }catch(e){
     const el=document.getElementById('mmsg');
     if(el)el.innerHTML='<span style="color:#8b97b8">⚠️ Xəritə yüklənə bilmədi.<br>İnternet bağlantısını yoxlayın.</span>';
   }
 }
 
-/* ═══════════════════════════════════════════
-   RESULTS
-═══════════════════════════════════════════ */
 function showResults(){
   const s=GS.score,w=10-s,acc=Math.round(s/10*100);
   document.getElementById('rscore').textContent=s;
@@ -1015,17 +926,12 @@ function showResults(){
   showScr('results');
 }
 
-function restartGame(){
-  openGameSetup(GS.type);
-}
+function restartGame(){ openGameSetup(GS.type); }
 function goHome(){
   showScr('welcome');
   document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
 }
 
-/* ═══════════════════════════════════════════
-   STATS (localStorage)
-═══════════════════════════════════════════ */
 function loadStats(){
   const played=localStorage.getItem('gqPlayed')||0;
   const best=localStorage.getItem('gqBest');
@@ -1040,12 +946,8 @@ function saveStats(score){
   loadStats();
 }
 
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',()=>{
   loadStats();
-
   const adph=document.getElementById('adph');
   if(adph)setTimeout(()=>{
     const ins=document.querySelector('.adsbygoogle');
