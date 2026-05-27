@@ -1,445 +1,212 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WorldQuiz</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-  :root{--bg:#0d0d14;--surface:#16161f;--card:#1c1c2a;--border:#2a2a3d;--accent:#7c6dfa;--accent2:#fa6d9a;--text:#eeeef5;--muted:#7070a0;--correct:#4ade80;--wrong:#f87171;--sidebar:210px;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;overflow-x:hidden;}
-  .sidebar{width:var(--sidebar);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:10;}
-  .sidebar-logo{padding:0 18px 20px;border-bottom:1px solid var(--border);}
-  .sidebar-logo h1{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-  .sidebar-logo p{font-size:11px;color:var(--muted);margin-top:2px;}
-  .sidebar-section{padding:14px 10px 6px;}
-  .sidebar-section-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:0 8px;margin-bottom:6px;}
-  .game-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all .18s;color:var(--muted);font-size:13px;font-weight:500;margin-bottom:2px;border:1.5px solid transparent;}
-  .game-item:hover{background:rgba(124,109,250,.08);color:var(--text);}
-  .game-item.active{background:rgba(124,109,250,.13);border-color:rgba(124,109,250,.35);color:var(--text);}
-  .game-item .icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
-  .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px 20px;min-height:100vh;}
-  .container{width:100%;max-width:560px;}
-  .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px;}
-  .progress-bar{height:4px;background:var(--border);border-radius:99px;margin-bottom:18px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .5s ease;}
-  .q-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px 24px 20px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;}
-  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
-  .q-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;}
-  .word-display{font-family:'Syne',sans-serif;font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;background:linear-gradient(135deg,var(--text) 40%,var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;min-height:60px;display:flex;align-items:center;justify-content:center;}
-  /* FLAG */
-  .flag-wrap{display:flex;align-items:center;justify-content:center;padding:6px 0;}
-  .flag-wrap img{width:280px;height:187px;border-radius:8px;object-fit:cover;box-shadow:0 4px 24px rgba(0,0,0,.5);border:1px solid var(--border);}
-  /* MAP - real world map iframe via embed */
-  .map-wrap{position:relative;width:100%;height:260px;border-radius:12px;overflow:hidden;background:#0d1a2e;}
-  #mapFrame{width:100%;height:100%;border:none;border-radius:12px;}
-  /* CURRENCY */
-  .currency-country{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;margin:8px 0 4px;}
-  .options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
-  .option-btn{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:13px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left;}
-  .option-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(124,109,250,.09);transform:translateY(-1px);}
-  .option-btn .opt-letter{width:24px;height:24px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;color:var(--muted);}
-  .option-btn.correct{border-color:var(--correct);background:rgba(74,222,128,.09);}
-  .option-btn.correct .opt-letter{background:var(--correct);color:#000;}
-  .option-btn.wrong{border-color:var(--wrong);background:rgba(248,113,113,.09);}
-  .option-btn.wrong .opt-letter{background:var(--wrong);color:#000;}
-  .option-btn:disabled{cursor:default;}
-  .feedback{text-align:center;font-size:13px;min-height:18px;margin-bottom:10px;color:transparent;transition:color .2s;}
-  .feedback.ok{color:var(--correct);font-weight:500;}
-  .feedback.bad{color:var(--wrong);font-weight:500;}
-  .next-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .18s;display:none;}
-  .next-btn:hover{opacity:.9;transform:translateY(-1px);}
-  .next-btn.visible{display:block;}
-  .start-screen{text-align:center;}
-  .start-icon{font-size:64px;margin-bottom:14px;}
-  .start-screen h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;}
-  .start-screen p{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px;}
-  .diff-row{display:flex;gap:10px;justify-content:center;margin-bottom:22px;}
-  .diff-btn{flex:1;max-width:130px;padding:12px 8px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:4px;}
-  .diff-btn:hover{border-color:var(--accent);color:var(--text);}
-  .diff-btn.selected{border-color:var(--accent);background:rgba(124,109,250,.15);color:var(--text);}
-  .diff-btn .diff-icon{font-size:22px;}
-  .diff-btn .diff-desc{font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;}
-  .start-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-family:'Syne',sans-serif;font-size:17px;font-weight:700;padding:16px 44px;cursor:pointer;transition:all .18s;}
-  .start-btn:hover{opacity:.9;transform:translateY(-2px);}
-  .result-screen{text-align:center;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px 32px;}
-  .result-emoji{font-size:56px;margin-bottom:10px;}
-  .result-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
-  .result-score{font-size:60px;font-family:'Syne',sans-serif;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:12px 0;}
-  .result-sub{color:var(--muted);font-size:14px;margin-bottom:22px;}
-  .restart-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;padding:14px 34px;cursor:pointer;transition:all .18s;}
-  .restart-btn:hover{opacity:.9;transform:translateY(-1px);}
-  .animate-in{animation:fadeUp .3s ease both;}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  .ad-bar{position:fixed;bottom:0;left:var(--sidebar);right:0;height:52px;background:var(--surface);border-top:1px solid var(--border);z-index:5;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoQuiz – Coğrafiya Oyunları</title>
+  <meta name="description" content="Dil, xəritə, valyuta və bayraq oyunları ilə dünya coğrafiyasını öyrən." />
+  <meta name="keywords" content="coğrafiya quiz, bayraq tapma, valyuta oyunu, xəritə oyunu, dil tapma" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- D3 + TopoJSON (xəritə üçün) -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js"></script>
+
+  <!-- Google AdSense – öz publisher ID-ni yaz -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<nav class="sidebar">
-  <div class="sidebar-logo"><h1>WorldQuiz</h1><p>Dünya bilgi oyunları</p></div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Oyunlar</div>
-    <div class="game-item active" onclick="switchGame('word',this)"><span class="icon">🔤</span>Word Quiz</div>
-    <div class="game-item" onclick="switchGame('map',this)"><span class="icon">🗺️</span>Map Quiz</div>
-    <div class="game-item" onclick="switchGame('currency',this)"><span class="icon">💰</span>Currency Quiz</div>
-    <div class="game-item" onclick="switchGame('flag',this)"><span class="icon">🚩</span>Flag Quiz</div>
+
+<!-- ══════════════════════ SIDEBAR ══════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-logo">
+    <span class="logo-globe">🌍</span>
+    <div>
+      <span class="logo-name">GeoQuiz</span>
+      <span class="logo-tagline">Coğrafiya Oyunları</span>
+    </div>
   </div>
-</nav>
-<div class="main"><div class="container" id="app"></div></div>
-<div class="ad-bar"></div>
 
-<script>
-// flagcdn.com 2-letter codes
-const FLAGS_DATA = {
-  easy:[
-    {country:"ABŞ",              code:"us"},
-    {country:"Fransa",           code:"fr"},
-    {country:"Almaniya",         code:"de"},
-    {country:"İtaliya",          code:"it"},
-    {country:"Rusiya",           code:"ru"},
-    {country:"Yaponiya",         code:"jp"},
-    {country:"Azərbaycan",       code:"az"},
-    {country:"Braziliya",        code:"br"},
-    {country:"Kanada",           code:"ca"},
-    {country:"Türkiyə",          code:"tr"},
-  ],
-  medium:[
-    {country:"Polşa",            code:"pl"},
-    {country:"Niderlandiya",     code:"nl"},
-    {country:"Belçika",          code:"be"},
-    {country:"Ukrayna",          code:"ua"},
-    {country:"İsveç",            code:"se"},
-    {country:"Norveç",           code:"no"},
-    {country:"İsveçrə",          code:"ch"},
-    {country:"Avstriya",         code:"at"},
-    {country:"Yunanıstan",       code:"gr"},
-    {country:"Gürcüstan",        code:"ge"},
-  ],
-  hard:[
-    {country:"Albaniya",         code:"al"},
-    {country:"Xorvatiya",        code:"hr"},
-    {country:"Sloveniya",        code:"si"},
-    {country:"Estoniya",         code:"ee"},
-    {country:"Latviya",          code:"lv"},
-    {country:"Litva",            code:"lt"},
-    {country:"Böyük Britaniya",  code:"gb"},
-    {country:"Moldova",          code:"md"},
-    {country:"Belarus",          code:"by"},
-    {country:"Monqoliya",        code:"mn"},
-  ]
-};
+  <nav class="sidebar-nav">
+    <p class="nav-section-title">OYUNLAR</p>
 
-const WORDS = {
-  easy:[
-    {word:"Water",  lang:"İngilis",  flag:"🇬🇧"},
-    {word:"Haus",   lang:"Alman",    flag:"🇩🇪"},
-    {word:"Maison", lang:"Fransız",  flag:"🇫🇷"},
-    {word:"Deniz",  lang:"Türk",     flag:"🇹🇷"},
-    {word:"Luna",   lang:"İtalyan",  flag:"🇮🇹"},
-    {word:"Cielo",  lang:"İspan",    flag:"🇪🇸"},
-    {word:"Alma",   lang:"Azərb.",   flag:"🇦🇿"},
-    {word:"Звезда", lang:"Rus",      flag:"🇷🇺"},
-    {word:"شمس",    lang:"Ərəb",     flag:"🇸🇦"},
-    {word:"山",     lang:"Çin",      flag:"🇨🇳"},
-  ],
-  medium:[
-    {word:"Fleur",   lang:"Fransız",  flag:"🇫🇷"},
-    {word:"Wasser",  lang:"Alman",    flag:"🇩🇪"},
-    {word:"Rüzgar",  lang:"Türk",     flag:"🇹🇷"},
-    {word:"Nuage",   lang:"Fransız",  flag:"🇫🇷"},
-    {word:"Земля",   lang:"Rus",      flag:"🇷🇺"},
-    {word:"Fuoco",   lang:"İtalyan",  flag:"🇮🇹"},
-    {word:"Chuva",   lang:"Portuqal", flag:"🇵🇹"},
-    {word:"Günəş",   lang:"Azərb.",   flag:"🇦🇿"},
-    {word:"海",      lang:"Yapon",    flag:"🇯🇵"},
-    {word:"Lluvia",  lang:"İspan",    flag:"🇪🇸"},
-  ],
-  hard:[
-    {word:"Květ",    lang:"Çex",      flag:"🇨🇿"},
-    {word:"Felhő",   lang:"Macar",    flag:"🇭🇺"},
-    {word:"Meri",    lang:"Fin",      flag:"🇫🇮"},
-    {word:"Lumi",    lang:"Fin",      flag:"🇫🇮"},
-    {word:"Морe",    lang:"Serb",     flag:"🇷🇸"},
-    {word:"Skogen",  lang:"Norveç",   flag:"🇳🇴"},
-    {word:"Csillag", lang:"Macar",    flag:"🇭🇺"},
-    {word:"Fjord",   lang:"Norveç",   flag:"🇳🇴"},
-    {word:"Kvet",    lang:"Çex",      flag:"🇨🇿"},
-    {word:"Järvi",   lang:"Fin",      flag:"🇫🇮"},
-  ]
-};
-
-// Map: country → OSM-based static map URL with marker
-// Using openstreetmap iframe embed with lat/lon
-const MAP_DATA = {
-  easy:[
-    {country:"Fransa",        lat:46.2,  lon:2.2},
-    {country:"Braziliya",     lat:-14.2, lon:-51.9},
-    {country:"Avstraliya",    lat:-25.3, lon:133.8},
-    {country:"Kanada",        lat:56.1,  lon:-106.3},
-    {country:"Rusiya",        lat:61.5,  lon:105.3},
-    {country:"Hindistan",     lat:20.6,  lon:78.9},
-    {country:"Çin",           lat:35.9,  lon:104.2},
-    {country:"ABŞ",           lat:37.1,  lon:-95.7},
-    {country:"Yaponiya",      lat:36.2,  lon:138.3},
-    {country:"Meksika",       lat:23.6,  lon:-102.5},
-  ],
-  medium:[
-    {country:"Argentina",     lat:-38.4, lon:-63.6},
-    {country:"Cənubi Afrika", lat:-30.6, lon:22.9},
-    {country:"İsveç",         lat:60.1,  lon:18.6},
-    {country:"Türkiyə",       lat:38.9,  lon:35.2},
-    {country:"Ukrayna",       lat:48.4,  lon:31.2},
-    {country:"İspaniya",      lat:40.5,  lon:-3.7},
-    {country:"Polşa",         lat:51.9,  lon:19.1},
-    {country:"Almaniya",      lat:51.2,  lon:10.5},
-    {country:"İran",          lat:32.4,  lon:53.7},
-    {country:"Misir",         lat:26.8,  lon:30.8},
-  ],
-  hard:[
-    {country:"Azərbaycan",    lat:40.1,  lon:47.6},
-    {country:"Gürcüstan",     lat:42.3,  lon:43.4},
-    {country:"Boliviya",      lat:-16.3, lon:-63.6},
-    {country:"Qana",          lat:7.9,   lon:-1.0},
-    {country:"Çad",           lat:15.5,  lon:18.7},
-    {country:"Özbəkistan",    lat:41.4,  lon:64.6},
-    {country:"Laos",          lat:19.9,  lon:102.5},
-    {country:"Ekvador",       lat:-1.8,  lon:-78.2},
-    {country:"Zambiya",       lat:-13.1, lon:27.8},
-    {country:"Norveç",        lat:60.5,  lon:8.5},
-  ]
-};
-
-const CURRENCIES_DATA = {
-  easy:[
-    {country:"ABŞ",           currency:"Dollar",    symbol:"$"},
-    {country:"Böyük Britaniya",currency:"Funt",     symbol:"£"},
-    {country:"Yaponiya",      currency:"Yen",       symbol:"¥"},
-    {country:"Avropa",        currency:"Avro",      symbol:"€"},
-    {country:"Rusiya",        currency:"Rubl",      symbol:"₽"},
-    {country:"Türkiyə",       currency:"Lirə",      symbol:"₺"},
-    {country:"Hindistan",     currency:"Rupi",      symbol:"₹"},
-    {country:"Çin",           currency:"Yuan",      symbol:"¥"},
-    {country:"Azərbaycan",    currency:"Manat",     symbol:"₼"},
-    {country:"Braziliya",     currency:"Real",      symbol:"R$"},
-  ],
-  medium:[
-    {country:"Cənubi Koreya", currency:"Von",       symbol:"₩"},
-    {country:"İsveçrə",       currency:"Frank",     symbol:"CHF"},
-    {country:"Kanada",        currency:"C.Dollar",  symbol:"C$"},
-    {country:"Polşa",         currency:"Zlot",      symbol:"zł"},
-    {country:"Ukrayna",       currency:"Qrivna",    symbol:"₴"},
-    {country:"Gürcüstan",     currency:"Lari",      symbol:"₾"},
-    {country:"Meksika",       currency:"Peso",      symbol:"$"},
-    {country:"İsveç",         currency:"Kron",      symbol:"kr"},
-    {country:"Norveç",        currency:"N.Kron",    symbol:"kr"},
-    {country:"Avstriya",      currency:"Avro",      symbol:"€"},
-  ],
-  hard:[
-    {country:"Tailand",       currency:"Bat",       symbol:"฿"},
-    {country:"İsrail",        currency:"Şekel",     symbol:"₪"},
-    {country:"Qazaxıstan",    currency:"Tenge",     symbol:"₸"},
-    {country:"Nigeriya",      currency:"Nayra",     symbol:"₦"},
-    {country:"Misir",         currency:"Funt",      symbol:"E£"},
-    {country:"Cənubi Afrika", currency:"Rend",      symbol:"R"},
-    {country:"Pakistan",      currency:"Rupi",      symbol:"₨"},
-    {country:"Filippin",      currency:"Peso",      symbol:"₱"},
-    {country:"Rumıniya",      currency:"Ley",       symbol:"lei"},
-    {country:"Bolqarıstan",   currency:"Lev",       symbol:"лв"},
-  ]
-};
-
-let currentGame='word', difficulty='easy';
-let questions=[], current=0, score=0, answered=false;
-
-function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
-
-function switchGame(type,el){
-  document.querySelectorAll('.game-item').forEach(e=>e.classList.remove('active'));
-  el.classList.add('active');
-  currentGame=type;
-  showStart();
-}
-
-function showStart(){
-  const icons={word:'🔤',map:'🗺️',currency:'💰',flag:'🚩'};
-  const titles={word:'Word Quiz',map:'Map Quiz',currency:'Currency Quiz',flag:'Flag Quiz'};
-  const descs={
-    word:'Ekranda bir söz görünəcək.<br>O sözün hansı dildə olduğunu 6 variantdan seç.',
-    map:'Dünya xəritəsində ölkənin yeri göstəriləcək.<br>Hansı ölkə olduğunu 6 variantdan seç.',
-    currency:'Bir ölkənin adı göstəriləcək.<br>O ölkənin valyutasını 6 variantdan seç.',
-    flag:'Bir bayraq göstəriləcək.<br>Hansı ölkənin bayrağı olduğunu 6 variantdan seç.',
-  };
-  document.getElementById('app').innerHTML=`
-    <div class="start-screen animate-in">
-      <div class="start-icon">${icons[currentGame]}</div>
-      <h2>${titles[currentGame]}</h2>
-      <p>${descs[currentGame]}<br><br>10 sual · Hər sual 10 xal</p>
-      <div class="diff-row">
-        <button class="diff-btn ${difficulty==='easy'?'selected':''}" onclick="setDiff('easy',this)">
-          <span class="diff-icon">🟢</span><span>Asan</span><span class="diff-desc">Məşhur ölkələr</span>
-        </button>
-        <button class="diff-btn ${difficulty==='medium'?'selected':''}" onclick="setDiff('medium',this)">
-          <span class="diff-icon">🟡</span><span>Orta</span><span class="diff-desc">Az tanınan</span>
-        </button>
-        <button class="diff-btn ${difficulty==='hard'?'selected':''}" onclick="setDiff('hard',this)">
-          <span class="diff-icon">🔴</span><span>Çətin</span><span class="diff-desc">Çox çətin</span>
-        </button>
+    <button class="nav-item active" id="nav-language" data-game="language" onclick="startGame('language')">
+      <span class="nav-icon">🔤</span>
+      <div class="nav-body">
+        <span class="nav-title">Dil Tapma</span>
+        <span class="nav-desc">Hansı dildə yazılıb?</span>
       </div>
-      <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
-    </div>`;
-}
+      <span class="nav-badge">YENİ</span>
+    </button>
 
-function setDiff(d,el){
-  difficulty=d;
-  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-// ── BUILDERS ──
-function buildFlagQ(){
-  const pool=shuffle(FLAGS_DATA[difficulty]).slice(0,10);
-  const allC=[...new Set([...FLAGS_DATA.easy,...FLAGS_DATA.medium,...FLAGS_DATA.hard].map(f=>f.country))];
-  return pool.map(f=>({
-    html:`<div class="q-label">Bu hansı ölkənin bayrağıdır?</div>
-          <div class="flag-wrap">
-            <img src="https://flagcdn.com/w320/${f.code}.png" 
-                 onerror="this.src='https://flagcdn.com/w160/${f.code}.png'"
-                 alt="${f.country} bayrağı"/>
-          </div>`,
-    correct:f.country,
-    options:shuffle([f.country,...shuffle(allC.filter(c=>c!==f.country)).slice(0,5)]),
-    fb:`${f.country}`
-  }));
-}
-
-function buildMapQ(){
-  const pool=MAP_DATA[difficulty];
-  const allC=[...new Set([...MAP_DATA.easy,...MAP_DATA.medium,...MAP_DATA.hard].map(m=>m.country))];
-  // Use OpenStreetMap static tiles with marker via a simple iframe
-  return pool.map(m=>{
-    const zoom=difficulty==='easy'?3:difficulty==='medium'?4:5;
-    // Use openstreetmap embed with bbox
-    const delta=difficulty==='easy'?15:difficulty==='medium'?8:4;
-    const minLon=m.lon-delta, maxLon=m.lon+delta;
-    const minLat=m.lat-delta*0.6, maxLat=m.lat+delta*0.6;
-    const src=`https://www.openstreetmap.org/export/embed.html?bbox=${minLon}%2C${minLat}%2C${maxLon}%2C${maxLat}&layer=mapnik&marker=${m.lat}%2C${m.lon}`;
-    return {
-      html:`<div class="q-label">Bu ölkə dünya xəritəsinin hansı yerindədir?</div>
-            <div class="map-wrap">
-              <iframe id="mapFrame" src="${src}" scrolling="no" loading="lazy"></iframe>
-            </div>`,
-      correct:m.country,
-      options:shuffle([m.country,...shuffle(allC.filter(c=>c!==m.country)).slice(0,5)]),
-      fb:`📍 ${m.country}`
-    };
-  });
-}
-
-function buildWordQ(){
-  const pool=WORDS[difficulty];
-  const allL=[...new Set([...WORDS.easy,...WORDS.medium,...WORDS.hard].map(w=>w.lang))];
-  return pool.map(w=>({
-    html:`<div class="q-label">Bu söz hansı dildədir?</div><div class="word-display">${w.word}</div>`,
-    correct:w.lang,
-    options:shuffle([w.lang,...shuffle(allL.filter(l=>l!==w.lang)).slice(0,5)]),
-    fb:`"${w.word}" — ${w.lang} ${w.flag}`
-  }));
-}
-
-function buildCurrencyQ(){
-  const pool=CURRENCIES_DATA[difficulty];
-  const allC=[...new Set([...CURRENCIES_DATA.easy,...CURRENCIES_DATA.medium,...CURRENCIES_DATA.hard].map(c=>c.currency))];
-  return pool.map(c=>({
-    html:`<div class="q-label">${c.country} ölkəsinin valyutası nədir?</div><div class="currency-country">${c.country}</div>`,
-    correct:c.currency,
-    options:shuffle([c.currency,...shuffle(allC.filter(v=>v!==c.currency)).slice(0,5)]),
-    fb:`${c.country} → ${c.currency} (${c.symbol})`
-  }));
-}
-
-// ── ENGINE ──
-function startGame(){
-  if(currentGame==='word')     questions=buildWordQ();
-  if(currentGame==='map')      questions=buildMapQ();
-  if(currentGame==='currency') questions=buildCurrencyQ();
-  if(currentGame==='flag')     questions=buildFlagQ();
-  current=0; score=0;
-  renderQ();
-}
-
-function renderQ(){
-  answered=false;
-  const q=questions[current];
-  const letters=['A','B','C','D','E','F'];
-  document.getElementById('app').innerHTML=`
-    <div class="animate-in">
-      <div class="progress-label">
-        <span>Sual ${current+1} / 10</span>
-        <span id="sl">${score} xal</span>
+    <button class="nav-item" id="nav-map" data-game="map" onclick="startGame('map')">
+      <span class="nav-icon">🗺️</span>
+      <div class="nav-body">
+        <span class="nav-title">Xəritə Oyunu</span>
+        <span class="nav-desc">Ölkəni xəritədə tap</span>
       </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${current*10}%"></div></div>
-      <div class="q-card">${q.html}</div>
-      <div class="options">
-        ${q.options.map((o,i)=>`<button class="option-btn" onclick="check(${i},this)"><span class="opt-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </button>
+
+    <button class="nav-item" id="nav-currency" data-game="currency" onclick="startGame('currency')">
+      <span class="nav-icon">💰</span>
+      <div class="nav-body">
+        <span class="nav-title">Valyuta Tapma</span>
+        <span class="nav-desc">Ölkənin pul vahidi</span>
       </div>
-      <div class="feedback" id="fb"></div>
-      <button class="next-btn" id="nb" onclick="nextQ()">${current===9?'Nəticəyə Bax 🏁':'Növbəti Sual →'}</button>
-    </div>`;
-  // store options for check
-  window._opts = q.options;
-  window._correct = q.correct;
-  window._fb = q.fb;
-}
+    </button>
 
-function check(idx, btn){
-  if(answered)return;
-  answered=true;
-  const sel=window._opts[idx];
-  const correct=window._correct;
-  document.querySelectorAll('.option-btn').forEach((b,i)=>{
-    b.disabled=true;
-    if(window._opts[i]===correct) b.classList.add('correct');
-  });
-  const fb=document.getElementById('fb');
-  if(sel===correct){
-    btn.classList.add('correct'); score+=10;
-    fb.textContent=`✓ Doğrudur! ${window._fb}`;
-    fb.className='feedback ok';
-  } else {
-    btn.classList.add('wrong');
-    fb.textContent=`✗ Yanlış! Düzgün: ${correct}`;
-    fb.className='feedback bad';
-  }
-  document.getElementById('sl').textContent=`${score} xal`;
-  document.getElementById('nb').classList.add('visible');
-}
+    <button class="nav-item" id="nav-flag" data-game="flag" onclick="startGame('flag')">
+      <span class="nav-icon">🏴</span>
+      <div class="nav-body">
+        <span class="nav-title">Bayraq Tapma</span>
+        <span class="nav-desc">Bayrağa görə ölkə</span>
+      </div>
+    </button>
+  </nav>
 
-function nextQ(){
-  current++;
-  if(current>=10) showResult();
-  else renderQ();
-}
+  <div class="sidebar-footer">
+    <div class="mini-stats">
+      <div class="mstat">
+        <span class="mstat-val" id="stat-played">0</span>
+        <span class="mstat-label">Oynadı</span>
+      </div>
+      <div class="mstat-divider"></div>
+      <div class="mstat">
+        <span class="mstat-val" id="stat-best">–</span>
+        <span class="mstat-label">Ən yaxşı</span>
+      </div>
+    </div>
+  </div>
+</aside>
 
-function showResult(){
-  const c=score/10;
-  let emoji,title;
-  if(c===10){emoji='🏆';title='Möhtəşəm! Mükəmməl!';}
-  else if(c>=8){emoji='🌟';title='Əla nəticə!';}
-  else if(c>=6){emoji='👍';title='Yaxşıdır!';}
-  else if(c>=4){emoji='📚';title='Daha çox öyrən!';}
-  else{emoji='💪';title='Məşq et!';}
-  document.getElementById('app').innerHTML=`
-    <div class="result-screen animate-in">
-      <div class="result-emoji">${emoji}</div>
-      <div class="result-title">${title}</div>
-      <div class="result-score">${c}/10</div>
-      <div class="result-sub">${score} xal qazandın!</div>
-      <button class="restart-btn" onclick="showStart()">🔄 Yenidən Oyna</button>
-    </div>`;
-}
+<!-- Mobile sidebar açma düyməsi -->
+<button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
-showStart();
-</script>
+<!-- ══════════════════════ MAIN ══════════════════════ -->
+<main class="main-content" id="main-content">
+
+  <!-- ── Xoş gəldiniz ekranı ── -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome-wrap">
+      <div class="welcome-hero">
+        <span class="hero-globe">🌍</span>
+        <h1>GeoQuiz-ə Xoş Gəldiniz!</h1>
+        <p>Sol menyudan bir oyun seçin və biliklərinizi yoxlayın</p>
+      </div>
+      <div class="game-cards">
+        <div class="game-card" onclick="startGame('language')">
+          <span class="card-icon">🔤</span>
+          <h3>Dil Tapma</h3>
+          <p>Cümləni oxu, hansı dildə olduğunu tap</p>
+        </div>
+        <div class="game-card" onclick="startGame('map')">
+          <span class="card-icon">🗺️</span>
+          <h3>Xəritə Oyunu</h3>
+          <p>Xəritədə göstərilən ölkəni tap</p>
+        </div>
+        <div class="game-card" onclick="startGame('currency')">
+          <span class="card-icon">💰</span>
+          <h3>Valyuta Tapma</h3>
+          <p>Ölkənin pul vahidini tap</p>
+        </div>
+        <div class="game-card" onclick="startGame('flag')">
+          <span class="card-icon">🏴</span>
+          <h3>Bayraq Tapma</h3>
+          <p>Bayrağa görə ölkəni müəyyən et</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Oyun ekranı ── -->
+  <div class="screen" id="screen-game">
+    <div class="game-header">
+      <div class="game-info">
+        <span class="game-badge" id="game-badge">🔤 Dil Tapma</span>
+        <button class="btn-back" onclick="goHome()">← Geri</button>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <span class="progress-txt" id="progress-txt">1 / 10</span>
+      </div>
+      <div class="score-box">
+        <span class="score-lbl">XAL</span>
+        <span class="score-val" id="score-val">0</span>
+      </div>
+    </div>
+
+    <!-- Sual -->
+    <div class="question-wrap" id="question-wrap"></div>
+
+    <!-- Variantlar -->
+    <div class="options-wrap" id="options-wrap"></div>
+  </div>
+
+  <!-- ── Nəticə ekranı ── -->
+  <div class="screen" id="screen-results">
+    <div class="results-wrap">
+      <span class="results-emoji" id="res-emoji">🏆</span>
+      <h2 class="results-title">Oyun Bitdi!</h2>
+      <div>
+        <span class="results-big" id="res-score">0</span>
+        <span class="results-total">/10</span>
+      </div>
+      <p class="results-msg" id="res-msg">Əla nəticə!</p>
+      <div class="breakdown">
+        <div class="bd-item corr">
+          <span class="bd-icon">✅</span>
+          <span class="bd-num" id="bd-correct">0</span>
+          <span class="bd-lbl">Düzgün</span>
+        </div>
+        <div class="bd-sep"></div>
+        <div class="bd-item wrng">
+          <span class="bd-icon">❌</span>
+          <span class="bd-num" id="bd-wrong">0</span>
+          <span class="bd-lbl">Yanlış</span>
+        </div>
+        <div class="bd-sep"></div>
+        <div class="bd-item acc">
+          <span class="bd-icon">🎯</span>
+          <span class="bd-num" id="bd-acc">0%</span>
+          <span class="bd-lbl">Dəqiqlik</span>
+        </div>
+      </div>
+      <div class="results-actions">
+        <button class="btn-primary" onclick="restartGame()">🔄 Yenidən Oyna</button>
+        <button class="btn-secondary" onclick="goHome()">🏠 Əsas Səhifə</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════ ALT REKLAM ══════════════════════ -->
+<div class="ad-bar" id="ad-bar">
+  <span class="ad-tag">Reklam</span>
+  <!-- Reklam aktiv edildikdə aşağıdakı ins teqi işləyəcək -->
+  <ins class="adsbygoogle"
+       style="display:block;width:728px;max-width:100%;height:60px;"
+       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+       data-ad-slot="0000000000"
+       data-ad-format="horizontal"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <!-- Development-də placeholder göstər -->
+  <div class="ad-placeholder" id="ad-dev">
+    📢 Reklam Sahəsi – 728×90 – Google AdSense
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
