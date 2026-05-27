@@ -56,29 +56,6 @@ body{
 .sb-nav{flex:1;padding:12px 8px;overflow-y:auto}
 .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.18em;color:var(--t3);padding:6px 10px 8px;text-transform:uppercase}
 
-.diff-sel{
-  width:100%;
-  padding:10px;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--border);
-  border-radius:10px;
-  color:var(--t1);
-  font-family:inherit;
-  font-size:.85rem;
-  font-weight:600;
-  outline:none;
-  cursor:pointer;
-  transition:all .2s ease;
-}
-.diff-sel:hover{
-  border-color:rgba(124,58,237,.4);
-  background:rgba(255,255,255,.08);
-}
-.diff-sel option{
-  background:var(--bgc);
-  color:var(--t1);
-}
-
 .ni{
   width:100%;display:flex;align-items:center;gap:12px;
   padding:12px 11px;border-radius:12px;border:1px solid transparent;
@@ -157,6 +134,38 @@ body{
 .gcard h3{font-size:.97rem;font-weight:700;margin-bottom:5px;position:relative;z-index:1}
 .gcard p{font-size:.75rem;color:var(--t2);position:relative;z-index:1}
 
+/* ─── MODAL (DIFFICULTY) ─── */
+.modal-ov{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;z-index:9999;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.modal-ov.show{opacity:1;pointer-events:auto}
+.modal-bx{
+  background:var(--bg2);border:1px solid rgba(124,58,237,.3);border-radius:24px;
+  padding:36px;text-align:center;width:90%;max-width:380px;position:relative;
+  transform:scale(.9);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 20px 50px rgba(0,0,0,.6);
+}
+.modal-ov.show .modal-bx{transform:scale(1)}
+.m-close{
+  position:absolute;top:14px;right:16px;background:none;border:none;
+  color:var(--t2);font-size:1.5rem;cursor:pointer;transition:color .2s;
+}
+.m-close:hover{color:var(--err)}
+.m-ic{font-size:3.5rem;margin-bottom:12px;display:block}
+.m-tt{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:8px}
+.m-tx{color:var(--t2);font-size:.9rem;margin-bottom:26px}
+.m-btns{display:flex;flex-direction:column;gap:10px}
+.m-btn{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  padding:14px;border-radius:14px;color:var(--t1);font-weight:600;
+  transition:all .2s;font-size:1.05rem;cursor:pointer;
+}
+.m-btn:hover{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.5);transform:translateY(-2px)}
+.m-btn.easy:hover{border-color:var(--ok);background:rgba(34,197,94,.15);color:#4ade80}
+.m-btn.med:hover{border-color:var(--warn);background:rgba(245,158,11,.15);color:#fbbf24}
+.m-btn.hard:hover{border-color:var(--err);background:rgba(239,68,68,.15);color:#f87171}
+
 /* ─── GAME HEADER ─── */
 .gh{
   display:flex;align-items:center;justify-content:space-between;
@@ -169,6 +178,10 @@ body{
   background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.1));
   border:1px solid rgba(124,58,237,.35);border-radius:20px;
   padding:4px 13px;font-size:.8rem;font-weight:600;
+}
+.diff-badge{
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px;font-size:.75rem;color:var(--t2);
 }
 .bback{
   background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--t2);
@@ -229,12 +242,8 @@ body{
   background:var(--bgc);border:1px solid var(--border);
   border-radius:22px;padding:40px 28px;text-align:center;
 }
-.cflag{
-  width:60px;height:auto;display:block;margin:0 auto 11px;
-  border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.3);
-}
-.cname{font-family:'Space Grotesk',sans-serif;font-size:2.1rem;font-weight:800;margin-bottom:10px}
-.chint{font-size:.88rem;color:var(--t2)}
+.cname{font-family:'Space Grotesk',sans-serif;font-size:3.2rem;font-weight:800;margin-bottom:10px}
+.chint{font-size:.9rem;color:var(--t2)}
 
 /* Flag card */
 .fcard{
@@ -242,7 +251,7 @@ body{
   border-radius:22px;padding:44px 28px;text-align:center;
 }
 .fbig{
-  width:180px;height:auto;display:block;margin:0 auto;
+  width:200px;height:auto;display:block;margin:0 auto;
   filter:drop-shadow(0 6px 22px rgba(0,0,0,.45));
   animation:wave 2.3s ease-in-out infinite;
   border-radius:8px;
@@ -369,33 +378,23 @@ body{
   </div>
   <nav class="sb-nav">
     <p class="sb-sec">OYUNLAR</p>
-    <button class="ni active" id="n-language" onclick="startGame('language')">
+    <button class="ni" id="n-language" onclick="openGameSetup('language')">
       <span class="ni-ic">🔤</span>
       <div class="ni-b"><span class="ni-t">Dil Tapma</span><span class="ni-d">Hansı dildə yazılıb?</span></div>
       <span class="ni-badge">YENİ</span>
     </button>
-    <button class="ni" id="n-map" onclick="startGame('map')">
+    <button class="ni" id="n-map" onclick="openGameSetup('map')">
       <span class="ni-ic">🗺️</span>
       <div class="ni-b"><span class="ni-t">Xəritə Oyunu</span><span class="ni-d">Ölkəni xəritədə tap</span></div>
     </button>
-    <button class="ni" id="n-currency" onclick="startGame('currency')">
+    <button class="ni" id="n-currency" onclick="openGameSetup('currency')">
       <span class="ni-ic">💰</span>
       <div class="ni-b"><span class="ni-t">Valyuta Tapma</span><span class="ni-d">Ölkənin pul vahidi</span></div>
     </button>
-    <button class="ni" id="n-flag" onclick="startGame('flag')">
+    <button class="ni" id="n-flag" onclick="openGameSetup('flag')">
       <span class="ni-ic">🏴</span>
       <div class="ni-b"><span class="ni-t">Bayraq Tapma</span><span class="ni-d">Bayrağa görə ölkə</span></div>
     </button>
-
-    <p class="sb-sec" style="margin-top:24px;">ÇƏTİNLİK SƏVİYYƏSİ</p>
-    <div style="padding:0 10px;">
-      <select id="diff-sel" class="diff-sel" onchange="if(GS.type) startGame(GS.type)">
-        <option value="easy">Asan (3 variant)</option>
-        <option value="medium">Orta (4 variant)</option>
-        <option value="hard" selected>Çətin (6 variant)</option>
-      </select>
-    </div>
-
   </nav>
   <div class="sb-foot">
     <div class="ms">
@@ -407,6 +406,21 @@ body{
 </aside>
 
 <button class="hbtn" id="hbtn" onclick="toggleSB()">☰</button>
+
+<!-- ══════════ MODAL ══════════ -->
+<div id="diff-modal" class="modal-ov">
+  <div class="modal-bx">
+    <button class="m-close" onclick="closeModal()">✕</button>
+    <span class="m-ic" id="m-ic">🗺️</span>
+    <h3 class="m-tt" id="m-tt">Xəritə Oyunu</h3>
+    <p class="m-tx">Oyunun çətinlik səviyyəsini seçin:</p>
+    <div class="m-btns">
+      <button class="m-btn easy" onclick="startWithDiff(1)">🟢 Asan (Tanınmış ölkələr)</button>
+      <button class="m-btn med" onclick="startWithDiff(2)">🟡 Orta (Daha az tanınanlar)</button>
+      <button class="m-btn hard" onclick="startWithDiff(3)">🔴 Çətin (Çox az bilinən ölkələr)</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════ MAIN ══════════ -->
 <main class="mc" id="mc">
@@ -420,16 +434,16 @@ body{
         <p>Sol menyudan bir oyun seçin və biliklərinizi yoxlayın</p>
       </div>
       <div class="gcards">
-        <div class="gcard" onclick="startGame('language')">
+        <div class="gcard" onclick="openGameSetup('language')">
           <span class="gc-ic">🔤</span><h3>Dil Tapma</h3><p>Cümləni oxu, hansı dildə olduğunu tap</p>
         </div>
-        <div class="gcard" onclick="startGame('map')">
+        <div class="gcard" onclick="openGameSetup('map')">
           <span class="gc-ic">🗺️</span><h3>Xəritə Oyunu</h3><p>Xəritədə göstərilən ölkəni tap</p>
         </div>
-        <div class="gcard" onclick="startGame('currency')">
+        <div class="gcard" onclick="openGameSetup('currency')">
           <span class="gc-ic">💰</span><h3>Valyuta Tapma</h3><p>Ölkənin pul vahidini tap</p>
         </div>
-        <div class="gcard" onclick="startGame('flag')">
+        <div class="gcard" onclick="openGameSetup('flag')">
           <span class="gc-ic">🏴</span><h3>Bayraq Tapma</h3><p>Bayrağa görə ölkəni müəyyən et</p>
         </div>
       </div>
@@ -441,6 +455,7 @@ body{
     <div class="gh">
       <div class="gi">
         <span class="gbadge" id="gbadge">🔤 Dil Tapma</span>
+        <span class="diff-badge" id="dbadge">Orta</span>
         <button class="bback" onclick="goHome()">← Geri</button>
       </div>
       <div class="prg">
@@ -492,67 +507,69 @@ body{
 
 <script>
 /* ═══════════════════════════════════════════
-   DATA – Countries + Phrases
+   DATA – Countries (d = Difficulty Level: 1-Easy, 2-Medium, 3-Hard)
 ═══════════════════════════════════════════ */
 const C=[
-  {id:840,code:'US',nameAz:'Amerika',               currency:'ABŞ Dolları',            cur:'USD',flag:'🇺🇸',lc:'en'},
-  {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',         cur:'GBP',flag:'🇬🇧',lc:'en'},
-  {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                   cur:'EUR',flag:'🇫🇷',lc:'fr'},
-  {id:276,code:'DE',nameAz:'Almaniya',               currency:'Avro',                   cur:'EUR',flag:'🇩🇪',lc:'de'},
-  {id:392,code:'JP',nameAz:'Yaponiya',               currency:'Yapon Yeni',             cur:'JPY',flag:'🇯🇵',lc:'ja'},
-  {id:156,code:'CN',nameAz:'Çin',                    currency:'Çin Yuanı',              cur:'CNY',flag:'🇨🇳',lc:'zh'},
-  {id:76, code:'BR',nameAz:'Braziliya',              currency:'Braziliya Realı',        cur:'BRL',flag:'🇧🇷',lc:'pt'},
-  {id:643,code:'RU',nameAz:'Rusiya',                 currency:'Rus Rublu',              cur:'RUB',flag:'🇷🇺',lc:'ru'},
-  {id:356,code:'IN',nameAz:'Hindistan',              currency:'Hindistan Rupisi',       cur:'INR',flag:'🇮🇳',lc:'hi'},
-  {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',         cur:'MXN',flag:'🇲🇽',lc:'es'},
-  {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',     cur:'AUD',flag:'🇦🇺',lc:'en'},
-  {id:124,code:'CA',nameAz:'Kanada',                 currency:'Kanada Dolları',         cur:'CAD',flag:'🇨🇦',lc:'fr'},
-  {id:380,code:'IT',nameAz:'İtaliya',                currency:'Avro',                   cur:'EUR',flag:'🇮🇹',lc:'it'},
-  {id:724,code:'ES',nameAz:'İspaniya',               currency:'Avro',                   cur:'EUR',flag:'🇪🇸',lc:'es'},
-  {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',           cur:'SAR',flag:'🇸🇦',lc:'ar'},
-  {id:792,code:'TR',nameAz:'Türkiyə',                currency:'Türk Lirəsi',            cur:'TRY',flag:'🇹🇷',lc:'tr'},
-  {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',            cur:'KRW',flag:'🇰🇷',lc:'ko'},
-  {id:32, code:'AR',nameAz:'Argentina',              currency:'Argentina Pesosu',       cur:'ARS',flag:'🇦🇷',lc:'es'},
-  {id:616,code:'PL',nameAz:'Polşa',                  currency:'Polşa Zlotısı',          cur:'PLN',flag:'🇵🇱',lc:'pl'},
-  {id:528,code:'NL',nameAz:'Niderland',              currency:'Avro',                   cur:'EUR',flag:'🇳🇱',lc:'nl'},
-  {id:752,code:'SE',nameAz:'İsveç',                  currency:'İsveç Kronası',          cur:'SEK',flag:'🇸🇪',lc:'sv'},
-  {id:578,code:'NO',nameAz:'Norveç',                 currency:'Norveç Kronası',         cur:'NOK',flag:'🇳🇴',lc:'no'},
-  {id:208,code:'DK',nameAz:'Danimarka',              currency:'Danimarka Kronası',      cur:'DKK',flag:'🇩🇰',lc:'da'},
-  {id:756,code:'CH',nameAz:'İsveçrə',                currency:'İsveçrə Frankı',         cur:'CHF',flag:'🇨🇭',lc:'de'},
-  {id:620,code:'PT',nameAz:'Portuqaliya',            currency:'Avro',                   cur:'EUR',flag:'🇵🇹',lc:'pt'},
-  {id:300,code:'GR',nameAz:'Yunanıstan',             currency:'Avro',                   cur:'EUR',flag:'🇬🇷',lc:'el'},
-  {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',      cur:'AZN',flag:'🇦🇿',lc:'az'},
-  {id:804,code:'UA',nameAz:'Ukrayna',                currency:'Ukrayna Qrivnası',       cur:'UAH',flag:'🇺🇦',lc:'uk'},
-  {id:642,code:'RO',nameAz:'Rumıniya',               currency:'Rumıniya Leyi',          cur:'RON',flag:'🇷🇴',lc:'ro'},
-  {id:348,code:'HU',nameAz:'Macarıstan',             currency:'Macarıstan Forinti',     cur:'HUF',flag:'🇭🇺',lc:'hu'},
-  {id:203,code:'CZ',nameAz:'Çexiya',                 currency:'Çex Kronası',            cur:'CZK',flag:'🇨🇿',lc:'cs'},
-  {id:246,code:'FI',nameAz:'Finlandiya',             currency:'Avro',                   cur:'EUR',flag:'🇫🇮',lc:'fi'},
-  {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',    cur:'ZAR',flag:'🇿🇦',lc:'zu'},
-  {id:818,code:'EG',nameAz:'Mısır',                  currency:'Misir Funtu',            cur:'EGP',flag:'🇪🇬',lc:'ar'},
-  {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',       cur:'NGN',flag:'🇳🇬',lc:'ig'},
-  {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',        cur:'KES',flag:'🇰🇪',lc:'sw'},
-  {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',           cur:'THB',flag:'🇹🇭',lc:'th'},
-  {id:360,code:'ID',nameAz:'İndoneziya',             currency:'İndoneziya Rupisi',      cur:'IDR',flag:'🇮🇩',lc:'id'},
-  {id:458,code:'MY',nameAz:'Malayziya',              currency:'Malayziya Ringgiti',     cur:'MYR',flag:'🇲🇾',lc:'ms'},
-  {id:608,code:'PH',nameAz:'Filippin',               currency:'Filippin Pesosu',        cur:'PHP',flag:'🇵🇭',lc:'tl'},
-  {id:704,code:'VN',nameAz:'Vyetnam',                currency:'Vyetnam Donqu',          cur:'VND',flag:'🇻🇳',lc:'vi'},
-  {id:50, code:'BD',nameAz:'Banqladeş',              currency:'Banqladeş Takası',       cur:'BDT',flag:'🇧🇩',lc:'bn'},
-  {id:586,code:'PK',nameAz:'Pakistan',               currency:'Pakistan Rupisi',        cur:'PKR',flag:'🇵🇰',lc:'ur'},
-  {id:376,code:'IL',nameAz:'İsrail',                 currency:'İsrail Şekeli',          cur:'ILS',flag:'🇮🇱',lc:'he'},
-  {id:364,code:'IR',nameAz:'İran',                   currency:'İran Rialı',             cur:'IRR',flag:'🇮🇷',lc:'fa'},
-  {id:554,code:'NZ',nameAz:'Yeni Zelandiya',         currency:'Yeni Zelandiya Dolları', cur:'NZD',flag:'🇳🇿',lc:'en'},
-  {id:784,code:'AE',nameAz:'BƏƏ',                    currency:'BƏƏ Dirhəmi',            cur:'AED',flag:'🇦🇪',lc:'ar'},
-  {id:414,code:'KW',nameAz:'Küveyt',                 currency:'Küveyt Dinarı',          cur:'KWD',flag:'🇰🇼',lc:'ar'},
-  {id:634,code:'QA',nameAz:'Qətər',                  currency:'Qətər Riyalı',           cur:'QAR',flag:'🇶🇦',lc:'ar'},
-  {id:152,code:'CL',nameAz:'Çili',                   currency:'Çili Pesosu',            cur:'CLP',flag:'🇨🇱',lc:'es'},
-  {id:170,code:'CO',nameAz:'Kolumbiya',              currency:'Kolumbiya Pesosu',       cur:'COP',flag:'🇨🇴',lc:'es'},
-  {id:604,code:'PE',nameAz:'Peru',                   currency:'Peru Solu',              cur:'PEN',flag:'🇵🇪',lc:'es'},
-  {id:504,code:'MA',nameAz:'Mərakeş',                currency:'Mərakeş Dirhəmi',        cur:'MAD',flag:'🇲🇦',lc:'ar'},
-  {id:372,code:'IE',nameAz:'İrlandiya',              currency:'Avro',                   cur:'EUR',flag:'🇮🇪',lc:'en'},
-  {id:703,code:'SK',nameAz:'Slovakiya',              currency:'Avro',                   cur:'EUR',flag:'🇸🇰',lc:'sk'},
-  {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',flag:'🇧🇬',lc:'bg'},
-  {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',flag:'🇭🇷',lc:'hr'},
-  {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',flag:'🇷🇸',lc:'sr'},
+  {id:840,code:'US',nameAz:'Amerika',               currency:'ABŞ Dolları',            cur:'USD',lc:'en', d:1},
+  {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',         cur:'GBP',lc:'en', d:1},
+  {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                   cur:'EUR',lc:'fr', d:1},
+  {id:276,code:'DE',nameAz:'Almaniya',               currency:'Avro',                   cur:'EUR',lc:'de', d:1},
+  {id:392,code:'JP',nameAz:'Yaponiya',               currency:'Yapon Yeni',             cur:'JPY',lc:'ja', d:1},
+  {id:156,code:'CN',nameAz:'Çin',                    currency:'Çin Yuanı',              cur:'CNY',lc:'zh', d:1},
+  {id:76, code:'BR',nameAz:'Braziliya',              currency:'Braziliya Realı',        cur:'BRL',lc:'pt', d:1},
+  {id:643,code:'RU',nameAz:'Rusiya',                 currency:'Rus Rublu',              cur:'RUB',lc:'ru', d:1},
+  {id:356,code:'IN',nameAz:'Hindistan',              currency:'Hindistan Rupisi',       cur:'INR',lc:'hi', d:1},
+  {id:792,code:'TR',nameAz:'Türkiyə',                currency:'Türk Lirəsi',            cur:'TRY',lc:'tr', d:1},
+  {id:380,code:'IT',nameAz:'İtaliya',                currency:'Avro',                   cur:'EUR',lc:'it', d:1},
+  {id:724,code:'ES',nameAz:'İspaniya',               currency:'Avro',                   cur:'EUR',lc:'es', d:1},
+  {id:124,code:'CA',nameAz:'Kanada',                 currency:'Kanada Dolları',         cur:'CAD',lc:'fr', d:1},
+  {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:1},
+  {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',      cur:'AZN',lc:'az', d:1},
+
+  {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',         cur:'MXN',lc:'es', d:2},
+  {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',           cur:'SAR',lc:'ar', d:2},
+  {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',            cur:'KRW',lc:'ko', d:2},
+  {id:32, code:'AR',nameAz:'Argentina',              currency:'Argentina Pesosu',       cur:'ARS',lc:'es', d:2},
+  {id:616,code:'PL',nameAz:'Polşa',                  currency:'Polşa Zlotısı',          cur:'PLN',lc:'pl', d:2},
+  {id:528,code:'NL',nameAz:'Niderland',              currency:'Avro',                   cur:'EUR',lc:'nl', d:2},
+  {id:752,code:'SE',nameAz:'İsveç',                  currency:'İsveç Kronası',          cur:'SEK',lc:'sv', d:2},
+  {id:578,code:'NO',nameAz:'Norveç',                 currency:'Norveç Kronası',         cur:'NOK',lc:'no', d:2},
+  {id:208,code:'DK',nameAz:'Danimarka',              currency:'Danimarka Kronası',      cur:'DKK',lc:'da', d:2},
+  {id:756,code:'CH',nameAz:'İsveçrə',                currency:'İsveçrə Frankı',         cur:'CHF',lc:'de', d:2},
+  {id:620,code:'PT',nameAz:'Portuqaliya',            currency:'Avro',                   cur:'EUR',lc:'pt', d:2},
+  {id:300,code:'GR',nameAz:'Yunanıstan',             currency:'Avro',                   cur:'EUR',lc:'el', d:2},
+  {id:804,code:'UA',nameAz:'Ukrayna',                currency:'Ukrayna Qrivnası',       cur:'UAH',lc:'uk', d:2},
+  {id:642,code:'RO',nameAz:'Rumıniya',               currency:'Rumıniya Leyi',          cur:'RON',lc:'ro', d:2},
+  {id:348,code:'HU',nameAz:'Macarıstan',             currency:'Macarıstan Forinti',     cur:'HUF',lc:'hu', d:2},
+  {id:203,code:'CZ',nameAz:'Çexiya',                 currency:'Çex Kronası',            cur:'CZK',lc:'cs', d:2},
+  {id:246,code:'FI',nameAz:'Finlandiya',             currency:'Avro',                   cur:'EUR',lc:'fi', d:2},
+  {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',    cur:'ZAR',lc:'zu', d:2},
+  {id:818,code:'EG',nameAz:'Mısır',                  currency:'Misir Funtu',            cur:'EGP',lc:'ar', d:2},
+
+  {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',       cur:'NGN',lc:'ig', d:3},
+  {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',        cur:'KES',lc:'sw', d:3},
+  {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',           cur:'THB',lc:'th', d:3},
+  {id:360,code:'ID',nameAz:'İndoneziya',             currency:'İndoneziya Rupisi',      cur:'IDR',lc:'id', d:3},
+  {id:458,code:'MY',nameAz:'Malayziya',              currency:'Malayziya Ringgiti',     cur:'MYR',lc:'ms', d:3},
+  {id:608,code:'PH',nameAz:'Filippin',               currency:'Filippin Pesosu',        cur:'PHP',lc:'tl', d:3},
+  {id:704,code:'VN',nameAz:'Vyetnam',                currency:'Vyetnam Donqu',          cur:'VND',lc:'vi', d:3},
+  {id:50, code:'BD',nameAz:'Banqladeş',              currency:'Banqladeş Takası',       cur:'BDT',lc:'bn', d:3},
+  {id:586,code:'PK',nameAz:'Pakistan',               currency:'Pakistan Rupisi',        cur:'PKR',lc:'ur', d:3},
+  {id:376,code:'IL',nameAz:'İsrail',                 currency:'İsrail Şekeli',          cur:'ILS',lc:'he', d:3},
+  {id:364,code:'IR',nameAz:'İran',                   currency:'İran Rialı',             cur:'IRR',lc:'fa', d:3},
+  {id:554,code:'NZ',nameAz:'Yeni Zelandiya',         currency:'Yeni Zelandiya Dolları', cur:'NZD',lc:'en', d:3},
+  {id:784,code:'AE',nameAz:'BƏƏ',                    currency:'BƏƏ Dirhəmi',            cur:'AED',lc:'ar', d:3},
+  {id:414,code:'KW',nameAz:'Küveyt',                 currency:'Küveyt Dinarı',          cur:'KWD',lc:'ar', d:3},
+  {id:634,code:'QA',nameAz:'Qətər',                  currency:'Qətər Riyalı',           cur:'QAR',lc:'ar', d:3},
+  {id:152,code:'CL',nameAz:'Çili',                   currency:'Çili Pesosu',            cur:'CLP',lc:'es', d:3},
+  {id:170,code:'CO',nameAz:'Kolumbiya',              currency:'Kolumbiya Pesosu',       cur:'COP',lc:'es', d:3},
+  {id:604,code:'PE',nameAz:'Peru',                   currency:'Peru Solu',              cur:'PEN',lc:'es', d:3},
+  {id:504,code:'MA',nameAz:'Mərakeş',                currency:'Mərakeş Dirhəmi',        cur:'MAD',lc:'ar', d:3},
+  {id:372,code:'IE',nameAz:'İrlandiya',              currency:'Avro',                   cur:'EUR',lc:'en', d:3},
+  {id:703,code:'SK',nameAz:'Slovakiya',              currency:'Avro',                   cur:'EUR',lc:'sk', d:3},
+  {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',lc:'bg', d:3},
+  {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',lc:'hr', d:3},
+  {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',lc:'sr', d:3},
 ];
 
 const P={
@@ -567,7 +584,7 @@ const P={
   zh:{l:'Çin dili',        t:'清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。'},
   ko:{l:'Koreya dili',      t:'가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.'},
   ar:{l:'Ərəb dili',    t:'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.'},
-  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती پر गिरकर मिट्टी की सुगंध फैलाती हैं।'},
+  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं।'},
   tr:{l:'Türk dili',     t:'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.'},
   fa:{l:'Fars dili',      t:'باد ملایم بهاری شکوفههای گیلاس را به آرامی به هوا میبرد.'},
   id:{l:'İndoneziya dili',  t:'Angin semilir membawa aroma bunga yang segar dari taman kota.'},
@@ -602,7 +619,8 @@ const P={
 /* ═══════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════ */
-let GS={type:null,qi:0,score:0,used:[],worldData:null};
+let GS={type:null,diff:1,qi:0,score:0,used:[],worldData:null};
+let pendingType = null;
 
 /* ═══════════════════════════════════════════
    UTILS
@@ -612,17 +630,9 @@ function shuf(a){
   for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}
   return r;
 }
-function pick(arr,n,ex=[]){return shuf(arr.filter(x=>!ex.includes(x))).slice(0,n)}
-
-function getOptCount(){
-  const v = document.getElementById('diff-sel').value;
-  if(v==='easy') return 3;
-  if(v==='medium') return 4;
-  return 6;
-}
 
 /* ═══════════════════════════════════════════
-   SCREENS
+   SCREENS & MODAL
 ═══════════════════════════════════════════ */
 function showScr(name){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
@@ -639,17 +649,33 @@ document.addEventListener('click',e=>{
   }
 });
 
+const BADGES={language:'🔤 Dil Tapma',map:'🗺️ Xəritə Oyunu',currency:'💰 Valyuta Tapma',flag:'🏴 Bayraq Tapma'};
+
+function openGameSetup(type){
+  pendingType = type;
+  document.getElementById('m-ic').textContent = BADGES[type].split(' ')[0];
+  document.getElementById('m-tt').textContent = BADGES[type].substring(3);
+  document.getElementById('diff-modal').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('diff-modal').classList.remove('show');
+}
+
 /* ═══════════════════════════════════════════
    GAME FLOW
 ═══════════════════════════════════════════ */
-const BADGES={language:'🔤 Dil Tapma',map:'🗺️ Xəritə Oyunu',currency:'💰 Valyuta Tapma',flag:'🏴 Bayraq Tapma'};
-
-function startGame(type){
-  GS={type,qi:0,score:0,used:[],worldData:GS.worldData};
+function startWithDiff(diffLevel){
+  closeModal();
+  GS={type:pendingType,diff:diffLevel,qi:0,score:0,used:[],worldData:GS.worldData};
+  
   document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
-  const nb=document.getElementById('n-'+type);
+  const nb=document.getElementById('n-'+pendingType);
   if(nb)nb.classList.add('active');
-  document.getElementById('gbadge').textContent=BADGES[type];
+  
+  document.getElementById('gbadge').textContent=BADGES[pendingType];
+  const dl_names = {1:'Asan', 2:'Orta', 3:'Çətin'};
+  document.getElementById('dbadge').textContent=dl_names[diffLevel];
+  
   document.getElementById('sval').textContent='0';
   showScr('game');
   updateProgress();
@@ -672,24 +698,39 @@ function loadQ(){
    GENERATORS
 ═══════════════════════════════════════════ */
 function pickCountry(){
-  const sh=shuf([...C]);
+  let diffCountries = C.filter(x=>x.d === GS.diff);
+  if(diffCountries.length === 0) diffCountries = C;
+  
+  let sh=shuf(diffCountries);
   let t=sh.find(x=>!GS.used.includes(x.code));
-  if(!t){GS.used=[];t=sh[0];}
+  if(!t){
+     const others = shuf(C);
+     t=others.find(x=>!GS.used.includes(x.code)) || others[0];
+  }
   GS.used.push(t.code);
   return t;
 }
 
 function genLang(){
-  const oc = getOptCount();
-  const lc=C.filter(x=>P[x.lc]);
-  const sh=shuf(lc);
+  let diffLangs = C.filter(x=>x.d === GS.diff && P[x.lc]);
+  if(diffLangs.length === 0) diffLangs = C.filter(x=>P[x.lc]);
+
+  let sh=shuf(diffLangs);
   let t=sh.find(x=>!GS.used.includes(x.code));
-  if(!t){GS.used=[];t=sh[0];}
+  if(!t){
+    sh = shuf(C.filter(x=>P[x.lc]));
+    t=sh.find(x=>!GS.used.includes(x.code)) || sh[0];
+  }
   GS.used.push(t.code);
-  const wrongs=sh
-    .filter(x=>x.lc!==t.lc&&P[x.lc])
+
+  // Wrong options try to come from the same difficulty for challenge
+  let wPool = C.filter(x=>x.d === GS.diff && P[x.lc] && x.lc !== t.lc);
+  if(wPool.length < 5) wPool = wPool.concat(C.filter(x=>P[x.lc] && x.lc !== t.lc));
+
+  const wrongs=shuf(wPool)
     .reduce((acc,x)=>{if(!acc.find(a=>a.lc===x.lc))acc.push(x);return acc;},[])
-    .slice(0,oc-1);
+    .slice(0,5);
+
   const opts=shuf([
     {v:t.lc,label:P[t.lc].l,correct:true},
     ...wrongs.map(x=>({v:x.lc,label:P[x.lc].l,correct:false}))
@@ -698,9 +739,11 @@ function genLang(){
 }
 
 function genMap(){
-  const oc = getOptCount();
   const t=pickCountry();
-  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,oc-1);
+  let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code));
+  
+  const wrongs=shuf(pool).slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -709,9 +752,11 @@ function genMap(){
 }
 
 function genCurr(){
-  const oc = getOptCount();
   const t=pickCountry();
-  const wrongs=shuf(C.filter(x=>x.code!==t.code&&x.cur!==t.cur)).slice(0,oc-1);
+  let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code && x.cur !== t.cur);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cur !== t.cur));
+  
+  const wrongs=shuf(pool).slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -720,9 +765,11 @@ function genCurr(){
 }
 
 function genFlag(){
-  const oc = getOptCount();
   const t=pickCountry();
-  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,oc-1);
+  let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code);
+  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code));
+  
+  const wrongs=shuf(pool).slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -739,7 +786,6 @@ function renderQ(q){
   const qw=document.getElementById('qw');
   const ow=document.getElementById('ow');
 
-  // Question area
   switch(q.type){
     case'language':
       qw.innerHTML=`
@@ -758,8 +804,8 @@ function renderQ(q){
     case'currency':
       qw.innerHTML=`
         <div class="ccard" style="padding: 50px 20px;">
-          <div class="cname" style="font-size:3rem; margin-bottom:15px; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${q.target.currency} <br/><span style="font-size:1.5rem">(${q.target.cur})</span></div>
-          <p class="chint" style="font-size:1.1rem; color:var(--t2);">Bu valyuta hansı ölkəyə məxsusdur?</p>
+          <div class="cname">${q.target.currency}</div>
+          <p class="chint">Bu valyuta hansı ölkəyə məxsusdur?</p>
         </div>`;
       break;
     case'flag':
@@ -769,7 +815,7 @@ function renderQ(q){
       break;
   }
 
-  // Options
+  // Options always 6
   ow.innerHTML=q.opts.map((o,i)=>`
     <button class="obtn" data-v="${o.v}" onclick="answer('${o.v}','${q.cv}',this)">
       <span class="olet">${LETS[i]}</span>
@@ -781,7 +827,6 @@ function renderQ(q){
    ANSWER HANDLING
 ═══════════════════════════════════════════ */
 function answer(selected,correct,btn){
-  // Disable all
   document.querySelectorAll('.obtn').forEach(b=>{
     b.disabled=true;
     if(b.dataset.v===correct)b.classList.add('ok');
@@ -834,7 +879,7 @@ async function drawMap(target){
       .attr('stroke','#090d1a')
       .attr('stroke-width',.4)
       .style('filter',d=>+d.id===target.id?'drop-shadow(0 0 8px rgba(124,58,237,.8))':'none');
-    // Question mark label on highlighted country
+    
     const tf=countries.features.find(f=>+f.id===target.id);
     if(tf){
       const c=path.centroid(tf);
@@ -861,55 +906,4 @@ function showResults(){
   document.getElementById('bdno').textContent=w;
   document.getElementById('bdac').textContent=acc+'%';
   let em,msg;
-  if(s===10){em='🏆';msg='Mükəmməl! 10/10 – Həqiqi coğrafiya ustasısınız!';}
-  else if(s>=8){em='🌟';msg='Əla nəticə! Çox yaxşı bildiyinizi sübut etdiniz!';}
-  else if(s>=6){em='👍';msg='Yaxşı! Orta üstü nəticə əldə etdiniz.';}
-  else if(s>=4){em='📚';msg='Pis deyil. Daha çox məşq etmək lazımdır.';}
-  else{em='💪';msg='Çalışmağa davam et! Növbəti dəfə daha yaxşı olacaq.';}
-  document.getElementById('ric').textContent=em;
-  document.getElementById('rmsg').textContent=msg;
-  saveStats(s);
-  showScr('results');
-}
-
-function restartGame(){startGame(GS.type)}
-function goHome(){
-  showScr('welcome');
-  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
-}
-
-/* ═══════════════════════════════════════════
-   STATS (localStorage)
-═══════════════════════════════════════════ */
-function loadStats(){
-  const played=localStorage.getItem('gqPlayed')||0;
-  const best=localStorage.getItem('gqBest');
-  document.getElementById('sp').textContent=played;
-  document.getElementById('sb2').textContent=best?best+'/10':'–';
-}
-function saveStats(score){
-  const p=parseInt(localStorage.getItem('gqPlayed')||0)+1;
-  const prev=parseInt(localStorage.getItem('gqBest')||0);
-  localStorage.setItem('gqPlayed',p);
-  if(score>prev)localStorage.setItem('gqBest',score);
-  loadStats();
-}
-
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded',()=>{
-  loadStats();
-  // AdSense real ads yükləndikdə placeholder gizlə
-  const adph=document.getElementById('adph');
-  if(adph)setTimeout(()=>{
-    const ins=document.querySelector('.adsbygoogle');
-    if(ins&&ins.innerHTML.trim()!=='')adph.style.display='none';
-  },2000);
-  // Pre-load map data
-  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-    .then(r=>r.json()).then(d=>GS.worldData=d).catch(()=>{});
-});
-</script>
-</body>
-</html>
+  if(s===10){em='🏆';msg='Mükəmməl! 1
