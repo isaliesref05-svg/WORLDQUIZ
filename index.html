@@ -55,6 +55,30 @@ body{
 .sb-sub{display:block;font-size:.62rem;color:var(--t3);letter-spacing:.06em;margin-top:2px}
 .sb-nav{flex:1;padding:12px 8px;overflow-y:auto}
 .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.18em;color:var(--t3);padding:6px 10px 8px;text-transform:uppercase}
+
+.diff-sel{
+  width:100%;
+  padding:10px;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--t1);
+  font-family:inherit;
+  font-size:.85rem;
+  font-weight:600;
+  outline:none;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.diff-sel:hover{
+  border-color:rgba(124,58,237,.4);
+  background:rgba(255,255,255,.08);
+}
+.diff-sel option{
+  background:var(--bgc);
+  color:var(--t1);
+}
+
 .ni{
   width:100%;display:flex;align-items:center;gap:12px;
   padding:12px 11px;border-radius:12px;border:1px solid transparent;
@@ -362,6 +386,16 @@ body{
       <span class="ni-ic">🏴</span>
       <div class="ni-b"><span class="ni-t">Bayraq Tapma</span><span class="ni-d">Bayrağa görə ölkə</span></div>
     </button>
+
+    <p class="sb-sec" style="margin-top:24px;">ÇƏTİNLİK SƏVİYYƏSİ</p>
+    <div style="padding:0 10px;">
+      <select id="diff-sel" class="diff-sel" onchange="if(GS.type) startGame(GS.type)">
+        <option value="easy">Asan (3 variant)</option>
+        <option value="medium">Orta (4 variant)</option>
+        <option value="hard" selected>Çətin (6 variant)</option>
+      </select>
+    </div>
+
   </nav>
   <div class="sb-foot">
     <div class="ms">
@@ -522,47 +556,47 @@ const C=[
 ];
 
 const P={
-  en:{l:'English',    t:'The morning sun cast golden light across the quiet valley below.'},
-  fr:{l:'Français',   t:'Les étoiles brillent intensément dans le ciel nocturne et calme.'},
-  de:{l:'Deutsch',    t:'Die Berge spiegeln sich im klaren Wasser des ruhigen Sees wider.'},
-  es:{l:'Español',    t:'Las flores del jardín perfuman el aire fresco de la mañana.'},
-  pt:{l:'Português',  t:'As ondas do mar trazem calma e paz para a alma cansada.'},
-  it:{l:'Italiano',   t:'Il profumo del caffè si diffonde delicatamente per tutta la casa.'},
-  ru:{l:'Русский',    t:'Снег тихо падает на замёрзшие поля и тёмные леса вдали.'},
-  ja:{l:'日本語',      t:'桜の花びらが風に舞い、春の訪れをやさしく告げています。'},
-  zh:{l:'中文',        t:'清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。'},
-  ko:{l:'한국어',      t:'가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.'},
-  ar:{l:'العربية',    t:'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.'},
-  hi:{l:'हिन्दी',     t:'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं।'},
-  tr:{l:'Türkçe',     t:'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.'},
-  fa:{l:'فارسی',      t:'باد ملایم بهاری شکوفههای گیلاس را به آرامی به هوا میبرد.'},
-  id:{l:'Indonesia',  t:'Angin semilir membawa aroma bunga yang segar dari taman kota.'},
-  th:{l:'ภาษาไทย',    t:'ดอกไม้หลากสีบานสะพรั่งงดงามในสวนสาธารณะยามเช้าตรู่'},
-  vi:{l:'Tiếng Việt', t:'Bầu trời buổi sáng trong xanh với những đám mây trắng bồng bềnh.'},
-  pl:{l:'Polski',     t:'Wieczorne niebo rozświetlają setki migoczących gwiazd na horyzoncie.'},
-  nl:{l:'Nederlands', t:'De tulpen bloeien prachtig langs de schilderachtige smalle grachten.'},
-  sv:{l:'Svenska',    t:'Vindens sus bland de höga tallarna skapar en fridfull sommmelodi.'},
-  no:{l:'Norsk',      t:'Nordlyset danser vakkert over den snødekte og stille fjelltoppen.'},
-  da:{l:'Dansk',      t:'Havet bølger blidt og roligt mod de hvide sandstrande om morgenen.'},
-  fi:{l:'Suomi',      t:'Talvinen metsä hiljeni lumen ja pakkasen peitossa odottaen kevättä.'},
-  el:{l:'Ελληνικά',   t:'Η θάλασσα λάμπει υπέροχα κάτω από τον ζεστό καλοκαιρινό ήλιο.'},
-  he:{l:'עברית',      t:'הכוכבים מאירים את שמי הלילה בזוהר כוכבי ומרהיב מאוד.'},
-  uk:{l:'Українська', t:'Квіти розцвітають на лугах після першого теплого весняного дощу.'},
-  ro:{l:'Română',     t:'Apusul de soare pictează cerul în nuanțe calde de portocaliu și roșu.'},
-  hu:{l:'Magyar',     t:'A folyó csendesen kanyarog a zöld erdők és dombok között.'},
-  cs:{l:'Čeština',    t:'Podzimní listí pokrývá zlatým kobercem klidné lesní cesty.'},
-  az:{l:'Azərbaycan', t:'Dağların zirvəsindən vadiyə baxdıqda hər şey çox kiçik görünür.'},
-  sw:{l:'Kiswahili',  t:'Jua linachomoza asubuhi na kuangaza nchi nzima kwa mwanga wake.'},
-  ms:{l:'Melayu',     t:'Bunga raya mekar indah di bawah sinar matahari pagi yang cerah.'},
-  tl:{l:'Filipino',   t:'Ang mga bituin ay nagliliwanag nang maliwanag sa madilim na kalangitan.'},
-  bn:{l:'বাংলা',      t:'আকাশ জুড়ে সাদা মেঘের ভেলা ভেসে বেড়াচ্ছে সারাদিন।'},
-  ur:{l:'اردو',       t:'پہاڑوں کی چوٹیوں پر برف کی سفید چادر بچھی ہوئی ہے۔'},
-  zu:{l:'isiZulu',    t:'Izintaba zikhanyiswa ukukhanya kwelanga ekuseni ngemva kwezulu.'},
-  ig:{l:'Igbo',       t:"Anyanwu apụtara n'ọnwa nke ụtụtụ na-eme ka ala ere ọkụ."},
-  sk:{l:'Slovenčina', t:'Slnko svieti nad tichými lúkami a pieseň vtákov sa nesie vzduchom.'},
-  bg:{l:'Български',  t:'Слънцето грее ярко над зелените поля и тихите реки.'},
-  hr:{l:'Hrvatski',   t:'More mirno plovi i donosi svježinu i mir ovoga ljetnog jutra.'},
-  sr:{l:'Српски',     t:'Звезде сијају на ноћном небу и осветљавају цео свет.'},
+  en:{l:'İngilis dili',    t:'The morning sun cast golden light across the quiet valley below.'},
+  fr:{l:'Fransız dili',   t:'Les étoiles brillent intensément dans le ciel nocturne et calme.'},
+  de:{l:'Alman dili',    t:'Die Berge spiegeln sich im klaren Wasser des ruhigen Sees wider.'},
+  es:{l:'İspan dili',    t:'Las flores del jardín perfuman el aire fresco de la mañana.'},
+  pt:{l:'Portuqal dili',  t:'As ondas do mar trazem calma e paz para a alma cansada.'},
+  it:{l:'İtalyan dili',   t:'Il profumo del caffè si diffonde delicatamente per tutta la casa.'},
+  ru:{l:'Rus dili',    t:'Снег тихо падает на замёрзшие поля и тёмные леса вдали.'},
+  ja:{l:'Yapon dili',      t:'桜の花びらが風に舞い、春の訪れをやさしく告げています。'},
+  zh:{l:'Çin dili',        t:'清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。'},
+  ko:{l:'Koreya dili',      t:'가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.'},
+  ar:{l:'Ərəb dili',    t:'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.'},
+  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती پر गिरकर मिट्टी की सुगंध फैलाती हैं।'},
+  tr:{l:'Türk dili',     t:'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.'},
+  fa:{l:'Fars dili',      t:'باد ملایم بهاری شکوفههای گیلاس را به آرامی به هوا میبرد.'},
+  id:{l:'İndoneziya dili',  t:'Angin semilir membawa aroma bunga yang segar dari taman kota.'},
+  th:{l:'Tay dili',    t:'ดอกไม้หลากสีบานสะพรั่งงดงามในสวนสาธารณะยามเช้าตรู่'},
+  vi:{l:'Vyetnam dili', t:'Bầu trời buổi sáng trong xanh với những đám mây trắng bồng bềnh.'},
+  pl:{l:'Polyak dili',     t:'Wieczorne niebo rozświetlają setki migoczących gwiazd na horyzoncie.'},
+  nl:{l:'Niderland dili', t:'De tulpen bloeien prachtig langs de schilderachtige smalle grachten.'},
+  sv:{l:'İsveç dili',    t:'Vindens sus bland de höga tallarna skapar en fridfull sommmelodi.'},
+  no:{l:'Norveç dili',      t:'Nordlyset danser vakkert over den snødekte og stille fjelltoppen.'},
+  da:{l:'Danimarka dili',      t:'Havet bølger blidt og roligt mod de hvide sandstrande om morgenen.'},
+  fi:{l:'Fin dili',      t:'Talvinen metsä hiljeni lumen ja pakkasen peitossa odottaen kevättä.'},
+  el:{l:'Yunan dili',   t:'Η θάλασσα λάμπει υπέροχα κάτω από τον ζεστό καλοκαιρινό ήλιο.'},
+  he:{l:'İvrit dili',      t:'הכוכבים מאירים את שמי הלילה בזוהר כוכבי ומרהיב מאוד.'},
+  uk:{l:'Ukrayna dili', t:'Квіти розцвітають на лугах після першого теплого весняного дощу.'},
+  ro:{l:'Rumın dili',     t:'Apusul de soare pictează cerul în nuanțe calde de portocaliu și roșu.'},
+  hu:{l:'Macar dili',     t:'A folyó csendesen kanyarog a zöld erdők és dombok között.'},
+  cs:{l:'Çex dili',    t:'Podzimní listí pokrývá zlatým kobercem klidné lesní cesty.'},
+  az:{l:'Azərbaycan dili', t:'Dağların zirvəsindən vadiyə baxdıqda hər şey çox kiçik görünür.'},
+  sw:{l:'Suahili dili',  t:'Jua linachomoza asubuhi na kuangaza nchi nzima kwa mwanga wake.'},
+  ms:{l:'Malay dili',     t:'Bunga raya mekar indah di bawah sinar matahari pagi yang cerah.'},
+  tl:{l:'Filippin dili',   t:'Ang mga bituin ay nagliliwanag nang maliwanag sa madilim na kalangitan.'},
+  bn:{l:'Benqal dili',      t:'আকাশ জুড়ে সাদা মেঘের ভেলা ভেসে বেড়াচ্ছে সারাদিন।'},
+  ur:{l:'Urdu dili',       t:'پہاڑوں کی چوٹیوں پر برف کی سفید چادر بچھی ہوئی ہے۔'},
+  zu:{l:'Zulu dili',    t:'Izintaba zikhanyiswa ukukhanya kwelanga ekuseni ngemva kwezulu.'},
+  ig:{l:'İqbo dili',       t:"Anyanwu apụtara n'ọnwa nke ụtụtụ na-eme ka ala ere ọkụ."},
+  sk:{l:'Slovak dili', t:'Slnko svieti nad tichými lúkami a pieseň vtákov sa nesie vzduchom.'},
+  bg:{l:'Bolqar dili',  t:'Слънцето грее ярко над зелените поля и тихите реки.'},
+  hr:{l:'Xorvat dili',   t:'More mirno plovi i donosi svježinu i mir ovoga ljetnog jutra.'},
+  sr:{l:'Serb dili',     t:'Звезде сијају на ноћном небу и осветљавају цео свет.'},
 };
 
 /* ═══════════════════════════════════════════
@@ -579,6 +613,13 @@ function shuf(a){
   return r;
 }
 function pick(arr,n,ex=[]){return shuf(arr.filter(x=>!ex.includes(x))).slice(0,n)}
+
+function getOptCount(){
+  const v = document.getElementById('diff-sel').value;
+  if(v==='easy') return 3;
+  if(v==='medium') return 4;
+  return 6;
+}
 
 /* ═══════════════════════════════════════════
    SCREENS
@@ -639,17 +680,16 @@ function pickCountry(){
 }
 
 function genLang(){
-  // Get countries that have phrase data
+  const oc = getOptCount();
   const lc=C.filter(x=>P[x.lc]);
   const sh=shuf(lc);
   let t=sh.find(x=>!GS.used.includes(x.code));
   if(!t){GS.used=[];t=sh[0];}
   GS.used.push(t.code);
-  // Wrong options: different langCodes
   const wrongs=sh
     .filter(x=>x.lc!==t.lc&&P[x.lc])
     .reduce((acc,x)=>{if(!acc.find(a=>a.lc===x.lc))acc.push(x);return acc;},[])
-    .slice(0,5);
+    .slice(0,oc-1);
   const opts=shuf([
     {v:t.lc,label:P[t.lc].l,correct:true},
     ...wrongs.map(x=>({v:x.lc,label:P[x.lc].l,correct:false}))
@@ -658,8 +698,9 @@ function genLang(){
 }
 
 function genMap(){
+  const oc = getOptCount();
   const t=pickCountry();
-  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,5);
+  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,oc-1);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -668,18 +709,20 @@ function genMap(){
 }
 
 function genCurr(){
+  const oc = getOptCount();
   const t=pickCountry();
-  const wrongs=shuf(C.filter(x=>x.code!==t.code&&x.cur!==t.cur)).slice(0,5);
+  const wrongs=shuf(C.filter(x=>x.code!==t.code&&x.cur!==t.cur)).slice(0,oc-1);
   const opts=shuf([
-    {v:t.cur,label:t.currency+' ('+t.cur+')',correct:true},
-    ...wrongs.map(x=>({v:x.cur,label:x.currency+' ('+x.cur+')',correct:false}))
+    {v:t.code,label:t.nameAz,correct:true},
+    ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
   ]);
-  return{type:'currency',target:t,cv:t.cur,opts};
+  return{type:'currency',target:t,cv:t.code,opts};
 }
 
 function genFlag(){
+  const oc = getOptCount();
   const t=pickCountry();
-  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,5);
+  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,oc-1);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -714,10 +757,9 @@ function renderQ(q){
       break;
     case'currency':
       qw.innerHTML=`
-        <div class="ccard">
-          <img class="cflag" src="https://flagcdn.com/w80/${q.target.code.toLowerCase()}.png" alt="Bayraq"/>
-          <div class="cname">${q.target.nameAz}</div>
-          <p class="chint">Bu ölkənin valyutası (pul vahidi) hansıdır?</p>
+        <div class="ccard" style="padding: 50px 20px;">
+          <div class="cname" style="font-size:3rem; margin-bottom:15px; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${q.target.currency} <br/><span style="font-size:1.5rem">(${q.target.cur})</span></div>
+          <p class="chint" style="font-size:1.1rem; color:var(--t2);">Bu valyuta hansı ölkəyə məxsusdur?</p>
         </div>`;
       break;
     case'flag':
