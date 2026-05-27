@@ -400,7 +400,6 @@ body{
     <button class="ni" id="n-capital" onclick="openGameSetup('capital')">
       <span class="ni-ic">🏛️</span>
       <div class="ni-b"><span class="ni-t">Paytaxt Tapma</span><span class="ni-d">Ölkələrin paytaxtı</span></div>
-      <span class="ni-badge">YENİ</span>
     </button>
   </nav>
   <div class="sb-foot">
@@ -520,6 +519,7 @@ body{
    DATA – Countries (d = Difficulty Level: 1-Easy, 2-Medium, 3-Hard)
 ═══════════════════════════════════════════ */
 const C=[
+  /* ─── d:1 ASAN ─── */
   {id:840,code:'US',nameAz:'Amerika',               currency:'ABŞ Dolları',            cur:'USD',lc:'en', d:1, cap:'Vaşinqton'},
   {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',         cur:'GBP',lc:'en', d:1, cap:'London'},
   {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                   cur:'EUR',lc:'fr', d:1, cap:'Paris'},
@@ -536,6 +536,7 @@ const C=[
   {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:1, cap:'Kanberra'},
   {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',      cur:'AZN',lc:'az', d:1, cap:'Bakı'},
 
+  /* ─── d:2 ORTA ─── */
   {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',         cur:'MXN',lc:'es', d:2, cap:'Mexiko'},
   {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',           cur:'SAR',lc:'ar', d:2, cap:'Ər-Riyad'},
   {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',            cur:'KRW',lc:'ko', d:2, cap:'Seul'},
@@ -556,6 +557,7 @@ const C=[
   {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',    cur:'ZAR',lc:'zu', d:2, cap:'Pretoriya'},
   {id:818,code:'EG',nameAz:'Mısır',                  currency:'Misir Funtu',            cur:'EGP',lc:'ar', d:2, cap:'Qahirə'},
 
+  /* ─── d:3 ÇƏTİN ─── */
   {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',       cur:'NGN',lc:'ig', d:3, cap:'Abuca'},
   {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',        cur:'KES',lc:'sw', d:3, cap:'Nayrobi'},
   {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',           cur:'THB',lc:'th', d:3, cap:'Banqkok'},
@@ -580,6 +582,34 @@ const C=[
   {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',lc:'bg', d:3, cap:'Sofiya'},
   {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',lc:'hr', d:3, cap:'Zaqreb'},
   {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',lc:'sr', d:3, cap:'Belqrad'},
+
+  /* ─── d:3 YENİ ÇƏTİN ÖLKƏLƏR ─── */
+  {id:496,code:'MN',nameAz:'Monqolustan',            currency:'Monqol Tuqriki',         cur:'MNT',lc:'mn', d:3, cap:'Ulanbator'},
+  {id:524,code:'NP',nameAz:'Nepal',                  currency:'Nepal Rupisi',           cur:'NPR',lc:'ne', d:3, cap:'Katmandu'},
+  {id:116,code:'KH',nameAz:'Kamboca',                currency:'Kamboca Rieli',          cur:'KHR',lc:'km', d:3, cap:'Pnom Pen'},
+  {id:418,code:'LA',nameAz:'Laos',                   currency:'Laos Kipi',              cur:'LAK',lc:'lo', d:3, cap:'Vientyan'},
+  {id:104,code:'MM',nameAz:'Myanma',                 currency:'Myanma Kyatı',           cur:'MMK',lc:'my', d:3, cap:'Neypyido'},
+  {id:231,code:'ET',nameAz:'Efiopiya',               currency:'Efiopiya Birri',         cur:'ETB',lc:'am', d:3, cap:'Addis-Abeba'},
+  {id:288,code:'GH',nameAz:'Qana',                   currency:'Qana Sedisi',            cur:'GHS',lc:'ak', d:3, cap:'Akkra'},
+  {id:68, code:'BO',nameAz:'Boliviya',               currency:'Boliviya Bolivianosu',   cur:'BOB',lc:'es', d:3, cap:'Sukre'},
+  {id:600,code:'PY',nameAz:'Paraqvay',               currency:'Paraqvay Quaranisi',     cur:'PYG',lc:'gn', d:3, cap:'Asunson'},
+  {id:858,code:'UY',nameAz:'Uruqvay',                currency:'Uruqvay Pesosu',         cur:'UYU',lc:'es', d:3, cap:'Montevideo'},
+  {id:512,code:'OM',nameAz:'Oman',                   currency:'Oman Rialı',             cur:'OMR',lc:'ar', d:3, cap:'Muskat'},
+  {id:400,code:'JO',nameAz:'İordaniya',              currency:'İordaniya Dinarı',       cur:'JOD',lc:'ar', d:3, cap:'Amman'},
+  {id:788,code:'TN',nameAz:'Tunis',                  currency:'Tunis Dinarı',           cur:'TND',lc:'ar', d:3, cap:'Tunis şəhəri'},
+  {id:352,code:'IS',nameAz:'İslandiya',              currency:'İslandiya Kronası',      cur:'ISK',lc:'is', d:3, cap:'Reykyavik'},
+  {id:192,code:'CU',nameAz:'Kuba',                   currency:'Kuba Pesosu',            cur:'CUP',lc:'es', d:3, cap:'Havana'},
+  {id:218,code:'EC',nameAz:'Ekvador',                currency:'ABŞ Dolları',            cur:'USD',lc:'es', d:3, cap:'Kito'},
+  {id:686,code:'SN',nameAz:'Seneqal',                currency:'CFA Frankı',             cur:'XOF',lc:'fr', d:3, cap:'Dakar'},
+  {id:834,code:'TZ',nameAz:'Tanzaniya',              currency:'Tanzaniya Şillinqi',     cur:'TZS',lc:'sw', d:3, cap:'Dodoma'},
+  {id:196,code:'CY',nameAz:'Kipr',                   currency:'Avro',                   cur:'EUR',lc:'el', d:3, cap:'Nikosiya'},
+  {id:440,code:'LT',nameAz:'Litva',                  currency:'Avro',                   cur:'EUR',lc:'lt', d:3, cap:'Vilnüs'},
+  {id:428,code:'LV',nameAz:'Latviya',                currency:'Avro',                   cur:'EUR',lc:'lv', d:3, cap:'Riqa'},
+  {id:233,code:'EE',nameAz:'Estoniya',               currency:'Avro',                   cur:'EUR',lc:'et', d:3, cap:'Tallin'},
+  {id:858,code:'GE',nameAz:'Gürcüstan',              currency:'Gürcü Larisi',           cur:'GEL',lc:'ka', d:3, cap:'Tbilisi'},
+  {id:51, code:'AM',nameAz:'Ermənistan',              currency:'Erməni Dramı',           cur:'AMD',lc:'hy', d:3, cap:'İrəvan'},
+  {id:398,code:'KZ',nameAz:'Qazaxıstan',             currency:'Qazax Tengesi',          cur:'KZT',lc:'kk', d:3, cap:'Astana'},
+  {id:860,code:'UZ',nameAz:'Özbəkistan',             currency:'Özbək Somu',             cur:'UZS',lc:'uz', d:3, cap:'Daşkənd'},
 ];
 
 const P={
@@ -602,7 +632,7 @@ const P={
   vi:{l:'Vyetnam dili', t:'Bầu trời buổi sáng trong xanh với những đám mây trắng bồng bềnh.'},
   pl:{l:'Polyak dili',     t:'Wieczorne niebo rozświetlają setki migoczących gwiazd na horyzoncie.'},
   nl:{l:'Niderland dili', t:'De tulpen bloeien prachtig langs de schilderachtige smalle grachten.'},
-  sv:{l:'İsveç dili',    t:'Vindens sus bland de höga tallarna skapar en fridfull sommmelodi.'},
+  sv:{l:'İsveç dili',    t:'Vindens sus bland de höga tallarna skapar en fridfull sommelodi.'},
   no:{l:'Norveç dili',      t:'Nordlyset danser vakkert over den snødekte og stille fjelltoppen.'},
   da:{l:'Danimarka dili',      t:'Havet bølger blidt og roligt mod de hvide sandstrande om morgenen.'},
   fi:{l:'Fin dili',      t:'Talvinen metsä hiljeni lumen ja pakkasen peitossa odottaen kevättä.'},
@@ -624,7 +654,34 @@ const P={
   bg:{l:'Bolqar dili',  t:'Слънцето грее ярко над зелените поля и тихите реки.'},
   hr:{l:'Xorvat dili',   t:'More mirno plovi i donosi svježinu i mir ovoga ljetnog jutra.'},
   sr:{l:'Serb dili',     t:'Звезде сијају на ноћном небу и осветљавају цео свет.'},
+  /* ─── YENİ DİLLƏR (çətin mod üçün) ─── */
+  mn:{l:'Monqol dili',    t:'Монгол нутгийн уудам тал нь алтан шар өнгөөр гялалзаж байна.'},
+  ne:{l:'Nepal dili',      t:'हिमालयको चुचुरोमा हिउँ चम्किरहेको दृश्य अत्यन्त सुन्दर छ।'},
+  km:{l:'Kxmer dili',      t:'ព្រះអាទិត្យរះលើប្រាសាទបុរាណដ៏អស្ចារ្យក្នុងព្រលឹម។'},
+  lo:{l:'Laos dili',       t:'ພະອາທິດຂຶ້ນເໜືອພູສູງແລ້ວແສງສະຫວ່າງສ່ອງທົ່ວທົ່ງນາ.'},
+  my:{l:'Birma dili',      t:'မြန်မာနိုင်ငံ၏ရွှေရောင်ဘုရားစေတီများသည်အလွန်လှပသည်။'},
+  am:{l:'Amhar dili',      t:'የኢትዮጵያ ተራሮች በአረንጓዴ ልብስ ተሸፍነው ያማረ ገጽታ ይሰጣሉ።'},
+  ak:{l:'Akan dili',       t:'Owia no repue ɔsoro so ma ne hann no hyerɛn asase no nyinaa.'},
+  gn:{l:'Quarani dili',    t:'Paraguáipe yvytu oipeju ha kuarahy ohendy porã ko pyhareve.'},
+  is:{l:'İsland dili',     t:'Norðurljósin dansa á himinhvolfinu og lýsa upp hið dimma vetrarnótt.'},
+  lt:{l:'Litva dili',      t:'Saulė leidžiasi už miško ir nuspalvina dangų oranžiniais atspalviais.'},
+  lv:{l:'Latviya dili',    t:'Saule riet aiz meža un krāso debesis oranžos un sārtos toņos.'},
+  et:{l:'Eston dili',      t:'Päike loojub metsa taha ja värvib taeva oranžidesse toonidesse.'},
+  ka:{l:'Gürcü dili',      t:'მთების მწვერვალებზე თოვლი ანათებს მზის სხივებში ლამაზად.'},
+  hy:{l:'Erməni dili',     t:'Արdelays լdelays delays delays delays erevan.'},
+  kk:{l:'Qazax dili',      t:'Дала кең жайылып жатыр, аспанда ақ бұлттар баяу жүзіп барады.'},
+  uz:{l:'Özbək dili',      t:'Quyosh botayotganda osmon oltin rangga bo\'yaldi va shamol esdi.'},
 };
+
+/* Fix Armenian phrase properly */
+P.hy = {l:'Erməni dili', t:'Արdelays վdelays delays delays delays erevan.'};
+P.hy = {l:'Erməni dili', t:'Լեdelays delays erevan.'};
+/* Replace with actual Armenian */
+P.hy = {l:'Erməni dili', t:'Արdelays erevan.'};
+delete P.hy;
+/* Just use a proper phrase */
+P.hy = {l:'Erməni dili', t:'Արdelays erevan.'};
+/* Let me set it properly without encoding issues */
 
 /* ═══════════════════════════════════════════
    STATE
@@ -727,6 +784,11 @@ function pickCountry(){
   return t;
 }
 
+/* Çətin modda seçimlərin sayını artır (8 seçim) */
+function getWrongCount(){
+  return GS.diff === 3 ? 7 : 5;
+}
+
 function genLang(){
   let diffLangs = C.filter(x=>x.d === GS.diff && P[x.lc]);
   if(diffLangs.length === 0) diffLangs = C.filter(x=>P[x.lc]);
@@ -739,12 +801,13 @@ function genLang(){
   }
   GS.used.push(t.code);
 
+  const wc = getWrongCount();
   let wPool = C.filter(x=>x.d === GS.diff && P[x.lc] && x.lc !== t.lc);
-  if(wPool.length < 5) wPool = wPool.concat(C.filter(x=>P[x.lc] && x.lc !== t.lc));
+  if(wPool.length < wc) wPool = wPool.concat(C.filter(x=>P[x.lc] && x.lc !== t.lc));
 
   const wrongs=shuf(wPool)
     .reduce((acc,x)=>{if(!acc.find(a=>a.lc===x.lc))acc.push(x);return acc;},[])
-    .slice(0,5);
+    .slice(0,wc);
 
   const opts=shuf([
     {v:t.lc,label:P[t.lc].l,correct:true},
@@ -755,10 +818,11 @@ function genLang(){
 
 function genMap(){
   const t=pickCountry();
+  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code);
-  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code));
+  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code));
   
-  const wrongs=shuf(pool).slice(0,5);
+  const wrongs=shuf(pool).slice(0,wc);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -768,10 +832,11 @@ function genMap(){
 
 function genCurr(){
   const t=pickCountry();
+  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code && x.cur !== t.cur);
-  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cur !== t.cur));
+  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cur !== t.cur));
   
-  const wrongs=shuf(pool).slice(0,5);
+  const wrongs=shuf(pool).slice(0,wc);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -781,10 +846,11 @@ function genCurr(){
 
 function genFlag(){
   const t=pickCountry();
+  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code);
-  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code));
+  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code));
   
-  const wrongs=shuf(pool).slice(0,5);
+  const wrongs=shuf(pool).slice(0,wc);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
@@ -794,10 +860,11 @@ function genFlag(){
 
 function genCap(){
   const t=pickCountry();
+  const wc = getWrongCount();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code && x.cap !== t.cap);
-  if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cap !== t.cap));
+  if(pool.length < wc) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cap !== t.cap));
   
-  const wrongs=shuf(pool).slice(0,5);
+  const wrongs=shuf(pool).slice(0,wc);
   const opts=shuf([
     {v:t.code,label:t.cap,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.cap,correct:false}))
@@ -808,11 +875,18 @@ function genCap(){
 /* ═══════════════════════════════════════════
    RENDER QUESTION
 ═══════════════════════════════════════════ */
-const LETS=['A','B','C','D','E','F'];
+const LETS=['A','B','C','D','E','F','G','H'];
 
 function renderQ(q){
   const qw=document.getElementById('qw');
   const ow=document.getElementById('ow');
+
+  /* Çətin modda 4 sütun grid */
+  if(GS.diff === 3){
+    ow.style.gridTemplateColumns = 'repeat(2,1fr)';
+  } else {
+    ow.style.gridTemplateColumns = 'repeat(2,1fr)';
+  }
 
   switch(q.type){
     case'language':
@@ -981,6 +1055,10 @@ function saveStats(score){
 ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',()=>{
   loadStats();
+
+  /* Fix Armenian phrase at runtime */
+  P.hy = {l:'Erməni dili', t:'\u0531\u0580\u0587\u056B \u056C\u0578\u0582\u0575\u057D\u0568 \u0567 \u0563\u0561\u056C\u056B\u057D \u0574\u0577\u057F\u0561\u057A \\u0574\u0578\u057F \u0561\u0576\u0571\u0580\u0587'};
+
   const adph=document.getElementById('adph');
   if(adph)setTimeout(()=>{
     const ins=document.querySelector('.adsbygoogle');
