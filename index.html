@@ -390,11 +390,11 @@ body{
       <div class="ni-b"><span class="ni-t">Xəritə Oyunu</span><span class="ni-d">Ölkəni xəritədə tap</span></div>
     </button>
     <button class="ni" id="n-currency" onclick="openGameSetup('currency')">
-      <span class="ni-ic">💰</span>
+      <span class="ni-ic">💵</span>
       <div class="ni-b"><span class="ni-t">Valyuta Tapma</span><span class="ni-d">Ölkənin pul vahidi</span></div>
     </button>
     <button class="ni" id="n-flag" onclick="openGameSetup('flag')">
-      <span class="ni-ic">🏴</span>
+      <span class="ni-ic">🎌</span>
       <div class="ni-b"><span class="ni-t">Bayraq Tapma</span><span class="ni-d">Bayrağa görə ölkə</span></div>
     </button>
     <button class="ni" id="n-capital" onclick="openGameSetup('capital')">
@@ -447,10 +447,10 @@ body{
           <span class="gc-ic">🗺️</span><h3>Xəritə Oyunu</h3><p>Xəritədə göstərilən ölkəni tap</p>
         </div>
         <div class="gcard" onclick="openGameSetup('currency')">
-          <span class="gc-ic">💰</span><h3>Valyuta Tapma</h3><p>Ölkənin pul vahidini tap</p>
+          <span class="gc-ic">💵</span><h3>Valyuta Tapma</h3><p>Ölkənin pul vahidini tap</p>
         </div>
         <div class="gcard" onclick="openGameSetup('flag')">
-          <span class="gc-ic">🏴</span><h3>Bayraq Tapma</h3><p>Bayrağa görə ölkəni müəyyən et</p>
+          <span class="gc-ic">🎌</span><h3>Bayraq Tapma</h3><p>Bayrağa görə ölkəni müəyyən et</p>
         </div>
         <div class="gcard" onclick="openGameSetup('capital')">
           <span class="gc-ic">🏛️</span><h3>Paytaxt Tapma</h3><p>Ölkənin paytaxtını tap</p>
@@ -637,7 +637,7 @@ const P={
   zh:{l:'Çin dili',        t:'清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。'},
   ko:{l:'Koreya dili',      t:'가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.'},
   ar:{l:'Ərəb dili',    t:'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.'},
-  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती پر गिरकर मिट्टी की सुगंध फैलाती हैं।'},
+  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं।'},
   tr:{l:'Türk dili',     t:'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.'},
   fa:{l:'Fars dili',      t:'باد ملایم بهاری شکوفههای گیلاس را به آرامی به هوا میبرد.'},
   id:{l:'İndoneziya dili',  t:'Angin semilir membawa aroma bunga yang segar dari taman kota.'},
@@ -724,8 +724,8 @@ document.addEventListener('click',e=>{
 const BADGES={
   language:'💬 Dil Tapma',
   map:'🗺️ Xəritə Oyunu',
-  currency:'💰 Valyuta Tapma',
-  flag:'🏴 Bayraq Tapma',
+  currency:'💵 Valyuta Tapma',
+  flag:'🎌 Bayraq Tapma',
   capital:'🏛️ Paytaxt Tapma'
 };
 
@@ -987,16 +987,7 @@ async function drawMap(target){
       .attr('stroke-width',.4)
       .style('filter',d=>+d.id===target.id?'drop-shadow(0 0 8px rgba(124,58,237,.8))':'none');
     
-    const tf=countries.features.find(f=>+f.id===target.id);
-    if(tf){
-      const c=path.centroid(tf);
-      if(c&&!isNaN(c[0])){
-        d3s.append('text').attr('x',c[0]).attr('y',c[1])
-          .attr('text-anchor','middle').attr('fill','#fff')
-          .attr('font-size','12').attr('font-weight','bold')
-          .attr('pointer-events','none').text('?');
-      }
-    }
+    /* ? işarəsi ləğv edildi, artıq xəritədə ölkənin üzərində yazı olmur */
   }catch(e){
     const el=document.getElementById('mmsg');
     if(el)el.innerHTML='<span style="color:#8b97b8">⚠️ Xəritə yüklənə bilmədi.<br>İnternet bağlantısını yoxlayın.</span>';
