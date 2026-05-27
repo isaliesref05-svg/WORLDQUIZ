@@ -3,159 +3,266 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>WorldQuiz – Coğrafiya Oyunları</title>
+<title>GeoQuiz – Coğrafiya Oyunları</title>
 <meta name="description" content="Dil, xəritə, valyuta və bayraq oyunları ilə dünya coğrafiyasını öyrən."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js"></script>
+<!-- AdSense: öz ca-pub kodunu yaz -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
 <style>
+/* ─── Variables ─── */
 :root{
-  --bg:#090d1a;--bg2:#0f1629;--bgc:#141d32;--bgs:#070b18;
-  --acc:#7c3aed;--acc2:#06b6d4;
+  --bg:#090d1a; --bg2:#0f1629; --bgc:#141d32; --bgs:#070b18;
+  --acc:#7c3aed; --acc2:#06b6d4;
   --grad:linear-gradient(135deg,#7c3aed,#06b6d4);
-  --ok:#22c55e;--err:#ef4444;--warn:#f59e0b;
-  --t1:#f0f4ff;--t2:#8b97b8;--t3:#3d4d72;
+  --ok:#22c55e; --err:#ef4444; --warn:#f59e0b;
+  --t1:#f0f4ff; --t2:#8b97b8; --t3:#3d4d72;
   --border:rgba(255,255,255,0.07);
-  --sw:268px;--adh:76px;
+  --sw:268px; --adh:76px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
 button{font-family:inherit;cursor:pointer}
-body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex;overflow:hidden;}
+body{
+  font-family:'Inter','Segoe UI',system-ui,sans-serif;
+  background:var(--bg); color:var(--t1);
+  min-height:100vh; display:flex; overflow:hidden;
+}
 
-/* SIDEBAR */
-.sb{width:var(--sw);height:100vh;background:var(--bgs);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1);}
-.sb-logo{display:flex;align-items:center;gap:11px;padding:20px 16px;border-bottom:1px solid var(--border);}
+/* ─── SIDEBAR ─── */
+.sb{
+  width:var(--sw); height:100vh; background:var(--bgs);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  position:fixed; left:0; top:0; z-index:100;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sb-logo{
+  display:flex; align-items:center; gap:11px;
+  padding:20px 16px; border-bottom:1px solid var(--border);
+}
 .sb-globe{font-size:2rem;animation:rot 14s linear infinite;display:inline-block}
 @keyframes rot{to{transform:rotate(360deg)}}
-.sb-name{display:block;font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sb-name{
+  display:block; font-family:'Space Grotesk',sans-serif;
+  font-size:1.35rem; font-weight:800;
+  background:var(--grad); -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent; background-clip:text;
+}
 .sb-sub{display:block;font-size:.62rem;color:var(--t3);letter-spacing:.06em;margin-top:2px}
 .sb-nav{flex:1;padding:12px 8px;overflow-y:auto}
 .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.18em;color:var(--t3);padding:6px 10px 8px;text-transform:uppercase}
-.ni{width:100%;display:flex;align-items:center;gap:12px;padding:12px 11px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--t2);text-align:left;margin-bottom:4px;transition:all .2s ease;}
+.ni{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:12px 11px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:var(--t2);text-align:left;margin-bottom:4px;
+  transition:all .2s ease;
+}
 .ni:hover{color:var(--t1);background:rgba(255,255,255,.03);border-color:var(--border)}
-.ni.active{background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(6,182,212,.08));border-color:rgba(124,58,237,.4);color:var(--t1);box-shadow:0 0 22px rgba(124,58,237,.1);}
+.ni.active{
+  background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(6,182,212,.08));
+  border-color:rgba(124,58,237,.4);color:var(--t1);
+  box-shadow:0 0 22px rgba(124,58,237,.1);
+}
 .ni-ic{font-size:1.45rem;flex-shrink:0}
 .ni-b{flex:1;min-width:0}
 .ni-t{display:block;font-size:.88rem;font-weight:600;line-height:1}
 .ni-d{display:block;font-size:.68rem;color:var(--t3);margin-top:3px}
-.ni-badge{font-size:.57rem;font-weight:800;background:var(--grad);color:#fff;padding:2px 7px;border-radius:20px;flex-shrink:0;}
+.ni-badge{
+  font-size:.57rem;font-weight:800;background:var(--grad);
+  color:#fff;padding:2px 7px;border-radius:20px;flex-shrink:0;
+}
 .sb-foot{padding:13px 16px;border-top:1px solid var(--border)}
 .ms{display:flex;align-items:center;justify-content:space-around}
 .msi{text-align:center}
-.msv{display:block;font-size:1.05rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.msv{
+  display:block;font-size:1.05rem;font-weight:700;
+  background:var(--grad);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
 .msl{font-size:.65rem;color:var(--t3)}
 .msd{width:1px;height:26px;background:var(--border)}
-.hbtn{display:none;position:fixed;top:13px;left:13px;z-index:200;background:var(--bgc);border:1px solid var(--border);border-radius:8px;width:40px;height:40px;color:var(--t1);font-size:1.2rem;align-items:center;justify-content:center;}
+.hbtn{
+  display:none;position:fixed;top:13px;left:13px;z-index:200;
+  background:var(--bgc);border:1px solid var(--border);border-radius:8px;
+  width:40px;height:40px;color:var(--t1);font-size:1.2rem;
+  align-items:center;justify-content:center;
+}
 
-/* MAIN */
-.mc{margin-left:var(--sw);flex:1;height:100vh;padding-bottom:var(--adh);overflow-y:auto;overflow-x:hidden;}
+/* ─── MAIN ─── */
+.mc{
+  margin-left:var(--sw);flex:1;height:100vh;
+  padding-bottom:var(--adh);overflow-y:auto;overflow-x:hidden;
+}
 .mc::-webkit-scrollbar{width:4px}
 .mc::-webkit-scrollbar-track{background:transparent}
 .mc::-webkit-scrollbar-thumb{background:var(--t3);border-radius:2px}
 .scr{display:none}
 .scr.on{display:block}
 
-/* WELCOME */
+/* ─── WELCOME ─── */
 .ww{max-width:860px;margin:0 auto;padding:50px 26px}
 .wh{text-align:center;margin-bottom:46px}
 .wh-g{font-size:5rem;display:block;margin-bottom:16px;animation:flt 3.5s ease-in-out infinite}
 @keyframes flt{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(3deg)}}
-.wh h1{font-family:'Space Grotesk',sans-serif;font-size:2.7rem;font-weight:800;background:linear-gradient(135deg,#f0f4ff 30%,#8b97b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:11px;line-height:1.2;}
+.wh h1{
+  font-family:'Space Grotesk',sans-serif;font-size:2.7rem;font-weight:800;
+  background:linear-gradient(135deg,#f0f4ff 30%,#8b97b8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:11px;line-height:1.2;
+}
 .wh p{color:var(--t2);font-size:1.05rem}
 .gcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
-.gcard{background:var(--bgc);border:1px solid var(--border);border-radius:22px;padding:28px 18px;text-align:center;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;}
-.gcard::after{content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:opacity .3s;}
-.gcard:hover{border-color:rgba(124,58,237,.5);transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.45),0 0 28px rgba(124,58,237,.12);}
+.gcard{
+  background:var(--bgc);border:1px solid var(--border);border-radius:22px;
+  padding:28px 18px;text-align:center;cursor:pointer;
+  transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
+}
+.gcard::after{
+  content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:opacity .3s;
+}
+.gcard:hover{
+  border-color:rgba(124,58,237,.5);transform:translateY(-6px);
+  box-shadow:0 20px 40px rgba(0,0,0,.45),0 0 28px rgba(124,58,237,.12);
+}
 .gcard:hover::after{opacity:.06}
 .gc-ic{font-size:2.8rem;display:block;margin-bottom:11px;position:relative;z-index:1}
 .gcard h3{font-size:.97rem;font-weight:700;margin-bottom:5px;position:relative;z-index:1}
 .gcard p{font-size:.75rem;color:var(--t2);position:relative;z-index:1}
 
-/* DIFFICULTY SELECT */
-.diff-modal{max-width:420px;margin:60px auto;padding:26px;background:var(--bgc);border:1px solid var(--border);border-radius:24px;animation:sup .3s ease;}
-.diff-modal h2{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:800;text-align:center;margin-bottom:6px;}
-.diff-modal p{font-size:.85rem;color:var(--t2);text-align:center;margin-bottom:20px;}
-.diff-btns{display:flex;flex-direction:column;gap:11px;}
-.dbtn{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 18px;border-radius:14px;
-  border:1.5px solid var(--border);background:var(--bg2);
-  color:var(--t1);text-align:left;transition:all .2s;
+/* ─── GAME HEADER ─── */
+.gh{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:15px 24px;border-bottom:1px solid var(--border);
+  background:rgba(9,13,26,.88);gap:14px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
 }
-.dbtn:hover{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.08);transform:translateX(4px);}
-.dbtn .dic{font-size:1.8rem;flex-shrink:0}
-.dbtn .dt{font-size:.95rem;font-weight:700}
-.dbtn .dd{font-size:.75rem;color:var(--t2);margin-top:3px}
-.back-link{display:block;text-align:center;margin-top:16px;color:var(--t2);font-size:.82rem;cursor:pointer;transition:color .2s;}
-.back-link:hover{color:var(--t1)}
-
-/* GAME HEADER */
-.gh{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--border);background:rgba(9,13,26,.88);gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);}
 .gi{display:flex;align-items:center;gap:11px}
-.gbadge{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.1));border:1px solid rgba(124,58,237,.35);border-radius:20px;padding:4px 13px;font-size:.8rem;font-weight:600;}
-.gdifficulty{font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:600;border:1px solid;}
-.gd-easy{color:#22c55e;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.1);}
-.gd-medium{color:#f59e0b;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.1);}
-.gd-hard{color:#ef4444;border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.1);}
-.bback{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--t2);padding:4px 13px;border-radius:20px;font-size:.77rem;transition:all .2s;}
+.gbadge{
+  background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.1));
+  border:1px solid rgba(124,58,237,.35);border-radius:20px;
+  padding:4px 13px;font-size:.8rem;font-weight:600;
+}
+.bback{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--t2);
+  padding:4px 13px;border-radius:20px;font-size:.77rem;transition:all .2s;
+}
 .bback:hover{color:var(--t1);border-color:rgba(124,58,237,.35)}
 .prg{display:flex;align-items:center;gap:10px;flex:1;max-width:260px}
 .ptrack{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
 .pbar{height:100%;background:var(--grad);border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1);width:10%}
 .ptxt{font-size:.76rem;color:var(--t3);white-space:nowrap}
-.sbox{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.06));border:1px solid rgba(124,58,237,.3);border-radius:13px;padding:6px 18px;text-align:center;min-width:68px;}
+.sbox{
+  background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.06));
+  border:1px solid rgba(124,58,237,.3);border-radius:13px;
+  padding:6px 18px;text-align:center;min-width:68px;
+}
 .slbl{font-size:.56rem;font-weight:700;letter-spacing:.12em;color:var(--acc);display:block}
 .sval{font-family:'Space Grotesk',sans-serif;font-size:1.55rem;font-weight:800}
 
-/* QUESTION */
+/* ─── QUESTION ─── */
 .qw{padding:32px 26px 12px;max-width:800px;margin:0 auto;animation:sup .35s ease}
-.ow{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;max-width:800px;margin:0 auto;padding:0 26px 38px;animation:sup .35s ease .05s both;}
+.ow{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:11px;
+  max-width:800px;margin:0 auto;padding:0 26px 38px;
+  animation:sup .35s ease .05s both;
+}
 @keyframes sup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .qlbl{text-align:center;color:var(--t2);font-size:.86rem;margin-top:13px}
 
 /* Language card */
-.lcard{background:var(--bgc);border:1px solid var(--border);border-radius:22px;padding:38px 36px;position:relative;overflow:hidden;}
-.lcard::before{content:'"';position:absolute;top:-14px;left:16px;font-size:8.5rem;color:rgba(124,58,237,.07);font-family:Georgia,serif;line-height:1;pointer-events:none;}
+.lcard{
+  background:var(--bgc);border:1px solid var(--border);
+  border-radius:22px;padding:38px 36px;position:relative;overflow:hidden;
+}
+.lcard::before{
+  content:'"';position:absolute;top:-14px;left:16px;
+  font-size:8.5rem;color:rgba(124,58,237,.07);font-family:Georgia,serif;
+  line-height:1;pointer-events:none;
+}
 .ltxt{font-size:1.55rem;font-weight:500;line-height:1.7;color:var(--t1);position:relative;z-index:1;text-align:center}
 
 /* Map card */
-.mcard{background:var(--bgc);border:1px solid var(--border);border-radius:22px;padding:14px;height:350px;position:relative;overflow:hidden;}
-.mmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--t2);font-size:.88rem;}
-.mspn{width:30px;height:30px;border:3px solid rgba(124,58,237,.2);border-top-color:var(--acc);border-radius:50%;animation:rot .8s linear infinite;}
+.mcard{
+  background:var(--bgc);border:1px solid var(--border);border-radius:22px;
+  padding:14px;height:350px;position:relative;overflow:hidden;
+}
+.mmsg{
+  position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;gap:10px;color:var(--t2);font-size:.88rem;
+}
+.mspn{
+  width:30px;height:30px;border:3px solid rgba(124,58,237,.2);
+  border-top-color:var(--acc);border-radius:50%;animation:rot .8s linear infinite;
+}
 #wsvg{width:100%;height:100%;display:block}
 
 /* Currency card */
-.ccard{background:var(--bgc);border:1px solid var(--border);border-radius:22px;padding:40px 28px;text-align:center;}
-.cflag{font-size:2.8rem;display:block;margin-bottom:11px}
+.ccard{
+  background:var(--bgc);border:1px solid var(--border);
+  border-radius:22px;padding:40px 28px;text-align:center;
+}
+.cflag{
+  width:60px;height:auto;display:block;margin:0 auto 11px;
+  border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
 .cname{font-family:'Space Grotesk',sans-serif;font-size:2.1rem;font-weight:800;margin-bottom:10px}
 .chint{font-size:.88rem;color:var(--t2)}
 
-/* Flag card — real image */
-.fcard{background:var(--bgc);border:1px solid var(--border);border-radius:22px;padding:36px 28px;text-align:center;}
-.fcard img{width:300px;max-width:90%;height:200px;object-fit:cover;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);border:1px solid var(--border);}
+/* Flag card */
+.fcard{
+  background:var(--bgc);border:1px solid var(--border);
+  border-radius:22px;padding:44px 28px;text-align:center;
+}
+.fbig{
+  width:180px;height:auto;display:block;margin:0 auto;
+  filter:drop-shadow(0 6px 22px rgba(0,0,0,.45));
+  animation:wave 2.3s ease-in-out infinite;
+  border-radius:8px;
+}
+@keyframes wave{0%,100%{transform:scale(1) rotate(-1.5deg)}50%{transform:scale(1.06) rotate(1.5deg)}}
 
-/* OPTIONS */
-.obtn{background:var(--bgc);border:1.5px solid var(--border);border-radius:13px;padding:15px 17px;color:var(--t1);font-size:.9rem;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:left;display:flex;align-items:center;gap:11px;}
-.obtn:hover:not(:disabled){border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.08);transform:translateY(-2px);box-shadow:0 6px 18px rgba(124,58,237,.12);}
+/* ─── OPTIONS ─── */
+.obtn{
+  background:var(--bgc);border:1.5px solid var(--border);border-radius:13px;
+  padding:15px 17px;color:var(--t1);font-size:.9rem;font-weight:500;
+  cursor:pointer;transition:all .2s ease;text-align:left;
+  display:flex;align-items:center;gap:11px;
+}
+.obtn:hover:not(:disabled){
+  border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.08);
+  transform:translateY(-2px);box-shadow:0 6px 18px rgba(124,58,237,.12);
+}
 .obtn.ok{border-color:var(--ok);background:rgba(34,197,94,.1);color:#4ade80}
 .obtn.no{border-color:var(--err);background:rgba(239,68,68,.1);color:#f87171}
 .obtn:disabled{cursor:default}
-.olet{width:29px;height:29px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:.76rem;font-weight:700;color:var(--t3);flex-shrink:0;}
+.olet{
+  width:29px;height:29px;border-radius:50%;background:rgba(255,255,255,.05);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.76rem;font-weight:700;color:var(--t3);flex-shrink:0;
+}
 .obtn.ok .olet{background:rgba(34,197,94,.2);color:#4ade80}
 .obtn.no .olet{background:rgba(239,68,68,.2);color:#f87171}
 
-/* RESULTS */
+/* ─── RESULTS ─── */
 .rw{max-width:500px;margin:0 auto;padding:56px 26px;text-align:center;animation:sup .4s ease}
 .ric{font-size:5rem;display:block;margin-bottom:14px;animation:bnc .6s ease}
 @keyframes bnc{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 .rttl{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;margin-bottom:20px}
-.rbig{font-family:'Space Grotesk',sans-serif;font-size:5.2rem;font-weight:900;line-height:1;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.rbig{
+  font-family:'Space Grotesk',sans-serif;font-size:5.2rem;font-weight:900;line-height:1;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
 .rtot{font-size:1.9rem;color:var(--t2);-webkit-text-fill-color:var(--t2)}
 .rmsg{color:var(--t2);font-size:1rem;margin:11px 0 26px}
-.bdn{display:flex;justify-content:center;background:var(--bgc);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:26px;}
+.bdn{
+  display:flex;justify-content:center;
+  background:var(--bgc);border:1px solid var(--border);
+  border-radius:18px;padding:20px;margin-bottom:26px;
+}
 .bdi{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
 .bds{width:1px;background:var(--border)}
 .bdic{font-size:1.4rem}
@@ -163,22 +270,50 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .bdi.ok .bdn-n{color:var(--ok)}.bdi.no .bdn-n{color:var(--err)}.bdi.ac .bdn-n{color:var(--warn)}
 .bdl{font-size:.7rem;color:var(--t3)}
 .ract{display:flex;flex-direction:column;gap:10px}
-.bp{background:var(--grad);border:none;border-radius:13px;padding:14px 26px;color:#fff;font-size:.97rem;font-weight:700;transition:all .2s;box-shadow:0 4px 18px rgba(124,58,237,.35);}
+.bp{
+  background:var(--grad);border:none;border-radius:13px;
+  padding:14px 26px;color:#fff;font-size:.97rem;font-weight:700;
+  transition:all .2s;box-shadow:0 4px 18px rgba(124,58,237,.35);
+}
 .bp:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(124,58,237,.5)}
-.bs{background:var(--bgc);border:1px solid var(--border);border-radius:13px;padding:13px 26px;color:var(--t2);font-size:.97rem;font-weight:500;transition:all .2s;}
+.bs{
+  background:var(--bgc);border:1px solid var(--border);border-radius:13px;
+  padding:13px 26px;color:var(--t2);font-size:.97rem;font-weight:500;transition:all .2s;
+}
 .bs:hover{color:var(--t1);border-color:rgba(124,58,237,.35)}
 
-/* TOAST */
-.toast{position:fixed;top:50%;left:50%;padding:17px 30px;border-radius:18px;font-size:1.4rem;font-weight:800;z-index:9999;pointer-events:none;opacity:0;animation:tpop .95s ease forwards;}
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;top:50%;left:50%;
+  padding:17px 30px;border-radius:18px;
+  font-size:1.4rem;font-weight:800;z-index:9999;pointer-events:none;
+  opacity:0;animation:tpop .95s ease forwards;
+}
 .toast.ok{background:rgba(34,197,94,.92);color:#fff;box-shadow:0 0 40px rgba(34,197,94,.5)}
 .toast.no{background:rgba(239,68,68,.92);color:#fff;box-shadow:0 0 40px rgba(239,68,68,.5)}
-@keyframes tpop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}25%{transform:translate(-50%,-50%) scale(1.1);opacity:1}70%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(.8);opacity:0}}
+@keyframes tpop{
+  0%{transform:translate(-50%,-50%) scale(.5);opacity:0}
+  25%{transform:translate(-50%,-50%) scale(1.1);opacity:1}
+  70%{transform:translate(-50%,-50%) scale(1);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(.8);opacity:0}
+}
 
-/* AD BAR */
-.adbar{position:fixed;bottom:0;left:0;right:0;height:var(--adh);background:var(--bgs);border-top:1px solid var(--border);z-index:1000;display:flex;align-items:center;justify-content:center;}
+/* ─── AD BAR ─── */
+.adbar{
+  position:fixed;bottom:0;left:0;right:0;height:var(--adh);
+  background:var(--bgs);border-top:1px solid var(--border);
+  z-index:1000;display:flex;align-items:center;justify-content:center;
+}
 .adtag{position:absolute;top:3px;right:8px;font-size:.57rem;color:var(--t3);letter-spacing:.1em}
-.adph{width:728px;max-width:96%;height:58px;border:1px dashed rgba(124,58,237,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:.76rem;background:linear-gradient(90deg,rgba(124,58,237,.03),rgba(6,182,212,.03));}
+.adph{
+  width:728px;max-width:96%;height:58px;
+  border:1px dashed rgba(124,58,237,.2);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t3);font-size:.76rem;
+  background:linear-gradient(90deg,rgba(124,58,237,.03),rgba(6,182,212,.03));
+}
 
+/* ─── RESPONSIVE ─── */
 @media(max-width:820px){
   .sb{transform:translateX(-100%)}
   .sb.open{transform:translateX(0);box-shadow:8px 0 40px rgba(0,0,0,.7)}
@@ -190,6 +325,7 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
   .ow{padding:0 13px 18px}
   .ltxt{font-size:1.15rem}
   .mcard{height:230px}
+  .fbig{width:140px}
   .wh h1{font-size:1.9rem}
   .rbig{font-size:3.8rem}
 }
@@ -198,31 +334,32 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 </head>
 <body>
 
+<!-- ══════════ SIDEBAR ══════════ -->
 <aside class="sb" id="sb">
   <div class="sb-logo">
     <span class="sb-globe">🌍</span>
     <div>
-      <span class="sb-name">WorldQuiz</span>
+      <span class="sb-name">GeoQuiz</span>
       <span class="sb-sub">Coğrafiya Oyunları</span>
     </div>
   </div>
   <nav class="sb-nav">
     <p class="sb-sec">OYUNLAR</p>
-    <button class="ni active" id="n-language" onclick="chooseDiff('language')">
+    <button class="ni active" id="n-language" onclick="startGame('language')">
       <span class="ni-ic">🔤</span>
       <div class="ni-b"><span class="ni-t">Dil Tapma</span><span class="ni-d">Hansı dildə yazılıb?</span></div>
       <span class="ni-badge">YENİ</span>
     </button>
-    <button class="ni" id="n-map" onclick="chooseDiff('map')">
+    <button class="ni" id="n-map" onclick="startGame('map')">
       <span class="ni-ic">🗺️</span>
       <div class="ni-b"><span class="ni-t">Xəritə Oyunu</span><span class="ni-d">Ölkəni xəritədə tap</span></div>
     </button>
-    <button class="ni" id="n-currency" onclick="chooseDiff('currency')">
+    <button class="ni" id="n-currency" onclick="startGame('currency')">
       <span class="ni-ic">💰</span>
       <div class="ni-b"><span class="ni-t">Valyuta Tapma</span><span class="ni-d">Ölkənin pul vahidi</span></div>
     </button>
-    <button class="ni" id="n-flag" onclick="chooseDiff('flag')">
-      <span class="ni-ic">🚩</span>
+    <button class="ni" id="n-flag" onclick="startGame('flag')">
+      <span class="ni-ic">🏴</span>
       <div class="ni-b"><span class="ni-t">Bayraq Tapma</span><span class="ni-d">Bayrağa görə ölkə</span></div>
     </button>
   </nav>
@@ -237,6 +374,7 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 
 <button class="hbtn" id="hbtn" onclick="toggleSB()">☰</button>
 
+<!-- ══════════ MAIN ══════════ -->
 <main class="mc" id="mc">
 
   <!-- Welcome -->
@@ -244,39 +382,22 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
     <div class="ww">
       <div class="wh">
         <span class="wh-g">🌍</span>
-        <h1>WorldQuiz-ə Xoş Gəldiniz!</h1>
+        <h1>GeoQuiz-ə Xoş Gəldiniz!</h1>
         <p>Sol menyudan bir oyun seçin və biliklərinizi yoxlayın</p>
       </div>
       <div class="gcards">
-        <div class="gcard" onclick="chooseDiff('language')"><span class="gc-ic">🔤</span><h3>Dil Tapma</h3><p>Cümləni oxu, hansı dildə olduğunu tap</p></div>
-        <div class="gcard" onclick="chooseDiff('map')"><span class="gc-ic">🗺️</span><h3>Xəritə Oyunu</h3><p>Xəritədə göstərilən ölkəni tap</p></div>
-        <div class="gcard" onclick="chooseDiff('currency')"><span class="gc-ic">💰</span><h3>Valyuta Tapma</h3><p>Ölkənin pul vahidini tap</p></div>
-        <div class="gcard" onclick="chooseDiff('flag')"><span class="gc-ic">🚩</span><h3>Bayraq Tapma</h3><p>Bayrağa görə ölkəni müəyyən et</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Difficulty chooser -->
-  <div class="scr" id="scr-diff">
-    <div style="padding:26px">
-      <div class="diff-modal">
-        <h2 id="diff-title">Oyun Seçin</h2>
-        <p>Çətinlik səviyyəsini seçin</p>
-        <div class="diff-btns">
-          <button class="dbtn" onclick="startGame(pendingType,'easy')">
-            <span class="dic">🟢</span>
-            <div><div class="dt">Asan</div><div class="dd">Məşhur ölkələr · 6 variant</div></div>
-          </button>
-          <button class="dbtn" onclick="startGame(pendingType,'medium')">
-            <span class="dic">🟡</span>
-            <div><div class="dt">Orta</div><div class="dd">Az tanınan ölkələr · 6 variant</div></div>
-          </button>
-          <button class="dbtn" onclick="startGame(pendingType,'hard')">
-            <span class="dic">🔴</span>
-            <div><div class="dt">Çətin</div><div class="dd">Nadir ölkələr · 6 variant</div></div>
-          </button>
+        <div class="gcard" onclick="startGame('language')">
+          <span class="gc-ic">🔤</span><h3>Dil Tapma</h3><p>Cümləni oxu, hansı dildə olduğunu tap</p>
         </div>
-        <span class="back-link" onclick="goHome()">← Geri qayıt</span>
+        <div class="gcard" onclick="startGame('map')">
+          <span class="gc-ic">🗺️</span><h3>Xəritə Oyunu</h3><p>Xəritədə göstərilən ölkəni tap</p>
+        </div>
+        <div class="gcard" onclick="startGame('currency')">
+          <span class="gc-ic">💰</span><h3>Valyuta Tapma</h3><p>Ölkənin pul vahidini tap</p>
+        </div>
+        <div class="gcard" onclick="startGame('flag')">
+          <span class="gc-ic">🏴</span><h3>Bayraq Tapma</h3><p>Bayrağa görə ölkəni müəyyən et</p>
+        </div>
       </div>
     </div>
   </div>
@@ -286,14 +407,16 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
     <div class="gh">
       <div class="gi">
         <span class="gbadge" id="gbadge">🔤 Dil Tapma</span>
-        <span class="gdifficulty" id="gdiff">Asan</span>
         <button class="bback" onclick="goHome()">← Geri</button>
       </div>
       <div class="prg">
         <div class="ptrack"><div class="pbar" id="pbar"></div></div>
         <span class="ptxt" id="ptxt">1 / 10</span>
       </div>
-      <div class="sbox"><span class="slbl">XAL</span><span class="sval" id="sval">0</span></div>
+      <div class="sbox">
+        <span class="slbl">XAL</span>
+        <span class="sval" id="sval">0</span>
+      </div>
     </div>
     <div class="qw" id="qw"></div>
     <div class="ow" id="ow"></div>
@@ -315,7 +438,6 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
       </div>
       <div class="ract">
         <button class="bp" onclick="restartGame()">🔄 Yenidən Oyna</button>
-        <button class="bs" onclick="chooseDiff(GS.type)">⚙️ Çətinlik Dəyiş</button>
         <button class="bs" onclick="goHome()">🏠 Əsas Səhifə</button>
       </div>
     </div>
@@ -323,243 +445,170 @@ body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 
 </main>
 
+<!-- ══════════ ALT REKLAM ══════════ -->
 <div class="adbar">
   <span class="adtag">Reklam</span>
-  <ins class="adsbygoogle" style="display:inline-block;width:728px;max-width:96%;height:58px" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="0000000000"></ins>
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:728px;max-width:96%;height:58px"
+       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+       data-ad-slot="0000000000"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({})</script>
   <div class="adph" id="adph">📢 Reklam Sahəsi – Google AdSense (728×58)</div>
 </div>
 
 <script>
-/* ═══════════ COUNTRIES ═══════════ */
-// easy = top 20 world countries, medium = mid-tier, hard = rare
-const C_EASY=[
-  {id:840,code:'US',nameAz:'Amerika (ABŞ)',         currency:'ABŞ Dolları',          cur:'USD',flagCode:'us',flag:'🇺🇸',lc:'en'},
-  {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',       cur:'GBP',flagCode:'gb',flag:'🇬🇧',lc:'en'},
-  {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                 cur:'EUR',flagCode:'fr',flag:'🇫🇷',lc:'fr'},
-  {id:276,code:'DE',nameAz:'Almaniya',               currency:'Avro',                 cur:'EUR',flagCode:'de',flag:'🇩🇪',lc:'de'},
-  {id:392,code:'JP',nameAz:'Yaponiya',               currency:'Yapon Yeni',           cur:'JPY',flagCode:'jp',flag:'🇯🇵',lc:'ja'},
-  {id:156,code:'CN',nameAz:'Çin',                    currency:'Çin Yuanı',            cur:'CNY',flagCode:'cn',flag:'🇨🇳',lc:'zh'},
-  {id:76, code:'BR',nameAz:'Braziliya',              currency:'Braziliya Realı',      cur:'BRL',flagCode:'br',flag:'🇧🇷',lc:'pt'},
-  {id:643,code:'RU',nameAz:'Rusiya',                 currency:'Rus Rublu',            cur:'RUB',flagCode:'ru',flag:'🇷🇺',lc:'ru'},
-  {id:356,code:'IN',nameAz:'Hindistan',              currency:'Hindistan Rupisi',     cur:'INR',flagCode:'in',flag:'🇮🇳',lc:'hi'},
-  {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',       cur:'MXN',flagCode:'mx',flag:'🇲🇽',lc:'es'},
-  {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',   cur:'AUD',flagCode:'au',flag:'🇦🇺',lc:'en'},
-  {id:124,code:'CA',nameAz:'Kanada',                 currency:'Kanada Dolları',       cur:'CAD',flagCode:'ca',flag:'🇨🇦',lc:'fr'},
-  {id:380,code:'IT',nameAz:'İtaliya',                currency:'Avro',                 cur:'EUR',flagCode:'it',flag:'🇮🇹',lc:'it'},
-  {id:724,code:'ES',nameAz:'İspaniya',               currency:'Avro',                 cur:'EUR',flagCode:'es',flag:'🇪🇸',lc:'es'},
-  {id:792,code:'TR',nameAz:'Türkiyə',                currency:'Türk Lirəsi',          cur:'TRY',flagCode:'tr',flag:'🇹🇷',lc:'tr'},
-  {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',    cur:'AZN',flagCode:'az',flag:'🇦🇿',lc:'az'},
-  {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',         cur:'SAR',flagCode:'sa',flag:'🇸🇦',lc:'ar'},
-  {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',          cur:'KRW',flagCode:'kr',flag:'🇰🇷',lc:'ko'},
-  {id:616,code:'PL',nameAz:'Polşa',                  currency:'Polşa Zlotısı',        cur:'PLN',flagCode:'pl',flag:'🇵🇱',lc:'pl'},
-  {id:528,code:'NL',nameAz:'Niderland',              currency:'Avro',                 cur:'EUR',flagCode:'nl',flag:'🇳🇱',lc:'nl'},
-];
-const C_MEDIUM=[
-  {id:752,code:'SE',nameAz:'İsveç',                  currency:'İsveç Kronası',        cur:'SEK',flagCode:'se',flag:'🇸🇪',lc:'sv'},
-  {id:578,code:'NO',nameAz:'Norveç',                 currency:'Norveç Kronası',       cur:'NOK',flagCode:'no',flag:'🇳🇴',lc:'no'},
-  {id:208,code:'DK',nameAz:'Danimarka',              currency:'Danimarka Kronası',    cur:'DKK',flagCode:'dk',flag:'🇩🇰',lc:'da'},
-  {id:756,code:'CH',nameAz:'İsveçrə',                currency:'İsveçrə Frankı',       cur:'CHF',flagCode:'ch',flag:'🇨🇭',lc:'de'},
-  {id:620,code:'PT',nameAz:'Portuqaliya',            currency:'Avro',                 cur:'EUR',flagCode:'pt',flag:'🇵🇹',lc:'pt'},
-  {id:300,code:'GR',nameAz:'Yunanıstan',             currency:'Avro',                 cur:'EUR',flagCode:'gr',flag:'🇬🇷',lc:'el'},
-  {id:804,code:'UA',nameAz:'Ukrayna',                currency:'Ukrayna Qrivnası',     cur:'UAH',flagCode:'ua',flag:'🇺🇦',lc:'uk'},
-  {id:642,code:'RO',nameAz:'Rumıniya',               currency:'Rumıniya Leyi',        cur:'RON',flagCode:'ro',flag:'🇷🇴',lc:'ro'},
-  {id:348,code:'HU',nameAz:'Macarıstan',             currency:'Macarıstan Forinti',   cur:'HUF',flagCode:'hu',flag:'🇭🇺',lc:'hu'},
-  {id:203,code:'CZ',nameAz:'Çexiya',                 currency:'Çex Kronası',          cur:'CZK',flagCode:'cz',flag:'🇨🇿',lc:'cs'},
-  {id:246,code:'FI',nameAz:'Finlandiya',             currency:'Avro',                 cur:'EUR',flagCode:'fi',flag:'🇫🇮',lc:'fi'},
-  {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',  cur:'ZAR',flagCode:'za',flag:'🇿🇦',lc:'zu'},
-  {id:818,code:'EG',nameAz:'Misir',                  currency:'Misir Funtu',          cur:'EGP',flagCode:'eg',flag:'🇪🇬',lc:'ar'},
-  {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',         cur:'THB',flagCode:'th',flag:'🇹🇭',lc:'th'},
-  {id:360,code:'ID',nameAz:'İndoneziya',             currency:'İndoneziya Rupisi',    cur:'IDR',flagCode:'id',flag:'🇮🇩',lc:'id'},
-  {id:458,code:'MY',nameAz:'Malayziya',              currency:'Malayziya Ringgiti',   cur:'MYR',flagCode:'my',flag:'🇲🇾',lc:'ms'},
-  {id:704,code:'VN',nameAz:'Vyetnam',                currency:'Vyetnam Donqu',        cur:'VND',flagCode:'vn',flag:'🇻🇳',lc:'vi'},
-  {id:376,code:'IL',nameAz:'İsrail',                 currency:'İsrail Şekeli',        cur:'ILS',flagCode:'il',flag:'🇮🇱',lc:'he'},
-  {id:784,code:'AE',nameAz:'BƏƏ',                    currency:'BƏƏ Dirhəmi',          cur:'AED',flagCode:'ae',flag:'🇦🇪',lc:'ar'},
-  {id:152,code:'CL',nameAz:'Çili',                   currency:'Çili Pesosu',          cur:'CLP',flagCode:'cl',flag:'🇨🇱',lc:'es'},
-];
-const C_HARD=[
-  {id:32, code:'AR',nameAz:'Argentina',              currency:'Argentina Pesosu',     cur:'ARS',flagCode:'ar',flag:'🇦🇷',lc:'es'},
-  {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',     cur:'NGN',flagCode:'ng',flag:'🇳🇬',lc:'ig'},
-  {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',      cur:'KES',flagCode:'ke',flag:'🇰🇪',lc:'sw'},
-  {id:608,code:'PH',nameAz:'Filippin',               currency:'Filippin Pesosu',      cur:'PHP',flagCode:'ph',flag:'🇵🇭',lc:'tl'},
-  {id:50, code:'BD',nameAz:'Banqladeş',              currency:'Banqladeş Takası',     cur:'BDT',flagCode:'bd',flag:'🇧🇩',lc:'bn'},
-  {id:586,code:'PK',nameAz:'Pakistan',               currency:'Pakistan Rupisi',      cur:'PKR',flagCode:'pk',flag:'🇵🇰',lc:'ur'},
-  {id:364,code:'IR',nameAz:'İran',                   currency:'İran Rialı',           cur:'IRR',flagCode:'ir',flag:'🇮🇷',lc:'fa'},
-  {id:554,code:'NZ',nameAz:'Yeni Zelandiya',         currency:'Yeni Zelandiya Dolları',cur:'NZD',flagCode:'nz',flag:'🇳🇿',lc:'en'},
-  {id:414,code:'KW',nameAz:'Küveyt',                 currency:'Küveyt Dinarı',        cur:'KWD',flagCode:'kw',flag:'🇰🇼',lc:'ar'},
-  {id:634,code:'QA',nameAz:'Qətər',                  currency:'Qətər Riyalı',         cur:'QAR',flagCode:'qa',flag:'🇶🇦',lc:'ar'},
-  {id:170,code:'CO',nameAz:'Kolumbiya',              currency:'Kolumbiya Pesosu',     cur:'COP',flagCode:'co',flag:'🇨🇴',lc:'es'},
-  {id:604,code:'PE',nameAz:'Peru',                   currency:'Peru Solu',            cur:'PEN',flagCode:'pe',flag:'🇵🇪',lc:'es'},
-  {id:504,code:'MA',nameAz:'Mərakeş',                currency:'Mərakeş Dirhəmi',      cur:'MAD',flagCode:'ma',flag:'🇲🇦',lc:'ar'},
-  {id:372,code:'IE',nameAz:'İrlandiya',              currency:'Avro',                 cur:'EUR',flagCode:'ie',flag:'🇮🇪',lc:'en'},
-  {id:703,code:'SK',nameAz:'Slovakiya',              currency:'Avro',                 cur:'EUR',flagCode:'sk',flag:'🇸🇰',lc:'sk'},
-  {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',          cur:'BGN',flagCode:'bg',flag:'🇧🇬',lc:'bg'},
-  {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                 cur:'EUR',flagCode:'hr',flag:'🇭🇷',lc:'hr'},
-  {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',       cur:'RSD',flagCode:'rs',flag:'🇷🇸',lc:'sr'},
-  {id:191,code:'EE',nameAz:'Estoniya',               currency:'Avro',                 cur:'EUR',flagCode:'ee',flag:'🇪🇪',lc:'et'},
-  {id:428,code:'LV',nameAz:'Latviya',                currency:'Avro',                 cur:'EUR',flagCode:'lv',flag:'🇱🇻',lc:'lv'},
+/* ═══════════════════════════════════════════
+   DATA – Countries + Phrases
+═══════════════════════════════════════════ */
+const C=[
+  {id:840,code:'US',nameAz:'Amerika',               currency:'ABŞ Dolları',            cur:'USD',flag:'🇺🇸',lc:'en'},
+  {id:826,code:'GB',nameAz:'Böyük Britaniya',        currency:'Britaniya Funtu',         cur:'GBP',flag:'🇬🇧',lc:'en'},
+  {id:250,code:'FR',nameAz:'Fransa',                 currency:'Avro',                   cur:'EUR',flag:'🇫🇷',lc:'fr'},
+  {id:276,code:'DE',nameAz:'Almaniya',               currency:'Avro',                   cur:'EUR',flag:'🇩🇪',lc:'de'},
+  {id:392,code:'JP',nameAz:'Yaponiya',               currency:'Yapon Yeni',             cur:'JPY',flag:'🇯🇵',lc:'ja'},
+  {id:156,code:'CN',nameAz:'Çin',                    currency:'Çin Yuanı',              cur:'CNY',flag:'🇨🇳',lc:'zh'},
+  {id:76, code:'BR',nameAz:'Braziliya',              currency:'Braziliya Realı',        cur:'BRL',flag:'🇧🇷',lc:'pt'},
+  {id:643,code:'RU',nameAz:'Rusiya',                 currency:'Rus Rublu',              cur:'RUB',flag:'🇷🇺',lc:'ru'},
+  {id:356,code:'IN',nameAz:'Hindistan',              currency:'Hindistan Rupisi',       cur:'INR',flag:'🇮🇳',lc:'hi'},
+  {id:484,code:'MX',nameAz:'Meksika',                currency:'Meksika Pesosu',         cur:'MXN',flag:'🇲🇽',lc:'es'},
+  {id:36, code:'AU',nameAz:'Avstraliya',             currency:'Avstraliya Dolları',     cur:'AUD',flag:'🇦🇺',lc:'en'},
+  {id:124,code:'CA',nameAz:'Kanada',                 currency:'Kanada Dolları',         cur:'CAD',flag:'🇨🇦',lc:'fr'},
+  {id:380,code:'IT',nameAz:'İtaliya',                currency:'Avro',                   cur:'EUR',flag:'🇮🇹',lc:'it'},
+  {id:724,code:'ES',nameAz:'İspaniya',               currency:'Avro',                   cur:'EUR',flag:'🇪🇸',lc:'es'},
+  {id:682,code:'SA',nameAz:'Səudiyyə Ərəbistanı',   currency:'Səudi Riyalı',           cur:'SAR',flag:'🇸🇦',lc:'ar'},
+  {id:792,code:'TR',nameAz:'Türkiyə',                currency:'Türk Lirəsi',            cur:'TRY',flag:'🇹🇷',lc:'tr'},
+  {id:410,code:'KR',nameAz:'Cənubi Koreya',          currency:'Koreya Vonu',            cur:'KRW',flag:'🇰🇷',lc:'ko'},
+  {id:32, code:'AR',nameAz:'Argentina',              currency:'Argentina Pesosu',       cur:'ARS',flag:'🇦🇷',lc:'es'},
+  {id:616,code:'PL',nameAz:'Polşa',                  currency:'Polşa Zlotısı',          cur:'PLN',flag:'🇵🇱',lc:'pl'},
+  {id:528,code:'NL',nameAz:'Niderland',              currency:'Avro',                   cur:'EUR',flag:'🇳🇱',lc:'nl'},
+  {id:752,code:'SE',nameAz:'İsveç',                  currency:'İsveç Kronası',          cur:'SEK',flag:'🇸🇪',lc:'sv'},
+  {id:578,code:'NO',nameAz:'Norveç',                 currency:'Norveç Kronası',         cur:'NOK',flag:'🇳🇴',lc:'no'},
+  {id:208,code:'DK',nameAz:'Danimarka',              currency:'Danimarka Kronası',      cur:'DKK',flag:'🇩🇰',lc:'da'},
+  {id:756,code:'CH',nameAz:'İsveçrə',                currency:'İsveçrə Frankı',         cur:'CHF',flag:'🇨🇭',lc:'de'},
+  {id:620,code:'PT',nameAz:'Portuqaliya',            currency:'Avro',                   cur:'EUR',flag:'🇵🇹',lc:'pt'},
+  {id:300,code:'GR',nameAz:'Yunanıstan',             currency:'Avro',                   cur:'EUR',flag:'🇬🇷',lc:'el'},
+  {id:31, code:'AZ',nameAz:'Azərbaycan',             currency:'Azərbaycan Manatı',      cur:'AZN',flag:'🇦🇿',lc:'az'},
+  {id:804,code:'UA',nameAz:'Ukrayna',                currency:'Ukrayna Qrivnası',       cur:'UAH',flag:'🇺🇦',lc:'uk'},
+  {id:642,code:'RO',nameAz:'Rumıniya',               currency:'Rumıniya Leyi',          cur:'RON',flag:'🇷🇴',lc:'ro'},
+  {id:348,code:'HU',nameAz:'Macarıstan',             currency:'Macarıstan Forinti',     cur:'HUF',flag:'🇭🇺',lc:'hu'},
+  {id:203,code:'CZ',nameAz:'Çexiya',                 currency:'Çex Kronası',            cur:'CZK',flag:'🇨🇿',lc:'cs'},
+  {id:246,code:'FI',nameAz:'Finlandiya',             currency:'Avro',                   cur:'EUR',flag:'🇫🇮',lc:'fi'},
+  {id:710,code:'ZA',nameAz:'Cənubi Afrika',          currency:'Cənubi Afrika Randı',    cur:'ZAR',flag:'🇿🇦',lc:'zu'},
+  {id:818,code:'EG',nameAz:'Mısır',                  currency:'Misir Funtu',            cur:'EGP',flag:'🇪🇬',lc:'ar'},
+  {id:566,code:'NG',nameAz:'Nigeriya',               currency:'Nigeriya Nayrası',       cur:'NGN',flag:'🇳🇬',lc:'ig'},
+  {id:404,code:'KE',nameAz:'Keniya',                 currency:'Keniya Şillinqi',        cur:'KES',flag:'🇰🇪',lc:'sw'},
+  {id:764,code:'TH',nameAz:'Tailand',                currency:'Tailand Batı',           cur:'THB',flag:'🇹🇭',lc:'th'},
+  {id:360,code:'ID',nameAz:'İndoneziya',             currency:'İndoneziya Rupisi',      cur:'IDR',flag:'🇮🇩',lc:'id'},
+  {id:458,code:'MY',nameAz:'Malayziya',              currency:'Malayziya Ringgiti',     cur:'MYR',flag:'🇲🇾',lc:'ms'},
+  {id:608,code:'PH',nameAz:'Filippin',               currency:'Filippin Pesosu',        cur:'PHP',flag:'🇵🇭',lc:'tl'},
+  {id:704,code:'VN',nameAz:'Vyetnam',                currency:'Vyetnam Donqu',          cur:'VND',flag:'🇻🇳',lc:'vi'},
+  {id:50, code:'BD',nameAz:'Banqladeş',              currency:'Banqladeş Takası',       cur:'BDT',flag:'🇧🇩',lc:'bn'},
+  {id:586,code:'PK',nameAz:'Pakistan',               currency:'Pakistan Rupisi',        cur:'PKR',flag:'🇵🇰',lc:'ur'},
+  {id:376,code:'IL',nameAz:'İsrail',                 currency:'İsrail Şekeli',          cur:'ILS',flag:'🇮🇱',lc:'he'},
+  {id:364,code:'IR',nameAz:'İran',                   currency:'İran Rialı',             cur:'IRR',flag:'🇮🇷',lc:'fa'},
+  {id:554,code:'NZ',nameAz:'Yeni Zelandiya',         currency:'Yeni Zelandiya Dolları', cur:'NZD',flag:'🇳🇿',lc:'en'},
+  {id:784,code:'AE',nameAz:'BƏƏ',                    currency:'BƏƏ Dirhəmi',            cur:'AED',flag:'🇦🇪',lc:'ar'},
+  {id:414,code:'KW',nameAz:'Küveyt',                 currency:'Küveyt Dinarı',          cur:'KWD',flag:'🇰🇼',lc:'ar'},
+  {id:634,code:'QA',nameAz:'Qətər',                  currency:'Qətər Riyalı',           cur:'QAR',flag:'🇶🇦',lc:'ar'},
+  {id:152,code:'CL',nameAz:'Çili',                   currency:'Çili Pesosu',            cur:'CLP',flag:'🇨🇱',lc:'es'},
+  {id:170,code:'CO',nameAz:'Kolumbiya',              currency:'Kolumbiya Pesosu',       cur:'COP',flag:'🇨🇴',lc:'es'},
+  {id:604,code:'PE',nameAz:'Peru',                   currency:'Peru Solu',              cur:'PEN',flag:'🇵🇪',lc:'es'},
+  {id:504,code:'MA',nameAz:'Mərakeş',                currency:'Mərakeş Dirhəmi',        cur:'MAD',flag:'🇲🇦',lc:'ar'},
+  {id:372,code:'IE',nameAz:'İrlandiya',              currency:'Avro',                   cur:'EUR',flag:'🇮🇪',lc:'en'},
+  {id:703,code:'SK',nameAz:'Slovakiya',              currency:'Avro',                   cur:'EUR',flag:'🇸🇰',lc:'sk'},
+  {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',flag:'🇧🇬',lc:'bg'},
+  {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',flag:'🇭🇷',lc:'hr'},
+  {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',flag:'🇷🇸',lc:'sr'},
 ];
 
-const ALL_C=[...C_EASY,...C_MEDIUM,...C_HARD];
-
-// Multiple unique phrases per language for more variety
 const P={
-  en:[
-    'The morning sun cast golden light across the quiet valley below.',
-    'Children played happily in the park as autumn leaves fell gently.',
-    'The old lighthouse stood firm against the crashing ocean waves.',
-  ],
-  fr:[
-    'Les étoiles brillent intensément dans le ciel nocturne et calme.',
-    'Le parfum des roses emplit le jardin au coucher du soleil.',
-    'La rivière serpente doucement à travers la forêt enchantée.',
-  ],
-  de:[
-    'Die Berge spiegeln sich im klaren Wasser des ruhigen Sees wider.',
-    'Der Herbstwind trägt die bunten Blätter durch die stillen Straßen.',
-    'Im Dorf leuchten abends die Fenster warm und einladend.',
-  ],
-  es:[
-    'Las flores del jardín perfuman el aire fresco de la mañana.',
-    'El sol se pone lentamente sobre las colinas doradas del campo.',
-    'Los niños corren felices por las calles empedradas del pueblo.',
-  ],
-  pt:[
-    'As ondas do mar trazem calma e paz para a alma cansada.',
-    'O vento suave agita as folhas das árvores na tarde quente.',
-    'A lua cheia ilumina o caminho pela floresta escura e silenciosa.',
-  ],
-  it:[
-    'Il profumo del caffè si diffonde delicatamente per tutta la casa.',
-    'Le campane della chiesa suonano dolcemente nel tramonto dorato.',
-    'Il mare azzurro brilla sotto il sole cocente dell estate.',
-  ],
-  ru:[
-    'Снег тихо падает на замёрзшие поля и тёмные леса вдали.',
-    'Ветер шумит в кронах деревьев в тихом осеннем парке.',
-    'Река медленно несёт свои воды сквозь густой зелёный лес.',
-  ],
-  ja:[
-    '桜の花びらが風に舞い、春の訪れをやさしく告げています。',
-    '夕暮れの空に星が輝き、静かな夜が始まろうとしている。',
-    '雨の音が屋根を叩き、窓の外に靄が立ち込めている。',
-  ],
-  zh:[
-    '清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。',
-    '秋天的落叶铺满了小径，风儿轻轻地吹过树梢。',
-    '夜空中繁星点点，月亮高挂，照亮了整个村庄。',
-  ],
-  ko:[
-    '가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.',
-    '봄비가 내리고 꽃들이 피어나 온 세상이 향기롭습니다.',
-    '저녁 노을이 하늘을 물들이며 하루가 저물어 갑니다.',
-  ],
-  ar:[
-    'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.',
-    'تهب الرياح الباردة في الليل وتحمل رائحة المطر الخفيف.',
-    'يتساقط الثلج ببطء على الجبال الشامخة في فصل الشتاء.',
-  ],
-  hi:[
-    'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं।',
-    'सूरज की किरणें पहाड़ों को सोने की तरह चमका देती हैं।',
-    'नदी के किनारे पक्षी मधुर स्वर में गीत गाते हैं।',
-  ],
-  tr:[
-    'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.',
-    'Dağların zirvesinde beyaz karlar parlıyor ve rüzgar esiyor.',
-    'Bahar gelince çiçekler açıyor ve ortalık güzel kokuyor.',
-  ],
-  az:[
-    'Dağların zirvəsindən vadiyə baxdıqda hər şey çox kiçik görünür.',
-    'Payız yarpaqları yellə birlikdə uçaraq hər yana dağılır.',
-    'Günəş batarkən göy üzü al-qırmızı rəngə boyanır.',
-  ],
-  fa:['باد ملایم بهاری شکوفه‌های گیلاس را به آرامی به هوا می‌برد.'],
-  id:['Angin semilir membawa aroma bunga yang segar dari taman kota.'],
-  th:['ดอกไม้หลากสีบานสะพรั่งงดงามในสวนสาธารณะยามเช้าตรู่'],
-  vi:['Bầu trời buổi sáng trong xanh với những đám mây trắng bồng bềnh.'],
-  pl:['Wieczorne niebo rozświetlają setki migoczących gwiazd na horyzoncie.'],
-  nl:['De tulpen bloeien prachtig langs de schilderachtige smalle grachten.'],
-  sv:['Vindens sus bland de höga tallarna skapar en fridfull sommarmelodi.'],
-  no:['Nordlyset danser vakkert over den snødekte og stille fjelltoppen.'],
-  da:['Havet bølger blidt og roligt mod de hvide sandstrande om morgenen.'],
-  fi:['Talvinen metsä hiljeni lumen ja pakkasen peitossa odottaen kevättä.'],
-  el:['Η θάλασσα λάμπει υπέροχα κάτω από τον ζεστό καλοκαιρινό ήλιο.'],
-  he:['הכוכבים מאירים את שמי הלילה בזוהר כוכבי ומרהיב מאוד.'],
-  uk:['Квіти розцвітають на лугах після першого теплого весняного дощу.'],
-  ro:['Apusul de soare pictează cerul în nuanțe calde de portocaliu și roșu.'],
-  hu:['A folyó csendesen kanyarog a zöld erdők és dombok között.'],
-  cs:['Podzimní listí pokrývá zlatým kobercem klidné lesní cesty.'],
-  sw:['Jua linachomoza asubuhi na kuangaza nchi nzima kwa mwanga wake.'],
-  ms:['Bunga raya mekar indah di bawah sinar matahari pagi yang cerah.'],
-  tl:['Ang mga bituin ay nagliliwanag nang maliwanag sa madilim na kalangitan.'],
-  bn:['আকাশ জুড়ে সাদা মেঘের ভেলা ভেসে বেড়াচ্ছে সারাদিন।'],
-  ur:['پہاڑوں کی چوٹیوں پر برف کی سفید چادر بچھی ہوئی ہے۔'],
-  zu:['Izintaba zikhanyiswa ukukhanya kwelanga ekuseni ngemva kwezulu.'],
-  ig:["Anyanwu apụtara n'ọnwa nke ụtụtụ na-eme ka ala ere ọkụ."],
-  sk:['Slnko svieti nad tichými lúkami a pieseň vtákov sa nesie vzduchom.'],
-  bg:['Слънцето грее ярко над зелените поля и тихите реки.'],
-  hr:['More mirno plovi i donosi svježinu i mir ovoga ljetnog jutra.'],
-  sr:['Звезде сијају на ноћном небу и осветљавају цео свет.'],
-  et:['Sügisene mets on kaetud kullase lehestikuga ja vaikus valitseb.'],
-  lv:['Jūra mierīgi plūst pret smilšainajiem krastiem rītausmas gaismā.'],
+  en:{l:'English',    t:'The morning sun cast golden light across the quiet valley below.'},
+  fr:{l:'Français',   t:'Les étoiles brillent intensément dans le ciel nocturne et calme.'},
+  de:{l:'Deutsch',    t:'Die Berge spiegeln sich im klaren Wasser des ruhigen Sees wider.'},
+  es:{l:'Español',    t:'Las flores del jardín perfuman el aire fresco de la mañana.'},
+  pt:{l:'Português',  t:'As ondas do mar trazem calma e paz para a alma cansada.'},
+  it:{l:'Italiano',   t:'Il profumo del caffè si diffonde delicatamente per tutta la casa.'},
+  ru:{l:'Русский',    t:'Снег тихо падает на замёрзшие поля и тёмные леса вдали.'},
+  ja:{l:'日本語',      t:'桜の花びらが風に舞い、春の訪れをやさしく告げています。'},
+  zh:{l:'中文',        t:'清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。'},
+  ko:{l:'한국어',      t:'가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.'},
+  ar:{l:'العربية',    t:'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.'},
+  hi:{l:'हिन्दी',     t:'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं।'},
+  tr:{l:'Türkçe',     t:'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.'},
+  fa:{l:'فارسی',      t:'باد ملایم بهاری شکوفههای گیلاس را به آرامی به هوا میبرد.'},
+  id:{l:'Indonesia',  t:'Angin semilir membawa aroma bunga yang segar dari taman kota.'},
+  th:{l:'ภาษาไทย',    t:'ดอกไม้หลากสีบานสะพรั่งงดงามในสวนสาธารณะยามเช้าตรู่'},
+  vi:{l:'Tiếng Việt', t:'Bầu trời buổi sáng trong xanh với những đám mây trắng bồng bềnh.'},
+  pl:{l:'Polski',     t:'Wieczorne niebo rozświetlają setki migoczących gwiazd na horyzoncie.'},
+  nl:{l:'Nederlands', t:'De tulpen bloeien prachtig langs de schilderachtige smalle grachten.'},
+  sv:{l:'Svenska',    t:'Vindens sus bland de höga tallarna skapar en fridfull sommmelodi.'},
+  no:{l:'Norsk',      t:'Nordlyset danser vakkert over den snødekte og stille fjelltoppen.'},
+  da:{l:'Dansk',      t:'Havet bølger blidt og roligt mod de hvide sandstrande om morgenen.'},
+  fi:{l:'Suomi',      t:'Talvinen metsä hiljeni lumen ja pakkasen peitossa odottaen kevättä.'},
+  el:{l:'Ελληνικά',   t:'Η θάλασσα λάμπει υπέροχα κάτω από τον ζεστό καλοκαιρινό ήλιο.'},
+  he:{l:'עברית',      t:'הכוכבים מאירים את שמי הלילה בזוהר כוכבי ומרהיב מאוד.'},
+  uk:{l:'Українська', t:'Квіти розцвітають на лугах після першого теплого весняного дощу.'},
+  ro:{l:'Română',     t:'Apusul de soare pictează cerul în nuanțe calde de portocaliu și roșu.'},
+  hu:{l:'Magyar',     t:'A folyó csendesen kanyarog a zöld erdők és dombok között.'},
+  cs:{l:'Čeština',    t:'Podzimní listí pokrývá zlatým kobercem klidné lesní cesty.'},
+  az:{l:'Azərbaycan', t:'Dağların zirvəsindən vadiyə baxdıqda hər şey çox kiçik görünür.'},
+  sw:{l:'Kiswahili',  t:'Jua linachomoza asubuhi na kuangaza nchi nzima kwa mwanga wake.'},
+  ms:{l:'Melayu',     t:'Bunga raya mekar indah di bawah sinar matahari pagi yang cerah.'},
+  tl:{l:'Filipino',   t:'Ang mga bituin ay nagliliwanag nang maliwanag sa madilim na kalangitan.'},
+  bn:{l:'বাংলা',      t:'আকাশ জুড়ে সাদা মেঘের ভেলা ভেসে বেড়াচ্ছে সারাদিন।'},
+  ur:{l:'اردو',       t:'پہاڑوں کی چوٹیوں پر برف کی سفید چادر بچھی ہوئی ہے۔'},
+  zu:{l:'isiZulu',    t:'Izintaba zikhanyiswa ukukhanya kwelanga ekuseni ngemva kwezulu.'},
+  ig:{l:'Igbo',       t:"Anyanwu apụtara n'ọnwa nke ụtụtụ na-eme ka ala ere ọkụ."},
+  sk:{l:'Slovenčina', t:'Slnko svieti nad tichými lúkami a pieseň vtákov sa nesie vzduchom.'},
+  bg:{l:'Български',  t:'Слънцето грее ярко над зелените поля и тихите реки.'},
+  hr:{l:'Hrvatski',   t:'More mirno plovi i donosi svježinu i mir ovoga ljetnog jutra.'},
+  sr:{l:'Српски',     t:'Звезде сијају на ноћном небу и осветљавају цео свет.'},
 };
 
-// Language display names
-const LANG_NAMES={
-  en:'English',fr:'Français',de:'Deutsch',es:'Español',pt:'Português',
-  it:'Italiano',ru:'Русский',ja:'日本語',zh:'中文',ko:'한국어',
-  ar:'العربية',hi:'हिन्दी',tr:'Türkçe',az:'Azərbaycan',fa:'فارسی',
-  id:'Indonesia',th:'ภาษาไทย',vi:'Tiếng Việt',pl:'Polski',nl:'Nederlands',
-  sv:'Svenska',no:'Norsk',da:'Dansk',fi:'Suomi',el:'Ελληνικά',
-  he:'עברית',uk:'Українська',ro:'Română',hu:'Magyar',cs:'Čeština',
-  sw:'Kiswahili',ms:'Melayu',tl:'Filipino',bn:'বাংলা',ur:'اردو',
-  zu:'isiZulu',ig:'Igbo',sk:'Slovenčina',bg:'Български',hr:'Hrvatski',
-  sr:'Српски',et:'Eesti',lv:'Latviešu',
-};
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let GS={type:null,qi:0,score:0,used:[],worldData:null};
 
-/* ═══════════ STATE ═══════════ */
-let GS={type:null,difficulty:'easy',qi:0,score:0,used:[],worldData:null};
-let pendingType=null;
-
-function getCPool(){
-  if(GS.difficulty==='easy') return C_EASY;
-  if(GS.difficulty==='medium') return C_MEDIUM;
-  return C_HARD;
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function shuf(a){
+  const r=[...a];
+  for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}
+  return r;
 }
+function pick(arr,n,ex=[]){return shuf(arr.filter(x=>!ex.includes(x))).slice(0,n)}
 
-/* ═══════════ UTILS ═══════════ */
-function shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
-function rndFrom(arr){return arr[Math.floor(Math.random()*arr.length)];}
-
-/* ═══════════ SCREENS ═══════════ */
-function showScr(name){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById('scr-'+name).classList.add('on');}
-function toggleSB(){document.getElementById('sb').classList.toggle('open');}
+/* ═══════════════════════════════════════════
+   SCREENS
+═══════════════════════════════════════════ */
+function showScr(name){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById('scr-'+name).classList.add('on');
+}
+function toggleSB(){
+  document.getElementById('sb').classList.toggle('open');
+}
 document.addEventListener('click',e=>{
-  const sb=document.getElementById('sb'),hb=document.getElementById('hbtn');
-  if(sb.classList.contains('open')&&!sb.contains(e.target)&&e.target!==hb)sb.classList.remove('open');
+  const sb=document.getElementById('sb');
+  const hb=document.getElementById('hbtn');
+  if(sb.classList.contains('open')&&!sb.contains(e.target)&&e.target!==hb){
+    sb.classList.remove('open');
+  }
 });
 
-/* ═══════════ GAME FLOW ═══════════ */
-const BADGES={language:'🔤 Dil Tapma',map:'🗺️ Xəritə Oyunu',currency:'💰 Valyuta Tapma',flag:'🚩 Bayraq Tapma'};
-const DIFF_LABELS={easy:'🟢 Asan',medium:'🟡 Orta',hard:'🔴 Çətin'};
-const DIFF_ICONS={language:'🔤',map:'🗺️',currency:'💰',flag:'🚩'};
+/* ═══════════════════════════════════════════
+   GAME FLOW
+═══════════════════════════════════════════ */
+const BADGES={language:'🔤 Dil Tapma',map:'🗺️ Xəritə Oyunu',currency:'💰 Valyuta Tapma',flag:'🏴 Bayraq Tapma'};
 
-function chooseDiff(type){
-  pendingType=type;
-  document.getElementById('diff-title').textContent=DIFF_ICONS[type]+' '+BADGES[type].slice(3);
+function startGame(type){
+  GS={type,qi:0,score:0,used:[],worldData:GS.worldData};
   document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
   const nb=document.getElementById('n-'+type);
   if(nb)nb.classList.add('active');
-  showScr('diff');
-}
-
-function startGame(type,diff){
-  GS={type,difficulty:diff,qi:0,score:0,used:[],worldData:GS.worldData};
   document.getElementById('gbadge').textContent=BADGES[type];
-  const dl=document.getElementById('gdiff');
-  dl.textContent=DIFF_LABELS[diff];
-  dl.className='gdifficulty gd-'+diff;
   document.getElementById('sval').textContent='0';
   showScr('game');
   updateProgress();
@@ -567,19 +616,22 @@ function startGame(type,diff){
 }
 
 function updateProgress(){
-  document.getElementById('pbar').style.width=((GS.qi)/10*100)+'%';
+  const pct=((GS.qi)/10)*100;
+  document.getElementById('pbar').style.width=pct+'%';
   document.getElementById('ptxt').textContent=(GS.qi+1)+' / 10';
 }
 
 function loadQ(){
   const gens={language:genLang,map:genMap,currency:genCurr,flag:genFlag};
-  renderQ(gens[GS.type]());
+  const q=gens[GS.type]();
+  renderQ(q);
 }
 
-/* ═══════════ GENERATORS ═══════════ */
+/* ═══════════════════════════════════════════
+   GENERATORS
+═══════════════════════════════════════════ */
 function pickCountry(){
-  const pool=getCPool();
-  const sh=shuf(pool);
+  const sh=shuf([...C]);
   let t=sh.find(x=>!GS.used.includes(x.code));
   if(!t){GS.used=[];t=sh[0];}
   GS.used.push(t.code);
@@ -587,53 +639,69 @@ function pickCountry(){
 }
 
 function genLang(){
-  // Use ALL_C for language variety regardless of difficulty
-  const lc=ALL_C.filter(x=>P[x.lc]);
+  // Get countries that have phrase data
+  const lc=C.filter(x=>P[x.lc]);
   const sh=shuf(lc);
   let t=sh.find(x=>!GS.used.includes(x.code));
   if(!t){GS.used=[];t=sh[0];}
   GS.used.push(t.code);
-  const phrase=rndFrom(P[t.lc]);
-  // Wrong options with unique lang codes
-  const wrongs=sh.filter(x=>x.lc!==t.lc&&P[x.lc])
+  // Wrong options: different langCodes
+  const wrongs=sh
+    .filter(x=>x.lc!==t.lc&&P[x.lc])
     .reduce((acc,x)=>{if(!acc.find(a=>a.lc===x.lc))acc.push(x);return acc;},[])
     .slice(0,5);
   const opts=shuf([
-    {v:t.lc,label:LANG_NAMES[t.lc]||t.lc,correct:true},
-    ...wrongs.map(x=>({v:x.lc,label:LANG_NAMES[x.lc]||x.lc,correct:false}))
+    {v:t.lc,label:P[t.lc].l,correct:true},
+    ...wrongs.map(x=>({v:x.lc,label:P[x.lc].l,correct:false}))
   ]);
-  return{type:'language',text:phrase,cv:t.lc,opts};
+  return{type:'language',text:P[t.lc].t,cv:t.lc,opts};
 }
 
 function genMap(){
   const t=pickCountry();
-  const wrongs=shuf(ALL_C.filter(x=>x.code!==t.code)).slice(0,5);
-  const opts=shuf([{v:t.code,label:t.nameAz,correct:true},...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))]);
+  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,5);
+  const opts=shuf([
+    {v:t.code,label:t.nameAz,correct:true},
+    ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
+  ]);
   return{type:'map',target:t,cv:t.code,opts};
 }
 
 function genCurr(){
   const t=pickCountry();
-  const wrongs=shuf(ALL_C.filter(x=>x.code!==t.code&&x.cur!==t.cur)).slice(0,5);
-  const opts=shuf([{v:t.cur,label:t.currency+' ('+t.cur+')',correct:true},...wrongs.map(x=>({v:x.cur,label:x.currency+' ('+x.cur+')',correct:false}))]);
+  const wrongs=shuf(C.filter(x=>x.code!==t.code&&x.cur!==t.cur)).slice(0,5);
+  const opts=shuf([
+    {v:t.cur,label:t.currency+' ('+t.cur+')',correct:true},
+    ...wrongs.map(x=>({v:x.cur,label:x.currency+' ('+x.cur+')',correct:false}))
+  ]);
   return{type:'currency',target:t,cv:t.cur,opts};
 }
 
 function genFlag(){
   const t=pickCountry();
-  const wrongs=shuf(ALL_C.filter(x=>x.code!==t.code)).slice(0,5);
-  const opts=shuf([{v:t.code,label:t.nameAz,correct:true},...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))]);
+  const wrongs=shuf(C.filter(x=>x.code!==t.code)).slice(0,5);
+  const opts=shuf([
+    {v:t.code,label:t.nameAz,correct:true},
+    ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
+  ]);
   return{type:'flag',target:t,cv:t.code,opts};
 }
 
-/* ═══════════ RENDER ═══════════ */
+/* ═══════════════════════════════════════════
+   RENDER QUESTION
+═══════════════════════════════════════════ */
 const LETS=['A','B','C','D','E','F'];
 
 function renderQ(q){
-  const qw=document.getElementById('qw'),ow=document.getElementById('ow');
+  const qw=document.getElementById('qw');
+  const ow=document.getElementById('ow');
+
+  // Question area
   switch(q.type){
     case'language':
-      qw.innerHTML=`<div class="lcard"><div class="ltxt">${q.text}</div></div><p class="qlbl">Bu mətn hansı dildə yazılmışdır?</p>`;
+      qw.innerHTML=`
+        <div class="lcard"><div class="ltxt">${q.text}</div></div>
+        <p class="qlbl">Bu mətn hansı dildə yazılmışdır?</p>`;
       break;
     case'map':
       qw.innerHTML=`
@@ -641,73 +709,37 @@ function renderQ(q){
           <div class="mmsg" id="mmsg"><div class="mspn"></div><span>Xəritə yüklənir...</span></div>
           <svg id="wsvg"></svg>
         </div>
-        <p class="qlbl">Xəritədə <span style="color:#a78bfa;font-weight:700">bənövşəyi</span> rənglə işarələnmiş ölkə hansıdır?</p>`;
+        <p class="qlbl">Xəritədə vurgulanmış ölkə hansıdır?</p>`;
       drawMap(q.target);
       break;
     case'currency':
-      qw.innerHTML=`<div class="ccard"><span class="cflag">${q.target.flag}</span><div class="cname">${q.target.nameAz}</div><p class="chint">Bu ölkənin valyutası (pul vahidi) hansıdır?</p></div>`;
+      qw.innerHTML=`
+        <div class="ccard">
+          <img class="cflag" src="https://flagcdn.com/w80/${q.target.code.toLowerCase()}.png" alt="Bayraq"/>
+          <div class="cname">${q.target.nameAz}</div>
+          <p class="chint">Bu ölkənin valyutası (pul vahidi) hansıdır?</p>
+        </div>`;
       break;
     case'flag':
       qw.innerHTML=`
-        <div class="fcard">
-          <img src="https://flagcdn.com/w320/${q.target.flagCode}.png"
-               onerror="this.src='https://flagcdn.com/w160/${q.target.flagCode}.png'"
-               alt="${q.target.nameAz} bayrağı"/>
-        </div>
+        <div class="fcard"><img class="fbig" src="https://flagcdn.com/w320/${q.target.code.toLowerCase()}.png" alt="Bayraq"/></div>
         <p class="qlbl">Bu bayraq hansı ölkəyə məxsusdur?</p>`;
       break;
   }
+
+  // Options
   ow.innerHTML=q.opts.map((o,i)=>`
     <button class="obtn" data-v="${o.v}" onclick="answer('${o.v}','${q.cv}',this)">
-      <span class="olet">${LETS[i]}</span><span>${o.label}</span>
+      <span class="olet">${LETS[i]}</span>
+      <span>${o.label}</span>
     </button>`).join('');
 }
 
-/* ═══════════ MAP (D3) ═══════════ */
-async function drawMap(target){
-  try{
-    if(!GS.worldData){
-      const r=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-      GS.worldData=await r.json();
-    }
-    const el=document.getElementById('mmsg');
-    if(el)el.style.display='none';
-    const svg=document.getElementById('wsvg');
-    if(!svg)return;
-    const mc=document.getElementById('mcard');
-    const W=mc.clientWidth-28,H=mc.clientHeight-28;
-    const d3s=d3.select(svg).attr('width',W).attr('height',H);
-    d3s.selectAll('*').remove();
-    const proj=d3.geoNaturalEarth1().scale(W/6.3).translate([W/2,H/2]);
-    const path=d3.geoPath().projection(proj);
-    const countries=topojson.feature(GS.worldData,GS.worldData.objects.countries);
-    d3s.selectAll('path')
-      .data(countries.features)
-      .enter().append('path')
-      .attr('d',path)
-      .attr('fill',d=>+d.id===target.id?'#7c3aed':'#1a2540')
-      .attr('stroke','#090d1a')
-      .attr('stroke-width',.4)
-      .style('filter',d=>+d.id===target.id?'drop-shadow(0 0 10px rgba(124,58,237,.9))':'none');
-    // "?" on country – no name shown
-    const tf=countries.features.find(f=>+f.id===target.id);
-    if(tf){
-      const c=path.centroid(tf);
-      if(c&&!isNaN(c[0])){
-        d3s.append('text').attr('x',c[0]).attr('y',c[1])
-          .attr('text-anchor','middle').attr('dominant-baseline','middle')
-          .attr('fill','#fff').attr('font-size','14').attr('font-weight','bold')
-          .attr('pointer-events','none').text('?');
-      }
-    }
-  }catch(e){
-    const el=document.getElementById('mmsg');
-    if(el)el.innerHTML='<span style="color:#8b97b8">⚠️ Xəritə yüklənə bilmədi. İnternet bağlantısını yoxlayın.</span>';
-  }
-}
-
-/* ═══════════ ANSWER ═══════════ */
+/* ═══════════════════════════════════════════
+   ANSWER HANDLING
+═══════════════════════════════════════════ */
 function answer(selected,correct,btn){
+  // Disable all
   document.querySelectorAll('.obtn').forEach(b=>{
     b.disabled=true;
     if(b.dataset.v===correct)b.classList.add('ok');
@@ -732,7 +764,54 @@ function toast(msg,cls){
   setTimeout(()=>el.remove(),950);
 }
 
-/* ═══════════ RESULTS ═══════════ */
+/* ═══════════════════════════════════════════
+   MAP (D3)
+═══════════════════════════════════════════ */
+async function drawMap(target){
+  try{
+    if(!GS.worldData){
+      const r=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+      GS.worldData=await r.json();
+    }
+    const el=document.getElementById('mmsg');
+    if(el)el.style.display='none';
+    const svg=document.getElementById('wsvg');
+    if(!svg)return;
+    const mc=document.getElementById('mcard');
+    const W=mc.clientWidth-28,H=mc.clientHeight-28;
+    const d3s=d3.select(svg).attr('width',W).attr('height',H);
+    d3s.selectAll('*').remove();
+    const proj=d3.geoNaturalEarth1().scale(W/6.3).translate([W/2,H/2]);
+    const path=d3.geoPath().projection(proj);
+    const countries=topojson.feature(GS.worldData,GS.worldData.objects.countries);
+    d3s.selectAll('path')
+      .data(countries.features)
+      .enter().append('path')
+      .attr('d',path)
+      .attr('fill',d=>+d.id===target.id?'#7c3aed':'#1a2540')
+      .attr('stroke','#090d1a')
+      .attr('stroke-width',.4)
+      .style('filter',d=>+d.id===target.id?'drop-shadow(0 0 8px rgba(124,58,237,.8))':'none');
+    // Question mark label on highlighted country
+    const tf=countries.features.find(f=>+f.id===target.id);
+    if(tf){
+      const c=path.centroid(tf);
+      if(c&&!isNaN(c[0])){
+        d3s.append('text').attr('x',c[0]).attr('y',c[1])
+          .attr('text-anchor','middle').attr('fill','#fff')
+          .attr('font-size','12').attr('font-weight','bold')
+          .attr('pointer-events','none').text('?');
+      }
+    }
+  }catch(e){
+    const el=document.getElementById('mmsg');
+    if(el)el.innerHTML='<span style="color:#8b97b8">⚠️ Xəritə yüklənə bilmədi.<br>İnternet bağlantısını yoxlayın.</span>';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════════ */
 function showResults(){
   const s=GS.score,w=10-s,acc=Math.round(s/10*100);
   document.getElementById('rscore').textContent=s;
@@ -740,7 +819,7 @@ function showResults(){
   document.getElementById('bdno').textContent=w;
   document.getElementById('bdac').textContent=acc+'%';
   let em,msg;
-  if(s===10){em='🏆';msg='Mükəmməl! 10/10 – Həqiqi dünya bilicisisiniz!';}
+  if(s===10){em='🏆';msg='Mükəmməl! 10/10 – Həqiqi coğrafiya ustasısınız!';}
   else if(s>=8){em='🌟';msg='Əla nəticə! Çox yaxşı bildiyinizi sübut etdiniz!';}
   else if(s>=6){em='👍';msg='Yaxşı! Orta üstü nəticə əldə etdiniz.';}
   else if(s>=4){em='📚';msg='Pis deyil. Daha çox məşq etmək lazımdır.';}
@@ -751,32 +830,41 @@ function showResults(){
   showScr('results');
 }
 
-function restartGame(){startGame(GS.type,GS.difficulty);}
-function goHome(){showScr('welcome');document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));}
+function restartGame(){startGame(GS.type)}
+function goHome(){
+  showScr('welcome');
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
+}
 
-/* ═══════════ STATS ═══════════ */
+/* ═══════════════════════════════════════════
+   STATS (localStorage)
+═══════════════════════════════════════════ */
 function loadStats(){
-  const played=localStorage.getItem('wqPlayed')||0;
-  const best=localStorage.getItem('wqBest');
+  const played=localStorage.getItem('gqPlayed')||0;
+  const best=localStorage.getItem('gqBest');
   document.getElementById('sp').textContent=played;
   document.getElementById('sb2').textContent=best?best+'/10':'–';
 }
 function saveStats(score){
-  const p=parseInt(localStorage.getItem('wqPlayed')||0)+1;
-  const prev=parseInt(localStorage.getItem('wqBest')||0);
-  localStorage.setItem('wqPlayed',p);
-  if(score>prev)localStorage.setItem('wqBest',score);
+  const p=parseInt(localStorage.getItem('gqPlayed')||0)+1;
+  const prev=parseInt(localStorage.getItem('gqBest')||0);
+  localStorage.setItem('gqPlayed',p);
+  if(score>prev)localStorage.setItem('gqBest',score);
   loadStats();
 }
 
-/* ═══════════ INIT ═══════════ */
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',()=>{
   loadStats();
+  // AdSense real ads yükləndikdə placeholder gizlə
   const adph=document.getElementById('adph');
   if(adph)setTimeout(()=>{
     const ins=document.querySelector('.adsbygoogle');
     if(ins&&ins.innerHTML.trim()!=='')adph.style.display='none';
   },2000);
+  // Pre-load map data
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
     .then(r=>r.json()).then(d=>GS.worldData=d).catch(()=>{});
 });
