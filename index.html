@@ -116,8 +116,8 @@ body{
   margin-bottom:11px;line-height:1.2;
 }
 .wh p{color:var(--t2);font-size:1.05rem}
-.gcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
-.gcard{
+.gcards{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+.gcard{width:calc(33.333% - 11px);min-width:190px;max-width:260px;
   background:var(--bgc);border:1px solid var(--border);border-radius:22px;
   padding:28px 18px;text-align:center;cursor:pointer;
   transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
@@ -582,8 +582,6 @@ const C=[
   {id:100,code:'BG',nameAz:'Bolqarıstan',            currency:'Bolqar Levi',            cur:'BGN',lc:'bg', d:3, cap:'Sofiya'},
   {id:191,code:'HR',nameAz:'Xorvatiya',              currency:'Avro',                   cur:'EUR',lc:'hr', d:3, cap:'Zaqreb'},
   {id:688,code:'RS',nameAz:'Serbiya',                currency:'Serbiya Dinarı',         cur:'RSD',lc:'sr', d:3, cap:'Belqrad'},
-
-  /* ─── d:3 YENİ ÇƏTİN ÖLKƏLƏR ─── */
   {id:496,code:'MN',nameAz:'Monqolustan',            currency:'Monqol Tuqriki',         cur:'MNT',lc:'mn', d:3, cap:'Ulanbator'},
   {id:524,code:'NP',nameAz:'Nepal',                  currency:'Nepal Rupisi',           cur:'NPR',lc:'ne', d:3, cap:'Katmandu'},
   {id:116,code:'KH',nameAz:'Kamboca',                currency:'Kamboca Rieli',          cur:'KHR',lc:'km', d:3, cap:'Pnom Pen'},
@@ -610,6 +608,19 @@ const C=[
   {id:51, code:'AM',nameAz:'Ermənistan',              currency:'Erməni Dramı',           cur:'AMD',lc:'hy', d:3, cap:'İrəvan'},
   {id:398,code:'KZ',nameAz:'Qazaxıstan',             currency:'Qazax Tengesi',          cur:'KZT',lc:'kk', d:3, cap:'Astana'},
   {id:860,code:'UZ',nameAz:'Özbəkistan',             currency:'Özbək Somu',             cur:'UZS',lc:'uz', d:3, cap:'Daşkənd'},
+  /* Extreme Hard */
+  {id:798,code:'TV',nameAz:'Tuvalu',                 currency:'Tuvalu Dolları',         cur:'TVD',lc:'en', d:3, cap:'Funafuti'},
+  {id:520,code:'NR',nameAz:'Nauru',                  currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:3, cap:'Yaren'},
+  {id:748,code:'SZ',nameAz:'Esvatini',               currency:'Lilanqeni',              cur:'SZL',lc:'en', d:3, cap:'Mbabane'},
+  {id:426,code:'LS',nameAz:'Lesoto',                 currency:'Loti',                   cur:'LSL',lc:'en', d:3, cap:'Maseru'},
+  {id:64, code:'BT',nameAz:'Butan',                  currency:'Nqultrum',               cur:'BTN',lc:'dz', d:3, cap:'Thimphu'},
+  {id:262,code:'DJ',nameAz:'Cibuti',                 currency:'Cibuti Frankı',          cur:'DJF',lc:'fr', d:3, cap:'Cibuti şəhəri'},
+  {id:174,code:'KM',nameAz:'Komor adaları',          currency:'Komor Frankı',           cur:'KMF',lc:'ar', d:3, cap:'Moroni'},
+  {id:84, code:'BZ',nameAz:'Beliz',                  currency:'Beliz Dolları',          cur:'BZD',lc:'en', d:3, cap:'Belmopan'},
+  {id:740,code:'SR',nameAz:'Surinam',                currency:'Surinam Dolları',        cur:'SRD',lc:'nl', d:3, cap:'Paramaribo'},
+  {id:548,code:'VU',nameAz:'Vanuatu',                currency:'Vatu',                   cur:'VUV',lc:'en', d:3, cap:'Port-Vila'},
+  {id:296,code:'KI',nameAz:'Kiribati',               currency:'Avstraliya Dolları',     cur:'AUD',lc:'en', d:3, cap:'Tarava'},
+  {id:624,code:'GW',nameAz:'Qvineya-Bisau',          currency:'CFA Frankı',             cur:'XOF',lc:'pt', d:3, cap:'Bisau'},
 ];
 
 const P={
@@ -624,7 +635,7 @@ const P={
   zh:{l:'Çin dili',        t:'清晨的阳光照耀着宁静的湖面，波光粼粼，美丽如画。'},
   ko:{l:'Koreya dili',      t:'가을 단풍이 산을 붉게 물들이고 찬 바람이 불어옵니다.'},
   ar:{l:'Ərəb dili',    t:'تشرق الشمس كل صباح لتضيء العالم بضوئها الذهبي الجميل.'},
-  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं।'},
+  hi:{l:'Hind dili',     t:'बारिश की बूंदें धरती पर गिरकर मिट्टी की सुगंध फैलाती हैं。'},
   tr:{l:'Türk dili',     t:'Güneş ufukta yavaşça batarken gökyüzü kızıl renklere büründü.'},
   fa:{l:'Fars dili',      t:'باد ملایم بهاری شکوفههای گیلاس را به آرامی به هوا میبرد.'},
   id:{l:'İndoneziya dili',  t:'Angin semilir membawa aroma bunga yang segar dari taman kota.'},
@@ -657,7 +668,7 @@ const P={
   /* ─── YENİ DİLLƏR (çətin mod üçün) ─── */
   mn:{l:'Monqol dili',    t:'Монгол нутгийн уудам тал нь алтан шар өнгөөр гялалзаж байна.'},
   ne:{l:'Nepal dili',      t:'हिमालयको चुचुरोमा हिउँ चम्किरहेको दृश्य अत्यन्त सुन्दर छ।'},
-  km:{l:'Kxmer dili',      t:'ព្រះអាទិត្យរះលើប្រាសាទបុរាណដ៏អស្ចារ្យក្នុងព្រលឹម។'},
+  km:{l:'Kxmer dili',      t:'ព្រះអាទិត្យរះលើប្រាសាទបុរាណដ៏អស្ចារ្យក្នុងព្រលឹម。'},
   lo:{l:'Laos dili',       t:'ພະອາທິດຂຶ້ນເໜືອພູສູງແລ້ວແສງສະຫວ່າງສ່ອງທົ່ວທົ່ງນາ.'},
   my:{l:'Birma dili',      t:'မြန်မာနိုင်ငံ၏ရွှေရောင်ဘုရားစေတီများသည်အလွန်လှပသည်။'},
   am:{l:'Amhar dili',      t:'የኢትዮጵያ ተራሮች በአረንጓዴ ልብስ ተሸፍነው ያማረ ገጽታ ይሰጣሉ።'},
@@ -668,20 +679,12 @@ const P={
   lv:{l:'Latviya dili',    t:'Saule riet aiz meža un krāso debesis oranžos un sārtos toņos.'},
   et:{l:'Eston dili',      t:'Päike loojub metsa taha ja värvib taeva oranžidesse toonidesse.'},
   ka:{l:'Gürcü dili',      t:'მთების მწვერვალებზე თოვლი ანათებს მზის სხივებში ლამაზად.'},
-  hy:{l:'Erməni dili',     t:'Արdelays լdelays delays delays delays erevan.'},
   kk:{l:'Qazax dili',      t:'Дала кең жайылып жатыр, аспанда ақ бұлттар баяу жүзіп барады.'},
   uz:{l:'Özbək dili',      t:'Quyosh botayotganda osmon oltin rangga bo\'yaldi va shamol esdi.'},
 };
 
-/* Fix Armenian phrase properly */
-P.hy = {l:'Erməni dili', t:'Արdelays վdelays delays delays delays erevan.'};
-P.hy = {l:'Erməni dili', t:'Լեdelays delays erevan.'};
-/* Replace with actual Armenian */
-P.hy = {l:'Erməni dili', t:'Արdelays erevan.'};
-delete P.hy;
-/* Just use a proper phrase */
-P.hy = {l:'Erməni dili', t:'Արdelays erevan.'};
-/* Let me set it properly without encoding issues */
+/* Armenian dili xətaya yol verməmək üçün əlavə kimi təyin edildi */
+P.hy = {l:'Erməni dili', t:'Արեւի լույսը գեղեցիկ փայլում է բնության վրա:'};
 
 /* ═══════════════════════════════════════════
    STATE
@@ -881,12 +884,6 @@ function renderQ(q){
   const qw=document.getElementById('qw');
   const ow=document.getElementById('ow');
 
-  /* Çətin modda 4 sütun grid */
-  if(GS.diff === 3){
-    ow.style.gridTemplateColumns = 'repeat(2,1fr)';
-  } else {
-    ow.style.gridTemplateColumns = 'repeat(2,1fr)';
-  }
 
   switch(q.type){
     case'language':
@@ -906,8 +903,8 @@ function renderQ(q){
     case'currency':
       qw.innerHTML=`
         <div class="ccard" style="padding: 50px 20px;">
-          <div class="cname">${q.target.currency}</div>
-          <p class="chint">Bu valyuta hansı ölkəyə məxsusdur?</p>
+          <div class="cname">${q.target.cur}</div>
+          <p class="chint">Bu valyuta kodu (ISO 4217) hansı ölkəyə məxsusdur?</p>
         </div>`;
       break;
     case'flag':
@@ -1055,9 +1052,6 @@ function saveStats(score){
 ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',()=>{
   loadStats();
-
-  /* Fix Armenian phrase at runtime */
-  P.hy = {l:'Erməni dili', t:'\u0531\u0580\u0587\u056B \u056C\u0578\u0582\u0575\u057D\u0568 \u0567 \u0563\u0561\u056C\u056B\u057D \u0574\u0577\u057F\u0561\u057A \\u0574\u0578\u057F \u0561\u0576\u0571\u0580\u0587'};
 
   const adph=document.getElementById('adph');
   if(adph)setTimeout(()=>{
