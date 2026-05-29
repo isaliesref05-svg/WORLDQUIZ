@@ -800,12 +800,14 @@ function genCurr(){
   const t=pickCountry();
   let pool = C.filter(x=>x.d === GS.diff && x.code !== t.code && x.cur !== t.cur);
   if(pool.length < 5) pool = pool.concat(C.filter(x=>x.code !== t.code && x.cur !== t.cur));
-  const wrongs=shuf(pool).slice(0,5);
+  const wrongs=shuf(pool)
+    .reduce((acc,x)=>{if(!acc.find(a=>a.cur===x.cur))acc.push(x);return acc;},[])
+    .slice(0,5);
   const opts=shuf([
     {v:t.code,label:t.nameAz,correct:true},
     ...wrongs.map(x=>({v:x.code,label:x.nameAz,correct:false}))
   ]);
-  return{type:'currency',target:t,cv:t.code,opts};
+  return{type:'currency',target:t,cv:t.code,opts,currencyName:t.currency};
 }
 
 function genFlag(){
@@ -846,7 +848,7 @@ function renderQ(q){
       drawMap(q.target);
       break;
     case'currency':
-      const cWord = q.target.currency;
+      const cWord = q.target.currency.split(' ').pop();
       qw.innerHTML=`<div class="ccard" style="padding:50px 20px;"><div class="cname">${cWord}</div><p class="chint">Bu valyuta hansı ölkəyə məxsusdur?</p></div>`;
       break;
     case'flag':
