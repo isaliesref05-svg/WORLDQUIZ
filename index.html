@@ -846,7 +846,7 @@ function renderQ(q){
       drawMap(q.target);
       break;
     case'currency':
-      const cWord = q.target.currency.split(' ').pop();
+      const cWord = q.target.currency;
       qw.innerHTML=`<div class="ccard" style="padding:50px 20px;"><div class="cname">${cWord}</div><p class="chint">Bu valyuta hansı ölkəyə məxsusdur?</p></div>`;
       break;
     case'flag':
